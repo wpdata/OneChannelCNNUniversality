@@ -1,4 +1,4 @@
-# Lean formalization of two-dimensional one-channel universality
+# Machine-Checked Universal Approximation by Two-Dimensional One-Channel Expansive ReLU CNNs
 
 This Lean 4 project proves universal approximation for the following exact
 model:
@@ -40,8 +40,8 @@ The project pins Lean `4.32.1` and Mathlib `v4.32.1`. Mathlib is recorded as
 a Git submodule, so clone with:
 
 ```sh
-git clone --recurse-submodules git@github.com:wpdata/lean-2d-one-channel-universality.git
-cd lean-2d-one-channel-universality
+git clone --recurse-submodules git@github.com:wpdata/machine-checked-2d-one-channel-relu-cnn-universality.git
+cd machine-checked-2d-one-channel-relu-cnn-universality
 ```
 
 If the repository was cloned without submodules, initialize Mathlib with:
