@@ -158,10 +158,30 @@ and states the protected evaluation law directly in terms of that network's
 `eval`.  The generic composition operation in `SharedBiasNetworkTo.append`
 proves that sequential composition preserves evaluation and adds depths.
 
+[`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean)
+establishes the noninterference invariant needed for composing local updates.
+With the convolution convention used here, the value at $(p,q)$ reads only
+sites weakly northwest of $(p,q)$. Lean proves that agreement on the rectangle
+
+$$
+\{(i,j):i\le p,\ j\le q\}
+$$
+
+is preserved by an arbitrary full-convolution layer, by a genuine shared-bias
+convolution/ReLU layer, and by every finite `SharedBiasNetwork` or explicitly
+typed `SharedBiasNetworkTo`. It also specializes the result to the protected
+Pascal signal. Hence, in a southeast-to-northwest scan, information already
+stored outside the current northwest rectangle cannot flow backward and alter
+the current activation. This is a verified causal foundation for a
+multi-update compiler, not yet the compiler itself: recovery of earlier
+nonlinear features after subsequent transports and the finite scan assembly
+remain to be proved.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
-approximation theorem.  The verified theorem above still permits an arbitrary
-position-dependent bias image.  It remains open in this development whether
-the shared-scalar-bias subclass is universal or non-universal.  Arbitrary
+approximation theorem. The repository's existing full universal-approximation
+theorem still permits arbitrary position-dependent bias images. It remains
+open in this development whether the shared-scalar-bias subclass is universal
+or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
 What remains is substantially different: compose many such local updates
@@ -189,6 +209,7 @@ argument for the shared-scalar-bias subclass.
 | [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | Repeated positive horizontal accumulation, exact Pascal-prefix addresses, injectivity, and protected row-suffix selection |
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | Injective two-dimensional Pascal addresses and arbitrary-target selection on a southeast protected quadrant |
 | [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | Explicit genuine shared-bias layers, the exact first-bias Pascal carrier and gap, zero-bias accumulation, and a bundled end-to-end protected arbitrary-target network |
+| [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | Northwest noninterference for full convolution, genuine shared-bias ReLU layers, arbitrary finite networks, and the protected Pascal signal |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

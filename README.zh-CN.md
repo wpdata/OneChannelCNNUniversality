@@ -127,8 +127,23 @@ $$
 受保护求值公式直接使用该网络的 `eval` 表述。通用组合操作
 `SharedBiasNetworkTo.append` 则证明串联保持求值语义且网络深度相加。
 
-这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
-允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能。
+[`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean)
+形式化了组合多次局部更新所需的“不干扰”不变量。按照本工程的卷积约定，位置 $(p,q)$
+只读取它弱西北方向的输入位置。Lean 已证明：若两个状态在矩形
+
+$$
+\{(i,j):i\le p,\ j\le q\}
+$$
+
+上一致，那么这种一致性会被任意一次完整卷积、真实的共享偏置卷积／ReLU 层、任意有限
+`SharedBiasNetwork`，以及显式输出尺寸的 `SharedBiasNetworkTo` 保持；受保护 Pascal
+信号也满足相应结论。因此，按东南到西北的顺序扫描时，已经存放在当前西北矩形之外的
+信息不会反向流入并改变当前激活。这是多次更新编译器已经验证的因果基础，但还不是完整
+编译器：仍需证明早先生成的非线性特征经过后续传输后可以恢复，并完成有限扫描的组装。
+
+这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
+逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
+不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。剩余工作已经变成另一项任务：组合多次局部更新，
 同时保存当前象限之外的寄存器；控制更新之间的扩张边缘值；最终把这种共享偏置编译器接到
@@ -154,6 +169,7 @@ $$
 | [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | 重复正横向累加、精确 Pascal 前缀地址、单射性与受保护行后缀选择 |
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | 单射二维 Pascal 地址，以及东南受保护象限上的任意目标选择 |
 | [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | 真实共享偏置层、首层偏置 Pascal 载波及间隙、零偏置累加，以及封装为单一网络的端到端受保护任意目标选择 |
+| [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | 完整卷积、真实共享偏置 ReLU 层、任意有限网络及受保护 Pascal 信号的西北不干扰定理 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
