@@ -74,5 +74,22 @@ def single (kernel : Kernel kRows kCols) (bias : ℝ) :
     (net : SharedBiasNetwork kRows kCols rows cols)
     (x : Image rows cols) : net.toNetwork.eval x = net.eval x := rfl
 
+/-- The embedding preserves the final row dimension definitionally. -/
+@[simp] theorem outRows_toNetwork
+    (net : SharedBiasNetwork kRows kCols rows cols) :
+    net.toNetwork.outRows = net.outRows := rfl
+
+/-- The embedding preserves the final column dimension definitionally. -/
+@[simp] theorem outCols_toNetwork
+    (net : SharedBiasNetwork kRows kCols rows cols) :
+    net.toNetwork.outCols = net.outCols := rfl
+
+/-- The embedding preserves every affine readout exactly. -/
+@[simp] theorem realize_toNetwork
+    (net : SharedBiasNetwork kRows kCols rows cols)
+    (weight : Image net.outRows net.outCols) (constant : ℝ)
+    (x : Image rows cols) :
+    net.toNetwork.realize weight constant x = net.realize weight constant x := rfl
+
 end SharedBiasNetwork
 end OneChannelCNNUniversality
