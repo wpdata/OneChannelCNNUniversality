@@ -201,6 +201,26 @@ Pascal transport expands and mixes the feature image; it remains available to
 the final affine readout. This does not yet prove recoverability through an
 arbitrary later biased selection block.
 
+[`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean)
+formalizes the complementary spatial invariant. Write
+
+$$
+Q_{r,s}=\{(i,j):r\le i,\ s\le j\}.
+$$
+
+If two feature images differ only inside $Q_{r,s}$, Lean proves that their
+outputs still differ only inside $Q_{r,s}$ after one full convolution, one
+genuine shared-bias convolution/ReLU layer, or an arbitrary finite
+`SharedBiasNetworkTo`. If the inputs also agree at the root $(r,s)$, this
+punctured-southeast condition $Q_{r,s}\setminus\{(r,s)\}$ is preserved and the
+root output remains equal. Consequently, information already stored in that
+punctured quadrant cannot leak toward the northwest or perturb the next target,
+even through later nonlinear shared-bias layers. This support result is a
+prerequisite for, but does not by itself establish, relative injectivity of a
+complete biased selection block. It also protects only comparable sites in a
+southeast quadrant; a scan covering an entire rectangular grid still needs a
+layout or ordering that handles incomparable coordinates.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -235,6 +255,7 @@ argument for the shared-scalar-bias subclass.
 | [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | Explicit genuine shared-bias layers, the exact first-bias Pascal carrier and gap, zero-bias accumulation, and a bundled end-to-end protected arbitrary-target network |
 | [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | Northwest noninterference for full convolution, genuine shared-bias ReLU layers, arbitrary finite networks, and the protected Pascal signal |
 | [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Linear left inversion of Pascal transport and exact coordinate recovery by finite affine-readout weights, including the concrete zero-bias network on nonnegative features |
+| [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | Southeast-support propagation and root-punctured-quadrant protection through genuine shared-bias ReLU layers and arbitrary finite networks |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

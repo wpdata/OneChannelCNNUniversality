@@ -162,6 +162,22 @@ $$
 传输的扩张与混合而丢失，最终仿射读出仍能精确取回它。这里尚未证明特征经过任意后续带
 偏置选择块后仍可恢复。
 
+[`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean)
+形式化了与西北因果性互补的空间不变量。记
+
+$$
+Q_{r,s}=\{(i,j):r\le i,\ s\le j\}.
+$$
+
+若两个特征图只在 $Q_{r,s}$ 内不同，Lean 已证明：经过一次完整卷积、一次真实共享偏置
+卷积／ReLU 层，或者任意有限的 `SharedBiasNetworkTo` 后，它们仍然只可能在
+$Q_{r,s}$ 内不同。如果输入在根位置 $(r,s)$ 也相同，那么“去掉根点的东南象限”
+$Q_{r,s}\setminus\{(r,s)\}$ 会被保持，且根位置的输出继续相同。因此，已经存放在这个
+去根象限内的信息，即使经过后续非线性共享偏置层，也不会向西北泄漏或扰动下一个目标。
+这个支撑定理是证明完整带偏置选择块相对单射性的必要基础，但其本身还不等于相对单射性。
+它也只保护东南象限内可比较的位置；若要扫描完整矩形网格，仍需额外的布局或次序来处理
+坐标不可比较的位置。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -192,6 +208,7 @@ $$
 | [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | 真实共享偏置层、首层偏置 Pascal 载波及间隙、零偏置累加，以及封装为单一网络的端到端受保护任意目标选择 |
 | [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | 完整卷积、真实共享偏置 ReLU 层、任意有限网络及受保护 Pascal 信号的西北不干扰定理 |
 | [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Pascal 传输的线性左逆、有限仿射读出权重的精确坐标恢复，以及非负特征上具体零偏置网络的恢复定理 |
+| [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | 真实共享偏置 ReLU 层和任意有限网络中的东南支撑传播，以及去根东南象限差异下的根位置保护 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
