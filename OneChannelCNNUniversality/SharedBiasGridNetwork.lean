@@ -386,6 +386,47 @@ theorem fullConv_expansiveIdentityKernel_nat {rows cols : ℕ}
   rw [fullConv_deltaKernel]
   simp
 
+/-- One genuine shared-bias network containing the first horizontal layer,
+all remaining zero-bias Pascal layers, and the final expansive selection
+layer. -/
+def pascalGridSelectionNetwork {rows cols : ℕ}
+    (rowSteps extraColSteps : ℕ) (firstBias finalBias : ℝ) :
+    SharedBiasNetworkTo 2 2 rows cols
+      (grownSize 2 (grownSize 2 (rows + 2 - 1) extraColSteps) rowSteps + 2 - 1)
+      (grownSize 2 (grownSize 2 (cols + 2 - 1) extraColSteps) rowSteps + 2 - 1) :=
+  (SharedBiasNetworkTo.single
+      (rows := rows) (cols := cols) horizontalAccumulationKernel firstBias).append
+    ((zeroBiasPascalGridNetwork
+        (rows := rows + 2 - 1) (cols := cols + 2 - 1)
+        rowSteps extraColSteps).append
+      (SharedBiasNetworkTo.single expansiveIdentityKernel finalBias))
+
+theorem pascalGridSelectionNetwork_depth {rows cols : ℕ}
+    (rowSteps extraColSteps : ℕ) (firstBias finalBias : ℝ) :
+    (pascalGridSelectionNetwork (rows := rows) (cols := cols)
+      rowSteps extraColSteps firstBias finalBias).net.depth =
+        rowSteps + extraColSteps + 2 := by
+  rw [pascalGridSelectionNetwork, SharedBiasNetworkTo.depth_append,
+    SharedBiasNetworkTo.depth_append, zeroBiasPascalGridNetwork_depth]
+  change 1 + (rowSteps + extraColSteps + 1) = rowSteps + extraColSteps + 2
+  omega
+
+theorem pascalGridSelectionNetwork_eval {rows cols : ℕ}
+    (rowSteps extraColSteps : ℕ) (firstBias finalBias : ℝ)
+    (x : Image rows cols) :
+    (pascalGridSelectionNetwork rowSteps extraColSteps
+      firstBias finalBias).eval x =
+        sharedLayerEval expansiveIdentityKernel finalBias
+          (iterateFullConv verticalAccumulationKernel rowSteps
+            (iterateFullConv horizontalAccumulationKernel extraColSteps
+              (sharedLayerEval horizontalAccumulationKernel firstBias x))) := by
+  rw [pascalGridSelectionNetwork, SharedBiasNetworkTo.eval_append,
+    SharedBiasNetworkTo.eval_append, SharedBiasNetworkTo.eval_single,
+    SharedBiasNetworkTo.eval_single]
+  apply congrArg (sharedLayerEval expansiveIdentityKernel finalBias)
+  exact zeroBiasPascalGridNetwork_eval_of_nonnegative
+    rowSteps extraColSteps _ (fun p q ↦ le_max_right _ _)
+
 /-- Genuine final-layer form of southeast Pascal selection.  The same
 broadcast scalar bias is used at every site of an expansive `2 × 2` layer;
 the theorem states its exact behavior on the protected original rectangle. -/
@@ -506,6 +547,37 @@ def PascalGridProtectedSelectionSpec
               (θ - protectedLinearizedPascalCarrier
                 rowSteps extraColSteps rows cols c b targetRow targetCol)
 
+/-- Public contract for the same construction packaged as one explicitly
+typed shared-bias network object. -/
+def BundledPascalGridSelectionSpec
+    {X : Type*} {rows cols : ℕ} (K : Set X) (V : X → Image rows cols)
+    (θ : ℝ) (rowSteps extraColSteps : ℕ)
+    (targetRow : Fin rows) (targetCol : Fin cols) (c b : ℝ)
+    (net : SharedBiasNetworkTo 2 2 rows cols
+      (grownSize 2 (grownSize 2 (rows + 2 - 1) extraColSteps) rowSteps + 2 - 1)
+      (grownSize 2 (grownSize 2 (cols + 2 - 1) extraColSteps) rowSteps + 2 - 1)) :
+    Prop :=
+  let finalBias := θ - protectedLinearizedPascalCarrier
+    rowSteps extraColSteps rows cols c b targetRow targetCol
+  net = pascalGridSelectionNetwork
+      rowSteps extraColSteps b finalBias ∧
+    ∀ x ∈ K, ∀ i j, southeastProtected targetRow targetCol i j →
+      net.eval (V x + constantImage rows cols c)
+          (⟨i, by
+            have := original_lt_pascalStage rows extraColSteps rowSteps i
+            omega⟩)
+          (⟨j, by
+            have := original_lt_pascalStage cols extraColSteps rowSteps j
+            omega⟩) =
+        if (i, j) = (targetRow, targetCol) then
+          relu (protectedLinearizedPascalSignal
+            rowSteps extraColSteps (V x) i j + θ)
+        else
+          protectedLinearizedPascalSignal
+              rowSteps extraColSteps (V x) i j +
+            protectedLinearizedPascalCarrier
+              rowSteps extraColSteps rows cols c b i j + finalBias
+
 /-- Compactness supplies the seed scale and the first shared bias.  The
 resulting genuine layer sequence has an exact signal-plus-carrier middle
 state and performs the requested selected ReLU on every site in the target's
@@ -595,5 +667,50 @@ theorem exists_pascal_grid_protected_selection_layers
     simpa [protectedSignal, protectedLinearizedPascalSignal,
       protectedLinearizedPascalCarrier, zeroExtend, i.isLt, j.isLt]
       using hselected i j hp
+
+/-- The end-to-end protected selection theorem with the complete layer
+sequence returned as one `SharedBiasNetworkTo` object. -/
+theorem exists_bundled_pascal_grid_protected_selection
+    {X : Type*} [TopologicalSpace X] {K : Set X} (hK : IsCompact K)
+    {rows cols : ℕ} (V : X → Image rows cols)
+    (hV : ContinuousFeatureOn K V) (rowSteps extraColSteps : ℕ)
+    (targetRow : Fin rows) (targetCol : Fin cols) (θ : ℝ)
+    (hrowSteps : rows - 1 ≤ rowSteps)
+    (hcolSteps : cols - 1 ≤ extraColSteps + 1) :
+    ∃ c b : ℝ, ∃ net : SharedBiasNetworkTo 2 2 rows cols
+        (grownSize 2 (grownSize 2 (rows + 2 - 1) extraColSteps) rowSteps + 2 - 1)
+        (grownSize 2 (grownSize 2 (cols + 2 - 1) extraColSteps) rowSteps + 2 - 1),
+      0 < c ∧ 0 < b ∧ net.net.depth = rowSteps + extraColSteps + 2 ∧
+        BundledPascalGridSelectionSpec K V θ rowSteps extraColSteps
+          targetRow targetCol c b net := by
+  obtain ⟨c, b, hc, hb, hspec⟩ :=
+    exists_pascal_grid_protected_selection_layers hK V hV
+      rowSteps extraColSteps targetRow targetCol θ hrowSteps hcolSteps
+  let finalBias := θ - protectedLinearizedPascalCarrier
+    rowSteps extraColSteps rows cols c b targetRow targetCol
+  let net := pascalGridSelectionNetwork
+    (rows := rows) (cols := cols) rowSteps extraColSteps b finalBias
+  refine ⟨c, b, net, hc, hb, ?_, rfl, ?_⟩
+  · exact pascalGridSelectionNetwork_depth
+      rowSteps extraColSteps b finalBias
+  · intro x hx i j hp
+    have hselected := (hspec x hx).2 i j hp
+    have hzero := zeroBiasPascalGridNetwork_eval_of_nonnegative
+      rowSteps extraColSteps
+      (sharedLayerEval horizontalAccumulationKernel b
+        (V x + constantImage rows cols c))
+      (sharedLayerEval_nonnegative _ _ _)
+    rw [hzero] at hselected
+    have hevalImage := pascalGridSelectionNetwork_eval
+      rowSteps extraColSteps b finalBias
+        (V x + constantImage rows cols c)
+    have heval := congrFun (congrFun hevalImage
+      (⟨i, by
+        have := original_lt_pascalStage rows extraColSteps rowSteps i
+        omega⟩))
+      (⟨j, by
+        have := original_lt_pascalStage cols extraColSteps rowSteps j
+        omega⟩)
+    exact heval.trans hselected
 
 end OneChannelCNNUniversality

@@ -4,6 +4,38 @@ open OneChannelCNNUniversality
 
 /-! Regression interface for a genuine expansive shared-bias final gate. -/
 
+example {kRows kCols inRows inCols midRows midCols outRows outCols : ℕ}
+    (head : SharedBiasNetworkTo kRows kCols inRows inCols midRows midCols)
+    (tail : SharedBiasNetworkTo kRows kCols midRows midCols outRows outCols)
+    (x : Image inRows inCols) :
+    (head.append tail).eval x = tail.eval (head.eval x) := by
+  exact SharedBiasNetworkTo.eval_append head tail x
+
+example {kRows kCols inRows inCols midRows midCols outRows outCols : ℕ}
+    (head : SharedBiasNetworkTo kRows kCols inRows inCols midRows midCols)
+    (tail : SharedBiasNetworkTo kRows kCols midRows midCols outRows outCols) :
+    (head.append tail).net.depth = head.net.depth + tail.net.depth := by
+  exact SharedBiasNetworkTo.depth_append head tail
+
+example {rows cols : ℕ} (rowSteps extraColSteps : ℕ)
+    (firstBias finalBias : ℝ) :
+    (pascalGridSelectionNetwork (rows := rows) (cols := cols)
+      rowSteps extraColSteps firstBias finalBias).net.depth =
+        rowSteps + extraColSteps + 2 := by
+  exact pascalGridSelectionNetwork_depth
+    rowSteps extraColSteps firstBias finalBias
+
+example {rows cols : ℕ} (rowSteps extraColSteps : ℕ)
+    (firstBias finalBias : ℝ) (x : Image rows cols) :
+    (pascalGridSelectionNetwork rowSteps extraColSteps
+      firstBias finalBias).eval x =
+        sharedLayerEval expansiveIdentityKernel finalBias
+          (iterateFullConv verticalAccumulationKernel rowSteps
+            (iterateFullConv horizontalAccumulationKernel extraColSteps
+              (sharedLayerEval horizontalAccumulationKernel firstBias x))) := by
+  exact pascalGridSelectionNetwork_eval
+    rowSteps extraColSteps firstBias finalBias x
+
 example {kRows kCols rows cols : ℕ} (w : Kernel kRows kCols)
     (steps : ℕ) (x y : Image rows cols) :
     iterateFullConv w steps (x + y) =
@@ -137,4 +169,18 @@ example {X : Type*} [TopologicalSpace X] {K : Set X}
       PascalGridProtectedSelectionSpec K V θ rowSteps extraColSteps
         targetRow targetCol c b := by
   exact exists_pascal_grid_protected_selection_layers hK V hV
+    rowSteps extraColSteps targetRow targetCol θ hrowSteps hcolSteps
+
+example {X : Type*} [TopologicalSpace X] {K : Set X}
+    (hK : IsCompact K) {rows cols : ℕ}
+    (V : X → Image rows cols) (hV : ContinuousFeatureOn K V)
+    (rowSteps extraColSteps : ℕ)
+    (targetRow : Fin rows) (targetCol : Fin cols) (θ : ℝ)
+    (hrowSteps : rows - 1 ≤ rowSteps)
+    (hcolSteps : cols - 1 ≤ extraColSteps + 1) :
+    ∃ c b : ℝ, ∃ net, 0 < c ∧ 0 < b ∧
+      net.net.depth = rowSteps + extraColSteps + 2 ∧
+      BundledPascalGridSelectionSpec K V θ rowSteps extraColSteps
+        targetRow targetCol c b net := by
+  exact exists_bundled_pascal_grid_protected_selection hK V hV
     rowSteps extraColSteps targetRow targetCol θ hrowSteps hcolSteps

@@ -152,5 +152,69 @@ def single {kRows kCols rows cols : ℕ}
     (single kernel bias).eval x = sharedLayerEval kernel bias x := by
   rw [single, eval_cons, eval_nil]
 
+private def appendAux
+    {kRows kCols inRows inCols outRows outCols : ℕ} :
+    (net : SharedBiasNetwork kRows kCols inRows inCols) →
+      {midRows midCols : ℕ} →
+      net.outRows = midRows → net.outCols = midCols →
+      SharedBiasNetworkTo kRows kCols midRows midCols outRows outCols →
+        SharedBiasNetworkTo kRows kCols inRows inCols outRows outCols
+  | .nil rows cols, _, _, hrows, hcols, tail => by
+      cases hrows
+      cases hcols
+      exact tail
+  | .cons kernel bias rest, _, _, hrows, hcols, tail =>
+      cons kernel bias (appendAux rest hrows hcols tail)
+
+/-- Sequential composition of explicitly output-typed shared-bias networks. -/
+def append
+    {kRows kCols inRows inCols midRows midCols outRows outCols : ℕ}
+    (head : SharedBiasNetworkTo kRows kCols inRows inCols midRows midCols)
+    (tail : SharedBiasNetworkTo kRows kCols midRows midCols outRows outCols) :
+    SharedBiasNetworkTo kRows kCols inRows inCols outRows outCols :=
+  appendAux head.net head.rows_eq head.cols_eq tail
+
+@[simp] theorem eval_append
+    {kRows kCols inRows inCols midRows midCols outRows outCols : ℕ}
+    (head : SharedBiasNetworkTo kRows kCols inRows inCols midRows midCols)
+    (tail : SharedBiasNetworkTo kRows kCols midRows midCols outRows outCols)
+    (x : Image inRows inCols) :
+    (head.append tail).eval x = tail.eval (head.eval x) := by
+  rcases head with ⟨net, hrows, hcols⟩
+  induction net generalizing midRows midCols with
+  | nil rows cols =>
+      cases hrows
+      cases hcols
+      change tail.eval x = tail.eval _
+      congr 1
+  | cons kernel bias rest ih =>
+      change (appendAux rest hrows hcols tail).eval
+          (sharedLayerEval kernel bias x) = tail.eval _
+      have htail := ih tail (sharedLayerEval kernel bias x) hrows hcols
+      rw [append] at htail
+      rw [htail]
+      congr 1
+
+@[simp] theorem depth_append
+    {kRows kCols inRows inCols midRows midCols outRows outCols : ℕ}
+    (head : SharedBiasNetworkTo kRows kCols inRows inCols midRows midCols)
+    (tail : SharedBiasNetworkTo kRows kCols midRows midCols outRows outCols) :
+    (head.append tail).net.depth = head.net.depth + tail.net.depth := by
+  rcases head with ⟨net, hrows, hcols⟩
+  induction net generalizing midRows midCols with
+  | nil rows cols =>
+      cases hrows
+      cases hcols
+      change tail.net.depth = 0 + tail.net.depth
+      omega
+  | cons kernel bias rest ih =>
+      change (appendAux rest hrows hcols tail).net.depth + 1 =
+        (rest.depth + 1) + tail.net.depth
+      have hdepth : (appendAux rest hrows hcols tail).net.depth =
+          rest.depth + tail.net.depth := by
+        simpa [append] using ih tail hrows hcols
+      rw [hdepth]
+      omega
+
 end SharedBiasNetworkTo
 end OneChannelCNNUniversality
