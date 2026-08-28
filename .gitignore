@@ -1,0 +1,17 @@
+.DS_Store
+**/.DS_Store
+
+/.lake/
+/.cache/
+/tmp/
+/.superpowers/
+/docs/superpowers/
+/deliverables/
+/research/
+/output/
+*.pyc
+
+*.aux
+*.log
+*.out
+*.toc

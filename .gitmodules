@@ -1,0 +1,3 @@
+[submodule "vendor/mathlib"]
+	path = vendor/mathlib
+	url = https://github.com/leanprover-community/mathlib4.git
