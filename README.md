@@ -54,8 +54,8 @@ theorem twoDimensional_oneChannel_universal_approximation
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
-$\min(a,b)=a-\operatorname{ReLU}(a-b)$ and
-$\max(a,b)=b+\operatorname{ReLU}(a-b)$.
+$\min(a,b)=a-\mathrm{ReLU}(a-b)$ and
+$\max(a,b)=b+\mathrm{ReLU}(a-b)$.
 
 ## Environment
 

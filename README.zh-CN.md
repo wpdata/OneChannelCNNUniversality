@@ -51,8 +51,8 @@ theorem twoDimensional_oneChannel_universal_approximation
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
-$\min(a,b)=a-\operatorname{ReLU}(a-b)$ 与
-$\max(a,b)=b+\operatorname{ReLU}(a-b)$。
+$\min(a,b)=a-\mathrm{ReLU}(a-b)$ 与
+$\max(a,b)=b+\mathrm{ReLU}(a-b)$。
 
 ## 固定环境
 
