@@ -139,7 +139,28 @@ $$
 `SharedBiasNetwork`，以及显式输出尺寸的 `SharedBiasNetworkTo` 保持；受保护 Pascal
 信号也满足相应结论。因此，按东南到西北的顺序扫描时，已经存放在当前西北矩形之外的
 信息不会反向流入并改变当前激活。这是多次更新编译器已经验证的因果基础，但还不是完整
-编译器：仍需证明早先生成的非线性特征经过后续传输后可以恢复，并完成有限扫描的组装。
+编译器：仍需证明早先生成的非线性特征经过后续带偏置选择块后可以恢复，并完成有限扫描
+的组装。
+
+[`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean)
+进一步证明了经过零偏置 Pascal 传输后的精确恢复。文件把横向再纵向的变换封装为单射
+线性映射 $P$，并构造线性左逆 $R$，满足
+
+$$
+R(P(x))=x.
+$$
+
+Lean 还把每个被恢复坐标转换成普通的有限权重图像：对于任意原始位置 $(i,j)$，存在权重
+数组 $W_{i,j}$，使
+
+$$
+\sum_{p,q} W_{i,j}(p,q)P(x)(p,q)=x(i,j).
+$$
+
+对于非负输入，同一等式已经直接落实到具体的 `zeroBiasPascalGridNetwork`；此时所有 ReLU
+都保持在线性支路。因此，早先由 ReLU 生成的非负特征不会仅仅因为后续零偏置 Pascal
+传输的扩张与混合而丢失，最终仿射读出仍能精确取回它。这里尚未证明特征经过任意后续带
+偏置选择块后仍可恢复。
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
@@ -170,6 +191,7 @@ $$
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | 单射二维 Pascal 地址，以及东南受保护象限上的任意目标选择 |
 | [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | 真实共享偏置层、首层偏置 Pascal 载波及间隙、零偏置累加，以及封装为单一网络的端到端受保护任意目标选择 |
 | [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | 完整卷积、真实共享偏置 ReLU 层、任意有限网络及受保护 Pascal 信号的西北不干扰定理 |
+| [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Pascal 传输的线性左逆、有限仿射读出权重的精确坐标恢复，以及非负特征上具体零偏置网络的恢复定理 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

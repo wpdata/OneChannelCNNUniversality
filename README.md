@@ -174,8 +174,32 @@ Pascal signal. Hence, in a southeast-to-northwest scan, information already
 stored outside the current northwest rectangle cannot flow backward and alter
 the current activation. This is a verified causal foundation for a
 multi-update compiler, not yet the compiler itself: recovery of earlier
-nonlinear features after subsequent transports and the finite scan assembly
-remain to be proved.
+nonlinear features through subsequent biased selection blocks and the finite
+scan assembly remain to be proved.
+
+[`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean)
+then proves exact recovery through the zero-bias Pascal transport. It packages
+the horizontal-then-vertical transform as an injective linear map $P$ and
+constructs a linear left inverse $R$ satisfying
+
+$$
+R(P(x))=x.
+$$
+
+Lean also converts each recovered coordinate into an ordinary finite weight
+image, so for every original site $(i,j)$ there is a weight array $W_{i,j}$
+with
+
+$$
+\sum_{p,q} W_{i,j}(p,q)P(x)(p,q)=x(i,j).
+$$
+
+For nonnegative inputs the same equation is proved directly for the concrete
+`zeroBiasPascalGridNetwork`, whose ReLUs remain in their linear branch. Thus a
+feature created by an earlier ReLU is not lost merely because later zero-bias
+Pascal transport expands and mixes the feature image; it remains available to
+the final affine readout. This does not yet prove recoverability through an
+arbitrary later biased selection block.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
@@ -210,6 +234,7 @@ argument for the shared-scalar-bias subclass.
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | Injective two-dimensional Pascal addresses and arbitrary-target selection on a southeast protected quadrant |
 | [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | Explicit genuine shared-bias layers, the exact first-bias Pascal carrier and gap, zero-bias accumulation, and a bundled end-to-end protected arbitrary-target network |
 | [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | Northwest noninterference for full convolution, genuine shared-bias ReLU layers, arbitrary finite networks, and the protected Pascal signal |
+| [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Linear left inversion of Pascal transport and exact coordinate recovery by finite affine-readout weights, including the concrete zero-bias network on nonnegative features |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
