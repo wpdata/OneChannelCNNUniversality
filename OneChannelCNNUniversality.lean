@@ -1,2 +1,3 @@
 import OneChannelCNNUniversality.Main
 import OneChannelCNNUniversality.SharedBias
+import OneChannelCNNUniversality.SharedBiasGeometry
