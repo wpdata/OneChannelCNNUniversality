@@ -252,6 +252,25 @@ This representation is area-efficient but has an extreme aspect ratio; more
 importantly, its coordinate permutation is currently a mathematical layout,
 not yet a shared-bias-CNN realization.
 
+[`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean)
+connects the one-row layout back to genuine shared-bias networks. For a target
+index $t$, it proves that agreement on the inclusive prefix
+
+$$
+\{0,\ldots,t\}
+$$
+
+is equivalent to the root-punctured southeast-support condition used by the
+relative-injectivity theorem. It then specializes the complete bundled
+selection block to this invariant: if two chain states agree through $t$ and
+their network outputs agree, the entire input chains are equal. Finally,
+`exists_bundled_rowChain_protected_selection` uses compactness to return the
+positive seed, first shared bias, genuine typed network, exact depth and
+selection contract together with this prefix-relative recovery guarantee.
+This is a certified single scan step; iterating it still requires a typed
+construction that transports the protected chain through each block's
+expanded output and controls the new fringe.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -290,6 +309,7 @@ the shared-scalar-bias subclass.
 | [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | Southeast-support propagation and root-punctured-quadrant protection through genuine shared-bias ReLU layers and arbitrary finite networks |
 | [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | Inversion from the protected original rectangle and relative injectivity of a complete bundled biased selection block |
 | [`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean) | Impossibility and length bounds for southeast-monotone scans, plus an injective row-major chain representation |
+| [`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean) | Prefix/support equivalence and a compactly generated genuine row-chain selection block with relative recovery |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

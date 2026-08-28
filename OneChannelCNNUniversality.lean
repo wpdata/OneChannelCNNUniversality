@@ -12,3 +12,4 @@ import OneChannelCNNUniversality.SharedBiasRecovery
 import OneChannelCNNUniversality.SharedBiasSupport
 import OneChannelCNNUniversality.SharedBiasRelativeInjectivity
 import OneChannelCNNUniversality.SharedBiasChainLayout
+import OneChannelCNNUniversality.SharedBiasChainSelection

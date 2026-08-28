@@ -1,4 +1,4 @@
-import OneChannelCNNUniversality.SharedBiasChainLayout
+import OneChannelCNNUniversality.SharedBiasChainSelection
 
 #print axioms OneChannelCNNUniversality.exists_shared_bias_carrier_layer
 #print axioms OneChannelCNNUniversality.horizontalBoundaryTransform_injective
@@ -59,3 +59,6 @@ import OneChannelCNNUniversality.SharedBiasChainLayout
 #print axioms OneChannelCNNUniversality.SoutheastMonotoneLayout.length_le
 #print axioms OneChannelCNNUniversality.rowMajorChainDecode_encode
 #print axioms OneChannelCNNUniversality.rowMajorChainEncode_injective
+#print axioms OneChannelCNNUniversality.rowPrefixAgree_iff_agreeOutsideStrictSoutheast
+#print axioms OneChannelCNNUniversality.BundledRowChainSelectionSpec.injective_of_rowPrefixAgree
+#print axioms OneChannelCNNUniversality.exists_bundled_rowChain_protected_selection

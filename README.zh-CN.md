@@ -201,6 +201,20 @@ $$
 左逆并证明这种链式表示不丢失任何信息。这个表示在面积上没有浪费，但长宽比很极端；更
 重要的是，目前它仍是数学层面的坐标布局，尚未由共享偏置 CNN 本身实现。
 
+[`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean)
+把单行链布局重新接回真实共享偏置网络。对于目标索引 $t$，文件证明：在包含端点的前缀
+
+$$
+\{0,\ldots,t\}
+$$
+
+上一致，等价于相对单射定理所要求的“去根东南支撑”条件。由此得到完整封装选择块的
+链式版本：若两个链状态在 $t$ 之前及 $t$ 处一致，并且网络输出相等，则两条输入链完全
+相等。最后，`exists_bundled_rowChain_protected_selection` 利用紧致性同时返回正种子、
+首层共享偏置、真实带类型网络、精确深度、选择公式和上述前缀相对恢复保证。这已经是一
+个经过认证的单次扫描步骤；若要迭代，还需构造带类型的组合，把受保护链穿过每个选择块
+的扩张输出，并控制新产生的边缘位置。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -235,6 +249,7 @@ $$
 | [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | 真实共享偏置 ReLU 层和任意有限网络中的东南支撑传播，以及去根东南象限差异下的根位置保护 |
 | [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | 从受保护原始矩形反演 Pascal 传输，以及完整带偏置选择块的相对单射性 |
 | [`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean) | 东南单调扫描的不可能性与长度上界，以及无损的行主序链式表示 |
+| [`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean) | 前缀／支撑等价，以及由紧致性生成且带相对恢复保证的真实行链选择块 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
