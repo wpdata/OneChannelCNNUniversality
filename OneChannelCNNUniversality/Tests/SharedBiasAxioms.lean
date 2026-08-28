@@ -1,0 +1,7 @@
+import OneChannelCNNUniversality.SharedBiasCarrier
+
+#print axioms OneChannelCNNUniversality.exists_shared_bias_carrier_layer
+#print axioms OneChannelCNNUniversality.horizontalBoundaryTransform_injective
+#print axioms OneChannelCNNUniversality.horizontalSharedCarrier_left
+#print axioms OneChannelCNNUniversality.horizontalSharedCarrier_interior
+#print axioms OneChannelCNNUniversality.exists_horizontal_shared_carrier_layer

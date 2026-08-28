@@ -53,10 +53,16 @@ $$
 横向一阶差分再经过 ReLU 会精确保留正的左边界；继续做纵向一阶差分会精确保留西北角
 单点。定理覆盖所有有限尺寸，包括空矩形的退化情形。
 
+[`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean)
+进一步证明了第一个“非破坏性共存”结果：在紧输入集上，一个广播标量足以让有限输出
+矩形的全部位置同时落在 ReLU 线性区。如果输入状态由可变信号与固定图像组成，下一层
+就精确等于卷积后的可变信号加上新的固定空间载波。对于横向边界核，可变信号所经历的
+差分变换是单射；与此同时，常数输入载波在左边界变为 $b+c$，在原始内部位置变为 $b$。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
 允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能：已经
-验证的边界单点还不足以在保留任意输入寄存器的同时，为任意有限位置提供彼此独立的载体
-间隔，从而实施局部 ReLU。
+验证的边界载波间隙还不能为任意有限位置提供彼此独立的地址，也尚未形成一个能够对单个
+位置实施局部 ReLU、同时保存所有其他寄存器的编译器。
 
 ## 证明架构
 
@@ -72,6 +78,7 @@ $$
 | [`Simulation.lean`](OneChannelCNNUniversality/Simulation.lean)、[`Main.lean`](OneChannelCNNUniversality/Main.lean) | 汇总精确编译与稠密性，得到最终网络定理 |
 | [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) | 共享标量偏置的精确语义，以及到一般模型的保语义嵌入 |
 | [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | 使用共享偏置精确生成常数、左边界与西北角位置信号 |
+| [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | 共享偏置紧集线性化、信号与载波非破坏性共存、单射横向差分和精确边界载波间隙 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
@@ -148,6 +155,6 @@ rg -n --glob '*.lean' \
 ## 范围与状态
 
 本仓库发布 Lean 源码及其可由机器复核的结果。Lean 内核验证说明：逐位置偏置万能逼近
-定理和约束更强的共享偏置边界引理都可由给定定义与报告中的基础推出；但这并不会把尚未
+定理和约束更强的共享偏置边界／载波引理都可由给定定义与报告中的基础推出；但这并不会把尚未
 解决的共享偏置万能性问题变成定理。机器验证本身也不等同于外部同行评审，不构成历史
 优先权判断。

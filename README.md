@@ -60,12 +60,22 @@ first differencing followed by ReLU isolates its positive left edge; vertical
 first differencing then isolates its northwest corner.  These theorems cover
 all finite dimensions, including empty rectangles.
 
+[`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean)
+proves a first non-destructive coexistence result.  On a compact input set,
+one broadcast scalar can place every site of a finite layer in ReLU's linear
+region simultaneously.  If the incoming state is a variable signal plus a
+fixed image, the next state is exactly the convolved variable signal plus a
+fixed spatial carrier.  For the horizontal boundary kernel, the variable
+transform is injective, while a constant input carrier becomes `b + c` on the
+left boundary and `b` at original interior sites.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem.  The verified theorem above still permits an arbitrary
 position-dependent bias image.  It remains open in this development whether
 the shared-scalar-bias subclass is universal or non-universal: the boundary
-seed alone does not yet provide the independently separated carrier values
-needed to preserve arbitrary input registers while applying a local ReLU.
+carrier gap does not yet provide independently addressable values at arbitrary
+finite sites, nor a compiler that applies a local ReLU while preserving every
+other register.
 
 ## Proof architecture
 
@@ -81,6 +91,7 @@ needed to preserve arbitrary input registers while applying a local ReLU.
 | [`Simulation.lean`](OneChannelCNNUniversality/Simulation.lean), [`Main.lean`](OneChannelCNNUniversality/Main.lean) | Assembly of exact compilation and density into the final network theorem |
 | [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) | Exact shared-scalar-bias semantics and semantics-preserving embedding into the general model |
 | [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | Exact constant, left-boundary, and northwest-corner position signals generated with shared biases |
+| [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | Compact shared-bias linearization, non-destructive signal/carrier coexistence, injective horizontal differencing, and an exact boundary carrier gap |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
@@ -161,7 +172,7 @@ forbidden-source scan, and the axiom report above.
 
 This repository publishes the Lean source and its machine-checkable results.
 Lean kernel verification establishes that the position-dependent-bias
-universal-approximation theorem and the narrower shared-bias boundary lemmas
+universal-approximation theorem and the narrower shared-bias boundary/carrier lemmas
 follow from the stated definitions and reported foundations.  It does not
 turn the unresolved shared-bias universality question into a theorem, and it
 does not by itself establish external peer review or historical priority.
