@@ -59,10 +59,17 @@ $$
 就精确等于卷积后的可变信号加上新的固定空间载波。对于横向边界核，可变信号所经历的
 差分变换是单射；与此同时，常数输入载波在左边界变为 $b+c$，在原始内部位置变为 $b$。
 
+[`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean)
+把经过证明的载波间隙转化为一次精确的局部 ReLU：如果目标载波比其他载波低出的间隙
+大于信号波动，那么唯一的共享偏置
+$\theta-C_{s_*}$ 会在目标位置实施所需 ReLU，同时让其他位置全部保持在线性区。
+一旦给出单位间隙的空间地址，紧致性还能机器验证地为任意连续有限信号族选出统一尺度。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
 允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能：已经
-验证的边界载波间隙还不能为任意有限位置提供彼此独立的地址，也尚未形成一个能够对单个
-位置实施局部 ReLU、同时保存所有其他寄存器的编译器。
+验证的边界载波目前还不能让任意指定目标成为具有单位间隙的唯一最低地址。不过，新的
+选择定理已经证明：一旦实际网络能生成这种地址，它就足以在保存其他寄存器的同时实施
+局部 ReLU。
 
 ## 证明架构
 
@@ -79,6 +86,7 @@ $$
 | [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) | 共享标量偏置的精确语义，以及到一般模型的保语义嵌入 |
 | [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | 使用共享偏置精确生成常数、左边界与西北角位置信号 |
 | [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | 共享偏置紧集线性化、信号与载波非破坏性共存、单射横向差分和精确边界载波间隙 |
+| [`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean) | 从载波间隙精确选择局部 ReLU，以及从单位空间地址取得紧集统一尺度 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
