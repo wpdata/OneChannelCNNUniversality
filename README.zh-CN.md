@@ -187,6 +187,20 @@ $Q_{r,s}\setminus\{(r,s)\}$ 内不同，而真实共享偏置网络的输出相�
 必然相等。因此，在一次局部更新所需的精确保护不变量下，共享偏置和最终 ReLU 都不会
 破坏输入信息。
 
+[`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean)
+形式化了把上述保护不变量扩展为完整扫描时必须付出的几何代价。任何东南单调链都不可能
+覆盖行数和列数都至少为二的矩形，因为 $(0,1)$ 与 $(1,0)$ 不可比较。更定量地，Lean
+证明：若在 $R\times C$ 矩形中放置由 $N$ 个不同位置组成的单调链，则必有
+
+$$
+N\le R+C-1.
+$$
+
+因此，对当前“单调链保护”方案而言，总空间跨度随寄存器数量线性增长是内在限制，并非
+证明中隐藏的偶然浪费。该文件还给出到 $1\times(d_1d_2)$ 图像的精确行主序置换，构造
+左逆并证明这种链式表示不丢失任何信息。这个表示在面积上没有浪费，但长宽比很极端；更
+重要的是，目前它仍是数学层面的坐标布局，尚未由共享偏置 CNN 本身实现。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -220,6 +234,7 @@ $Q_{r,s}\setminus\{(r,s)\}$ 内不同，而真实共享偏置网络的输出相�
 | [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Pascal 传输的线性左逆、有限仿射读出权重的精确坐标恢复，以及非负特征上具体零偏置网络的恢复定理 |
 | [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | 真实共享偏置 ReLU 层和任意有限网络中的东南支撑传播，以及去根东南象限差异下的根位置保护 |
 | [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | 从受保护原始矩形反演 Pascal 传输，以及完整带偏置选择块的相对单射性 |
+| [`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean) | 东南单调扫描的不可能性与长度上界，以及无损的行主序链式表示 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

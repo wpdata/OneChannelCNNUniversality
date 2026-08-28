@@ -234,6 +234,24 @@ outputs implies equality of the input feature images. Thus the shared bias
 and final ReLU do not destroy information under precisely the protected
 variation invariant needed for one local update.
 
+[`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean)
+formalizes the geometric cost of extending that invariant to a total scan.
+No southeast-monotone chain can cover a rectangle with at least two rows and
+two columns, because $(0,1)$ and $(1,0)$ are incomparable. More quantitatively,
+every injective chain of $N$ sites in an $R\times C$ rectangle satisfies
+
+$$
+N\le R+C-1.
+$$
+
+Thus linear total spatial extent is intrinsic to the present chain-protection
+strategy, rather than an artifact hidden by the proof. The file also gives an
+exact row-major permutation into a $1\times(d_1d_2)$ image, proves a left
+inverse, and hence proves that this chain representation loses no information.
+This representation is area-efficient but has an extreme aspect ratio; more
+importantly, its coordinate permutation is currently a mathematical layout,
+not yet a shared-bias-CNN realization.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -271,6 +289,7 @@ the shared-scalar-bias subclass.
 | [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Linear left inversion of Pascal transport and exact coordinate recovery by finite affine-readout weights, including the concrete zero-bias network on nonnegative features |
 | [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | Southeast-support propagation and root-punctured-quadrant protection through genuine shared-bias ReLU layers and arbitrary finite networks |
 | [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | Inversion from the protected original rectangle and relative injectivity of a complete bundled biased selection block |
+| [`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean) | Impossibility and length bounds for southeast-monotone scans, plus an injective row-major chain representation |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
