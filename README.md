@@ -130,18 +130,34 @@ layer has bias zero.  It also realizes the final protected selection identity
 with an actual expansive `2 × 2` shared-bias convolution/ReLU layer rather
 than a proof-level pointwise activation.
 
+The theorem `exists_pascal_grid_protected_selection_layers` now closes the
+single-update path end to end.  For any compact continuous input family and
+any target register, it chooses a positive seed $c$ and a positive first-layer
+shared bias $b$.  The layer sequence starts from the seeded state
+$V(x)+c\mathbf 1$.  The carrier produced by the genuine first layer and all
+subsequent zero-bias Pascal layers is computed exactly on the original
+rectangle as
+
+$$
+C(i,j)=cP_{m_{\mathrm{row}}}(i)P_{m+1}(j)
+      +bP_{m_{\mathrm{row}}}(i)P_m(j).
+$$
+
+The second summand is southeast-monotone, so it cannot reduce the gap of at
+least $c$ supplied by the first summand.  Lean then verifies both the exact
+signal-plus-carrier middle state and the behavior of the genuine final
+expansive shared-bias ReLU layer on the target's protected southeast quadrant.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem.  The verified theorem above still permits an arbitrary
 position-dependent bias image.  It remains open in this development whether
 the shared-scalar-bias subclass is universal or non-universal.  Arbitrary
-targets can now be selected under southeast-quadrant protection, which removes
-the earlier northwest-only restriction.  Shared-bias signal/carrier
-co-generation is now available at the decomposition level, and the
-nonnegative zero-bias Pascal stage is explicit.  The remaining end-to-end step
-is to compute the carrier contributed by the initial linearizing bias, prove
-that its protected southeast gap survives every zero-bias Pascal layer, and
-then compose repeated local updates while preserving the required registers
-outside a single quadrant and avoiding expansion-fringe interference.
+targets can now be selected end to end under southeast-quadrant protection,
+which removes the earlier northwest-only and proof-level-carrier restrictions.
+What remains is substantially different: compose many such local updates
+while preserving registers outside the active quadrant, control
+expansion-fringe sites between updates, and connect that compiler to a density
+argument for the shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -162,7 +178,7 @@ outside a single quadrant and avoiding expansion-fringe interference.
 | [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | Two injective shared-bias address layers, an exact northwest gap on protected registers, and an end-to-end northwest selection layer |
 | [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | Repeated positive horizontal accumulation, exact Pascal-prefix addresses, injectivity, and protected row-suffix selection |
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | Injective two-dimensional Pascal addresses and arbitrary-target selection on a southeast protected quadrant |
-| [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | Explicitly typed genuine shared-bias networks, compact finite-iteration linearization, zero-bias Pascal layers on nonnegative states, and an expansive final selection layer |
+| [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | Explicit genuine shared-bias layers, the exact first-bias Pascal carrier and gap, zero-bias accumulation, and end-to-end protected arbitrary-target selection |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

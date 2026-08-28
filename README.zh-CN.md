@@ -104,13 +104,26 @@ $$
 最后的受保护选择恒等式也已由真实的扩张型 $2\times2$ 共享偏置卷积／ReLU 层实现，
 不再只是证明层面的逐点激活公式。
 
+定理 `exists_pascal_grid_protected_selection_layers` 现在已经把一次局部更新从头到尾接通。
+对于任意紧的连续输入族和任意目标寄存器，它会选取正的常数种子 $c$ 与正的首层共享
+偏置 $b$；层序列从种子状态 $V(x)+c\mathbf 1$ 开始。真实首层和后续全部零偏置 Pascal
+层所产生的载波，在原始矩形内被精确计算为
+
+$$
+C(i,j)=cP_{m_{\mathrm{row}}}(i)P_{m+1}(j)
+      +bP_{m_{\mathrm{row}}}(i)P_m(j).
+$$
+
+第二项沿东南方向单调，因此不会缩小第一项提供的至少为 $c$ 的间隙。Lean 随后同时验证
+中间状态的精确信号—载波分解，以及真实最终扩张型共享偏置 ReLU 层在目标东南受保护
+象限内的行为。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
 允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能。
-任意目标现在已经能在“保护其东南象限”的条件下被选择，这消除了原先只能选择西北角的
-限制。目前信号／载波分解层面的共同生成以及非负状态上的显式零偏置 Pascal 阶段已经完成；
-下一步仍需精确计算首个线性化偏置产生的载波，证明它经过全部零偏置 Pascal 层后仍保留
-东南保护间隙，然后保护单个象限以外所需的寄存器，并在不受扩张边缘值干扰的条件下组合
-多次局部更新。
+任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
+西北角以及只在证明层面假设载波的限制。剩余工作已经变成另一项任务：组合多次局部更新，
+同时保存当前象限之外的寄存器；控制更新之间的扩张边缘值；最终把这种共享偏置编译器接到
+适用于共享标量偏置子类的稠密性论证上。
 
 ## 证明架构
 
@@ -131,7 +144,7 @@ $$
 | [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | 两个单射共享偏置地址层、受保护寄存器上的精确西北间隙，以及端到端西北选择层 |
 | [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | 重复正横向累加、精确 Pascal 前缀地址、单射性与受保护行后缀选择 |
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | 单射二维 Pascal 地址，以及东南受保护象限上的任意目标选择 |
-| [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | 显式尺寸真实共享偏置网络、紧集有限次线性化、非负状态零偏置 Pascal 层与扩张型最终选择层 |
+| [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | 真实共享偏置层、首层偏置 Pascal 载波及间隙的精确公式、零偏置累加，以及端到端受保护任意目标选择 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

@@ -4,6 +4,41 @@ open OneChannelCNNUniversality
 
 /-! Regression interface for a genuine expansive shared-bias final gate. -/
 
+example {kRows kCols rows cols : ℕ} (w : Kernel kRows kCols)
+    (steps : ℕ) (x y : Image rows cols) :
+    iterateFullConv w steps (x + y) =
+      iterateFullConv w steps x + iterateFullConv w steps y := by
+  exact iterateFullConv_add w steps x y
+
+example {rows cols : ℕ} (rowSteps extraColSteps : ℕ) (c b : ℝ)
+    (i : Fin rows) (j : Fin cols) :
+    protectedLinearizedPascalCarrier rowSteps extraColSteps rows cols c b i j =
+      c * pascalPrefix rowSteps i * pascalPrefix (extraColSteps + 1) j +
+        b * pascalPrefix rowSteps i * pascalPrefix extraColSteps j := by
+  exact protectedLinearizedPascalCarrier_eq
+    rowSteps extraColSteps c b i j
+
+/-- Asymmetric concrete regression: the seed has two horizontal Pascal
+steps, while the first shared bias has one. -/
+example : protectedLinearizedPascalCarrier 2 1 2 3 2 3
+    (⟨1, by omega⟩ : Fin 2) (⟨2, by omega⟩ : Fin 3) = 42 := by
+  rw [protectedLinearizedPascalCarrier_eq]
+  norm_num [pascalPrefix, Finset.sum_range_succ, Nat.choose]
+
+example {rows cols : ℕ} (rowSteps extraColSteps : ℕ) (c b : ℝ)
+    (targetRow : Fin rows) (targetCol : Fin cols)
+    (hrowSteps : rows - 1 ≤ rowSteps)
+    (hcolSteps : cols - 1 ≤ extraColSteps + 1)
+    (hc : 0 ≤ c) (hb : 0 ≤ b) :
+    ∀ i j, southeastProtected targetRow targetCol i j →
+      (i, j) ≠ (targetRow, targetCol) →
+      c ≤ protectedLinearizedPascalCarrier
+          rowSteps extraColSteps rows cols c b i j -
+        protectedLinearizedPascalCarrier
+          rowSteps extraColSteps rows cols c b targetRow targetCol := by
+  exact protectedLinearizedPascalCarrier_gap_on rowSteps extraColSteps c b
+    targetRow targetCol hrowSteps hcolSteps hc hb
+
 example {kRows kCols rows cols : ℕ} (w : Kernel kRows kCols) (b : ℝ)
     (x : Image rows cols) :
     (SharedBiasNetworkTo.single w b).eval x = sharedLayerEval w b x := by
@@ -90,3 +125,16 @@ example {X : Type*} [TopologicalSpace X] {K : Set X}
             targetRow targetCol) := by
   exact exists_sharedLayer_southeast_pascal_selection hK signal hSignal
     rowSteps colSteps targetRow targetCol θ hrowSteps hcolSteps
+
+example {X : Type*} [TopologicalSpace X] {K : Set X}
+    (hK : IsCompact K) {rows cols : ℕ}
+    (V : X → Image rows cols) (hV : ContinuousFeatureOn K V)
+    (rowSteps extraColSteps : ℕ)
+    (targetRow : Fin rows) (targetCol : Fin cols) (θ : ℝ)
+    (hrowSteps : rows - 1 ≤ rowSteps)
+    (hcolSteps : cols - 1 ≤ extraColSteps + 1) :
+    ∃ c b : ℝ, 0 < c ∧ 0 < b ∧
+      PascalGridProtectedSelectionSpec K V θ rowSteps extraColSteps
+        targetRow targetCol c b := by
+  exact exists_pascal_grid_protected_selection_layers hK V hV
+    rowSteps extraColSteps targetRow targetCol θ hrowSteps hcolSteps
