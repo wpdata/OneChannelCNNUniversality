@@ -73,10 +73,34 @@ $\theta-C_{s_*}$ 会在目标位置实施所需 ReLU，同时让其他受保护�
 `exists_northwest_protected_selection_layers` 在紧输入族上统一选取全部所需幅度，并验证
 第三个共享偏置层只在西北寄存器实施指定 ReLU，而其余受保护寄存器保持在线性支路。
 
+[`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean)
+把地址机制扩展到任意一行。重复使用正二抽头全卷积，会精确生成载波
+
+$$
+C(i,j)=cP_m(j),\qquad
+P_m(q)=\sum_{r=0}^{q}\binom{m}{r}.
+$$
+
+在超出二项式支撑之前，相邻地址之间至少相差 $c$。相应的重复信号变换保持单射；
+紧致性则给出一个统一载波尺度，使任意指定列可以被选择，同时保持该行尚未处理的后缀
+全部处于 ReLU 线性支路。
+
+[`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean)
+在两个坐标方向分别执行同样的正累加，并证明精确的可分离地址公式
+
+$$
+C(i,j)=cP_{m_{\mathrm{row}}}(i)P_{m_{\mathrm{col}}}(j).
+$$
+
+横向再纵向的完整信号变换仍然是单射。因此，任意指定的原始寄存器都是其东南受保护
+象限内具有至少 $c$ 间隙的唯一最低点。对于紧集上的连续信号族，一个共享标量偏置就能
+在该寄存器实施指定 ReLU，并让该象限内其余寄存器全部保持在线性支路。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
 允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能。
-西北寄存器的选择原语现在已经完整构造；要得到万能编译器，仍需证明如何把这种受保护的
-选择搬运或重新生成到任意寄存器，并在不受扩张边缘值干扰的条件下组合多次局部更新。
+任意目标现在已经能在“保护其东南象限”的条件下被选择，这消除了原先只能选择西北角的
+限制。要得到万能编译器，仍需构造一个在 ReLU 层中同步生成地址与可变信号的具体共享偏置
+网络，保护单个象限以外所需的寄存器，并在不受扩张边缘值干扰的条件下组合多次局部更新。
 
 ## 证明架构
 
@@ -95,6 +119,8 @@ $\theta-C_{s_*}$ 会在目标位置实施所需 ReLU，同时让其他受保护�
 | [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | 共享偏置紧集线性化、信号与载波非破坏性共存、单射横向差分和精确边界载波间隙 |
 | [`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean) | 从载波间隙精确选择局部 ReLU，以及从单位空间地址取得紧集统一尺度 |
 | [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | 两个单射共享偏置地址层、受保护寄存器上的精确西北间隙，以及端到端西北选择层 |
+| [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | 重复正横向累加、精确 Pascal 前缀地址、单射性与受保护行后缀选择 |
+| [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | 单射二维 Pascal 地址，以及东南受保护象限上的任意目标选择 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

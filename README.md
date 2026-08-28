@@ -89,14 +89,46 @@ uniformly on a compact input family and verifies a third shared-bias layer that
 applies the selected ReLU at the northwest register while every other
 protected register remains in the linear branch.
 
+[`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean)
+extends the address mechanism along an arbitrary row.  Repeating the positive
+two-tap full convolution produces the exact carrier
+
+$$
+C(i,j)=cP_m(j),\qquad
+P_m(q)=\sum_{r=0}^{q}\binom{m}{r}.
+$$
+
+Before the binomial support is exhausted, successive addresses have a gap of
+at least $c$.  The corresponding repeated signal transform is injective, and
+compactness supplies one carrier scale that selects any requested column while
+keeping the unprocessed suffix of that row in ReLU's linear branch, with its
+signal retained up to a known fixed offset.
+
+[`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean)
+performs the same positive accumulation in both coordinates.  It proves the
+exact separable address formula
+
+$$
+C(i,j)=cP_{m_{\mathrm{row}}}(i)P_{m_{\mathrm{col}}}(j),
+$$
+
+and proves that the complete horizontal-then-vertical signal transform is
+injective.  Consequently, any chosen original register is the unique minimum,
+with gap at least $c$, in its southeast protected quadrant.  On a compact
+continuous signal family, one shared scalar bias then performs the requested
+ReLU at that register and leaves every other register in that quadrant in the
+linear branch.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem.  The verified theorem above still permits an arbitrary
 position-dependent bias image.  It remains open in this development whether
-the shared-scalar-bias subclass is universal or non-universal.  The northwest
-selection primitive is now fully constructed, but a universal compiler still
-needs a verified way to transport or regenerate this protected selection at
-arbitrary registers and to compose repeated local updates without interference
-from expansion-fringe values.
+the shared-scalar-bias subclass is universal or non-universal.  Arbitrary
+targets can now be selected under southeast-quadrant protection, which removes
+the earlier northwest-only restriction.  A universal compiler still needs a
+concrete shared-bias network construction that co-generates the address and
+variable signal through its ReLU layers, preserves the required registers
+outside a single quadrant, and composes repeated local updates without
+interference from expansion-fringe values.
 
 ## Proof architecture
 
@@ -115,6 +147,8 @@ from expansion-fringe values.
 | [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | Compact shared-bias linearization, non-destructive signal/carrier coexistence, injective horizontal differencing, and an exact boundary carrier gap |
 | [`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean) | Exact selected ReLU from a carrier gap and compact uniform scaling from a unit spatial address |
 | [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | Two injective shared-bias address layers, an exact northwest gap on protected registers, and an end-to-end northwest selection layer |
+| [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | Repeated positive horizontal accumulation, exact Pascal-prefix addresses, injectivity, and protected row-suffix selection |
+| [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | Injective two-dimensional Pascal addresses and arbitrary-target selection on a southeast protected quadrant |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

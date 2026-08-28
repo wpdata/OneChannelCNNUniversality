@@ -4,3 +4,5 @@ import OneChannelCNNUniversality.SharedBiasGeometry
 import OneChannelCNNUniversality.SharedBiasCarrier
 import OneChannelCNNUniversality.SharedBiasSelection
 import OneChannelCNNUniversality.SharedBiasAddress
+import OneChannelCNNUniversality.SharedBiasScan
+import OneChannelCNNUniversality.SharedBiasGridScan
