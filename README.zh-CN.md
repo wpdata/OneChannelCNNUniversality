@@ -60,22 +60,23 @@ $\max(a,b)=b+\operatorname{ReLU}(a-b)$。
 - Mathlib v4.32.1
 
 [`lean-toolchain`](lean-toolchain) 固定 Lean 工具链；
-[`lake-manifest.json`](lake-manifest.json) 与
-[`vendor/mathlib`](vendor/mathlib) 子模块记录准确的 Mathlib 修订版本。
+[`lakefile.lean`](lakefile.lean) 与 [`lake-manifest.json`](lake-manifest.json)
+固定 Mathlib 的 Git 依赖及准确修订版本。Lake 会把依赖下载到已忽略的本地
+`.lake/packages/` 目录，本仓库不保存 Mathlib 源码。
 
 ## 安装
 
-安装 [elan](https://github.com/leanprover/elan)，然后连同 Mathlib 子模块克隆本仓库：
+安装 [elan](https://github.com/leanprover/elan)，然后克隆本仓库：
 
 ```bash
-git clone --recurse-submodules git@github.com:wpdata/machine-checked-2d-one-channel-relu-cnn-universality.git
-cd machine-checked-2d-one-channel-relu-cnn-universality
+git clone git@github.com:wpdata/OneChannelCNNUniversality.git
+cd OneChannelCNNUniversality
 ```
 
-如果克隆时没有包含子模块，请运行：
+下载固定版本的依赖：
 
 ```bash
-git submodule update --init --recursive
+lake update
 ```
 
 ## 构建与验证

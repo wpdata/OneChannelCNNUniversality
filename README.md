@@ -62,24 +62,25 @@ $\max(a,b)=b+\operatorname{ReLU}(a-b)$.
 - Lean 4.32.1
 - Mathlib v4.32.1
 
-The toolchain is pinned by [`lean-toolchain`](lean-toolchain). The Mathlib
-revision is recorded by [`lake-manifest.json`](lake-manifest.json) and the
-[`vendor/mathlib`](vendor/mathlib) submodule.
+The toolchain is pinned by [`lean-toolchain`](lean-toolchain). The Mathlib Git
+dependency and revision are pinned by [`lakefile.lean`](lakefile.lean) and
+[`lake-manifest.json`](lake-manifest.json). Lake downloads dependencies into
+the ignored local `.lake/packages/` directory; Mathlib source is not stored in
+this repository.
 
 ## Installation
 
-Install [elan](https://github.com/leanprover/elan), then clone the repository
-with its Mathlib submodule:
+Install [elan](https://github.com/leanprover/elan), then clone the repository:
 
 ```bash
-git clone --recurse-submodules git@github.com:wpdata/machine-checked-2d-one-channel-relu-cnn-universality.git
-cd machine-checked-2d-one-channel-relu-cnn-universality
+git clone git@github.com:wpdata/OneChannelCNNUniversality.git
+cd OneChannelCNNUniversality
 ```
 
-If the repository was cloned without submodules, initialize Mathlib with:
+Download the pinned dependencies:
 
 ```bash
-git submodule update --init --recursive
+lake update
 ```
 
 ## Verification
