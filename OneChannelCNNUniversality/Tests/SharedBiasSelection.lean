@@ -50,3 +50,18 @@ example {X : Type*} [TopologicalSpace X] {K : Set X}
           target theta := by
   exact exists_sharedBias_select_from_unit_address
     hK signal hSignal address target theta haddress
+
+example {rows cols : ℕ} (signal carrier : Image rows cols)
+    (protect : Fin rows → Fin cols → Prop)
+    (target : Fin rows × Fin cols) (theta margin : ℝ)
+    (hgap : ∀ p q, protect p q → (p, q) ≠ target →
+      margin ≤ carrier p q - carrier target.1 target.2)
+    (hbound : ∀ p q, protect p q → |signal p q + theta| < margin) :
+    ∀ p q, protect p q →
+      relu (signal p q + carrier p q +
+        (theta - carrier target.1 target.2)) =
+      if (p, q) = target then relu (signal p q + theta)
+      else signal p q + carrier p q +
+        (theta - carrier target.1 target.2) := by
+  exact sharedBiasSelectiveActivation_on signal carrier protect target theta margin
+    hgap hbound

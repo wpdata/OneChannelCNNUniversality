@@ -62,14 +62,21 @@ $$
 [`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean)
 把经过证明的载波间隙转化为一次精确的局部 ReLU：如果目标载波比其他载波低出的间隙
 大于信号波动，那么唯一的共享偏置
-$\theta-C_{s_*}$ 会在目标位置实施所需 ReLU，同时让其他位置全部保持在线性区。
-一旦给出单位间隙的空间地址，紧致性还能机器验证地为任意连续有限信号族选出统一尺度。
+$\theta-C_{s_*}$ 会在目标位置实施所需 ReLU，同时让其他受保护位置全部保持在线性区；
+不保存寄存器的扩张边缘不需要满足多余条件。一旦给出单位间隙的空间地址，紧致性还能
+机器验证地为任意连续有限信号族选出统一尺度。
+
+[`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean)
+使用两个具有正二抽头卷积核的真实共享偏置 ReLU 层，在受保护的西北寄存器生成这种地址。
+该文件精确计算原矩形内四类位置的载波值，证明西北位置是具有定量间隙的唯一最低点，
+并证明输入相关的两层变换是单射。端到端定理
+`exists_northwest_protected_selection_layers` 在紧输入族上统一选取全部所需幅度，并验证
+第三个共享偏置层只在西北寄存器实施指定 ReLU，而其余受保护寄存器保持在线性支路。
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
-允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能：已经
-验证的边界载波目前还不能让任意指定目标成为具有单位间隙的唯一最低地址。不过，新的
-选择定理已经证明：一旦实际网络能生成这种地址，它就足以在保存其他寄存器的同时实施
-局部 ReLU。
+允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能。
+西北寄存器的选择原语现在已经完整构造；要得到万能编译器，仍需证明如何把这种受保护的
+选择搬运或重新生成到任意寄存器，并在不受扩张边缘值干扰的条件下组合多次局部更新。
 
 ## 证明架构
 
@@ -87,6 +94,7 @@ $\theta-C_{s_*}$ 会在目标位置实施所需 ReLU，同时让其他位置全�
 | [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | 使用共享偏置精确生成常数、左边界与西北角位置信号 |
 | [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | 共享偏置紧集线性化、信号与载波非破坏性共存、单射横向差分和精确边界载波间隙 |
 | [`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean) | 从载波间隙精确选择局部 ReLU，以及从单位空间地址取得紧集统一尺度 |
+| [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | 两个单射共享偏置地址层、受保护寄存器上的精确西北间隙，以及端到端西北选择层 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

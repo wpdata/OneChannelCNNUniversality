@@ -50,6 +50,38 @@ theorem sharedBiasSelectiveActivation_eq {rows cols : ℕ}
     have hsignalBound := hbound p q
     linarith
 
+/-- Protected-site form of shared-bias selection.  No condition is imposed on
+unprotected expansion sites; at every protected register the target receives
+the selected ReLU and every other register stays exactly linear. -/
+theorem sharedBiasSelectiveActivation_on {rows cols : ℕ}
+    (signal carrier : Image rows cols)
+    (protect : Fin rows → Fin cols → Prop)
+    (target : Fin rows × Fin cols) (theta margin : ℝ)
+    (hgap : ∀ p q, protect p q → (p, q) ≠ target →
+      margin ≤ carrier p q - carrier target.1 target.2)
+    (hbound : ∀ p q, protect p q → |signal p q + theta| < margin) :
+    ∀ p q, protect p q →
+      relu (signal p q + carrier p q +
+        (theta - carrier target.1 target.2)) =
+      if (p, q) = target then relu (signal p q + theta)
+      else signal p q + carrier p q +
+        (theta - carrier target.1 target.2) := by
+  intro p q hpq
+  by_cases htarget : (p, q) = target
+  · rw [if_pos htarget]
+    have hp : p = target.1 := congrArg Prod.fst htarget
+    have hq : q = target.2 := congrArg Prod.snd htarget
+    subst p
+    subst q
+    congr 1
+    ring
+  · rw [if_neg htarget]
+    apply relu_of_nonneg
+    have hcarrier := hgap p q hpq htarget
+    have hsignal := neg_abs_le (signal p q + theta)
+    have hsignalBound := hbound p q hpq
+    linarith
+
 /-- Exact network-layer form of `sharedBiasSelectiveActivation_eq`.  If the
 convolutional preactivation decomposes as `signal + carrier`, then the scalar
 bias `theta - carrier(target)` performs the selected update. -/

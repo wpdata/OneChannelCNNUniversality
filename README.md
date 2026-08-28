@@ -73,18 +73,30 @@ left boundary and `b` at original interior sites.
 turns a certified carrier gap into one exact selected ReLU.  If the target
 carrier is lower than every other carrier by more than the signal variation,
 the one shared bias `theta - carrier(target)` applies the requested ReLU at
-the target and keeps every other site in the linear branch.  Compactness
-machine-checkably supplies one uniform scale for any continuous finite signal
-family once a unit-gap spatial address is available.
+the target and keeps every other protected site in the linear branch; no
+condition is imposed on expansion-fringe sites that do not store registers.
+Compactness machine-checkably supplies one uniform scale for any continuous
+finite signal family once a unit-gap spatial address is available.
+
+[`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean)
+constructs such an address at the northwest protected register using two
+genuine shared-bias ReLU layers with positive two-tap kernels.  On the original
+rectangle the carrier values are computed exactly, the northwest site is the
+unique minimum with a quantitative gap, and the input-dependent two-layer
+transform is injective.  The end-to-end theorem
+`exists_northwest_protected_selection_layers` chooses all required amplitudes
+uniformly on a compact input family and verifies a third shared-bias layer that
+applies the selected ReLU at the northwest register while every other
+protected register remains in the linear branch.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem.  The verified theorem above still permits an arbitrary
 position-dependent bias image.  It remains open in this development whether
-the shared-scalar-bias subclass is universal or non-universal: the boundary
-boundary carrier does not yet generate a unit-gap address with an arbitrary
-chosen target as its unique minimum.  The selection theorem now proves that
-such an address would be sufficient to apply a local ReLU while preserving
-every other register.
+the shared-scalar-bias subclass is universal or non-universal.  The northwest
+selection primitive is now fully constructed, but a universal compiler still
+needs a verified way to transport or regenerate this protected selection at
+arbitrary registers and to compose repeated local updates without interference
+from expansion-fringe values.
 
 ## Proof architecture
 
@@ -102,6 +114,7 @@ every other register.
 | [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | Exact constant, left-boundary, and northwest-corner position signals generated with shared biases |
 | [`SharedBiasCarrier.lean`](OneChannelCNNUniversality/SharedBiasCarrier.lean) | Compact shared-bias linearization, non-destructive signal/carrier coexistence, injective horizontal differencing, and an exact boundary carrier gap |
 | [`SharedBiasSelection.lean`](OneChannelCNNUniversality/SharedBiasSelection.lean) | Exact selected ReLU from a carrier gap and compact uniform scaling from a unit spatial address |
+| [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | Two injective shared-bias address layers, an exact northwest gap on protected registers, and an end-to-end northwest selection layer |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
