@@ -1,0 +1,3 @@
+import OneChannelCNNUniversality.Main
+
+#print axioms OneChannelCNNUniversality.twoDimensional_oneChannel_universal_approximation

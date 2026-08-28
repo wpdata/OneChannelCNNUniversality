@@ -21,7 +21,7 @@ $k_{\mathrm{rows}}\times k_{\mathrm{cols}}$ 的两条边均至少为二，$K$ �
 - 从最后一层特征图进行任意仿射读出。
 
 导出的顶层定理是
-[`ICM2022NumCS97.twoDimensional_oneChannel_universal_approximation`](ICM2022NumCS97/Main.lean)：
+[`OneChannelCNNUniversality.twoDimensional_oneChannel_universal_approximation`](OneChannelCNNUniversality/Main.lean)：
 
 ```lean
 theorem twoDimensional_oneChannel_universal_approximation
@@ -40,15 +40,15 @@ theorem twoDimensional_oneChannel_universal_approximation
 
 | 文件 | 职责 |
 | --- | --- |
-| [`Basic.lean`](ICM2022NumCS97/Basic.lean) | 有限数组图像、卷积、ReLU 层、网络与仿射读出的语义 |
-| [`Carrier.lean`](ICM2022NumCS97/Carrier.lean)、[`Register.lean`](ICM2022NumCS97/Register.lean) | 精确载体与掩码寄存器操作 |
-| [`Program.lean`](ICM2022NumCS97/Program.lean)、[`RegisterProgram.lean`](ICM2022NumCS97/RegisterProgram.lean)、[`HybridProgram.lean`](ICM2022NumCS97/HybridProgram.lean) | 将寄存器程序编译为真正的卷积／ReLU 层 |
-| [`Encoder.lean`](ICM2022NumCS97/Encoder.lean)、[`SparseEncoder.lean`](ICM2022NumCS97/SparseEncoder.lean) | 单射稀疏卷积编码以及二项式／Vandermonde 可逆性论证 |
-| [`RouteGeometry.lean`](ICM2022NumCS97/RouteGeometry.lean)、[`Routing.lean`](ICM2022NumCS97/Routing.lean)、[`GridRouting.lean`](ICM2022NumCS97/GridRouting.lean) | 对编码坐标进行精确空间路由 |
-| [`GridMachine.lean`](ICM2022NumCS97/GridMachine.lean)、[`LatticeCompiler.lean`](ICM2022NumCS97/LatticeCompiler.lean) | 使用 ReLU 的最小值／最大值恒等式精确计算有限仿射格表达式 |
-| [`Ridge.lean`](ICM2022NumCS97/Ridge.lean)、[`Universal.lean`](ICM2022NumCS97/Universal.lean) | 通过 Mathlib 的格版本 Stone--Weierstrass 定理证明稠密性 |
-| [`Simulation.lean`](ICM2022NumCS97/Simulation.lean)、[`Main.lean`](ICM2022NumCS97/Main.lean) | 汇总精确编译与稠密性，得到最终网络定理 |
-| [`Tests/`](ICM2022NumCS97/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
+| [`Basic.lean`](OneChannelCNNUniversality/Basic.lean) | 有限数组图像、卷积、ReLU 层、网络与仿射读出的语义 |
+| [`Carrier.lean`](OneChannelCNNUniversality/Carrier.lean)、[`Register.lean`](OneChannelCNNUniversality/Register.lean) | 精确载体与掩码寄存器操作 |
+| [`Program.lean`](OneChannelCNNUniversality/Program.lean)、[`RegisterProgram.lean`](OneChannelCNNUniversality/RegisterProgram.lean)、[`HybridProgram.lean`](OneChannelCNNUniversality/HybridProgram.lean) | 将寄存器程序编译为真正的卷积／ReLU 层 |
+| [`Encoder.lean`](OneChannelCNNUniversality/Encoder.lean)、[`SparseEncoder.lean`](OneChannelCNNUniversality/SparseEncoder.lean) | 单射稀疏卷积编码以及二项式／Vandermonde 可逆性论证 |
+| [`RouteGeometry.lean`](OneChannelCNNUniversality/RouteGeometry.lean)、[`Routing.lean`](OneChannelCNNUniversality/Routing.lean)、[`GridRouting.lean`](OneChannelCNNUniversality/GridRouting.lean) | 对编码坐标进行精确空间路由 |
+| [`GridMachine.lean`](OneChannelCNNUniversality/GridMachine.lean)、[`LatticeCompiler.lean`](OneChannelCNNUniversality/LatticeCompiler.lean) | 使用 ReLU 的最小值／最大值恒等式精确计算有限仿射格表达式 |
+| [`Ridge.lean`](OneChannelCNNUniversality/Ridge.lean)、[`Universal.lean`](OneChannelCNNUniversality/Universal.lean) | 通过 Mathlib 的格版本 Stone--Weierstrass 定理证明稠密性 |
+| [`Simulation.lean`](OneChannelCNNUniversality/Simulation.lean)、[`Main.lean`](OneChannelCNNUniversality/Main.lean) | 汇总精确编译与稠密性，得到最终网络定理 |
+| [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
 $\min(a,b)=a-\operatorname{ReLU}(a-b)$ 与
@@ -90,7 +90,7 @@ lake build
 运行全部证明测试：
 
 ```bash
-for test_file in ICM2022NumCS97/Tests/*.lean; do
+for test_file in OneChannelCNNUniversality/Tests/*.lean; do
   lake env lean "$test_file"
 done
 ```
@@ -98,13 +98,13 @@ done
 审计顶层定理使用的公理：
 
 ```bash
-lake env lean ICM2022NumCS97/Tests/Axioms.lean
+lake env lean OneChannelCNNUniversality/Tests/Axioms.lean
 ```
 
 预期报告为：
 
 ```text
-'ICM2022NumCS97.twoDimensional_oneChannel_universal_approximation' depends on axioms: [propext,
+'OneChannelCNNUniversality.twoDimensional_oneChannel_universal_approximation' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 ```
@@ -115,7 +115,7 @@ lake env lean ICM2022NumCS97/Tests/Axioms.lean
 ```bash
 rg -n --glob '*.lean' \
   '(^|[^[:alnum:]_])(sorry|admit|unsafe)([^[:alnum:]_]|$)|^[[:space:]]*axiom([^[:alnum:]_]|$)' \
-  ICM2022NumCS97 ICM2022NumCS97.lean
+  OneChannelCNNUniversality OneChannelCNNUniversality.lean
 ```
 
 编译器的 linter 警告是代码风格诊断，不代表存在未证明目标。验证标准是：完整构建

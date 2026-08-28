@@ -1,3 +1,0 @@
-import ICM2022NumCS97.Main
-
-#print axioms ICM2022NumCS97.twoDimensional_oneChannel_universal_approximation

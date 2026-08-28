@@ -24,7 +24,7 @@ The exact model has:
 - an arbitrary affine readout from the final feature image.
 
 The exported theorem is
-[`ICM2022NumCS97.twoDimensional_oneChannel_universal_approximation`](ICM2022NumCS97/Main.lean):
+[`OneChannelCNNUniversality.twoDimensional_oneChannel_universal_approximation`](OneChannelCNNUniversality/Main.lean):
 
 ```lean
 theorem twoDimensional_oneChannel_universal_approximation
@@ -43,15 +43,15 @@ theorem twoDimensional_oneChannel_universal_approximation
 
 | Files | Role |
 | --- | --- |
-| [`Basic.lean`](ICM2022NumCS97/Basic.lean) | Finite-array image, convolution, ReLU-layer, network, and affine-readout semantics |
-| [`Carrier.lean`](ICM2022NumCS97/Carrier.lean), [`Register.lean`](ICM2022NumCS97/Register.lean) | Exact carrier and masked-register operations |
-| [`Program.lean`](ICM2022NumCS97/Program.lean), [`RegisterProgram.lean`](ICM2022NumCS97/RegisterProgram.lean), [`HybridProgram.lean`](ICM2022NumCS97/HybridProgram.lean) | Compilation of register programs into genuine convolution/ReLU layers |
-| [`Encoder.lean`](ICM2022NumCS97/Encoder.lean), [`SparseEncoder.lean`](ICM2022NumCS97/SparseEncoder.lean) | Injective sparse convolutional encoding and the binomial/Vandermonde invertibility argument |
-| [`RouteGeometry.lean`](ICM2022NumCS97/RouteGeometry.lean), [`Routing.lean`](ICM2022NumCS97/Routing.lean), [`GridRouting.lean`](ICM2022NumCS97/GridRouting.lean) | Exact spatial routing of encoded coordinates |
-| [`GridMachine.lean`](ICM2022NumCS97/GridMachine.lean), [`LatticeCompiler.lean`](ICM2022NumCS97/LatticeCompiler.lean) | Exact evaluation of finite affine lattice expressions using ReLU min/max identities |
-| [`Ridge.lean`](ICM2022NumCS97/Ridge.lean), [`Universal.lean`](ICM2022NumCS97/Universal.lean) | Density via Mathlib's lattice Stone--Weierstrass theorem |
-| [`Simulation.lean`](ICM2022NumCS97/Simulation.lean), [`Main.lean`](ICM2022NumCS97/Main.lean) | Assembly of exact compilation and density into the final network theorem |
-| [`Tests/`](ICM2022NumCS97/Tests) | Module, regression, top-level, and axiom-audit checks |
+| [`Basic.lean`](OneChannelCNNUniversality/Basic.lean) | Finite-array image, convolution, ReLU-layer, network, and affine-readout semantics |
+| [`Carrier.lean`](OneChannelCNNUniversality/Carrier.lean), [`Register.lean`](OneChannelCNNUniversality/Register.lean) | Exact carrier and masked-register operations |
+| [`Program.lean`](OneChannelCNNUniversality/Program.lean), [`RegisterProgram.lean`](OneChannelCNNUniversality/RegisterProgram.lean), [`HybridProgram.lean`](OneChannelCNNUniversality/HybridProgram.lean) | Compilation of register programs into genuine convolution/ReLU layers |
+| [`Encoder.lean`](OneChannelCNNUniversality/Encoder.lean), [`SparseEncoder.lean`](OneChannelCNNUniversality/SparseEncoder.lean) | Injective sparse convolutional encoding and the binomial/Vandermonde invertibility argument |
+| [`RouteGeometry.lean`](OneChannelCNNUniversality/RouteGeometry.lean), [`Routing.lean`](OneChannelCNNUniversality/Routing.lean), [`GridRouting.lean`](OneChannelCNNUniversality/GridRouting.lean) | Exact spatial routing of encoded coordinates |
+| [`GridMachine.lean`](OneChannelCNNUniversality/GridMachine.lean), [`LatticeCompiler.lean`](OneChannelCNNUniversality/LatticeCompiler.lean) | Exact evaluation of finite affine lattice expressions using ReLU min/max identities |
+| [`Ridge.lean`](OneChannelCNNUniversality/Ridge.lean), [`Universal.lean`](OneChannelCNNUniversality/Universal.lean) | Density via Mathlib's lattice Stone--Weierstrass theorem |
+| [`Simulation.lean`](OneChannelCNNUniversality/Simulation.lean), [`Main.lean`](OneChannelCNNUniversality/Main.lean) | Assembly of exact compilation and density into the final network theorem |
+| [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
 $\min(a,b)=a-\operatorname{ReLU}(a-b)$ and
@@ -94,7 +94,7 @@ lake build
 Run every proof test:
 
 ```bash
-for test_file in ICM2022NumCS97/Tests/*.lean; do
+for test_file in OneChannelCNNUniversality/Tests/*.lean; do
   lake env lean "$test_file"
 done
 ```
@@ -102,13 +102,13 @@ done
 Audit the top-level theorem:
 
 ```bash
-lake env lean ICM2022NumCS97/Tests/Axioms.lean
+lake env lean OneChannelCNNUniversality/Tests/Axioms.lean
 ```
 
 The expected report is:
 
 ```text
-'ICM2022NumCS97.twoDimensional_oneChannel_universal_approximation' depends on axioms: [propext,
+'OneChannelCNNUniversality.twoDimensional_oneChannel_universal_approximation' depends on axioms: [propext,
  Classical.choice,
  Quot.sound]
 ```
@@ -120,7 +120,7 @@ source scan must return no matches:
 ```bash
 rg -n --glob '*.lean' \
   '(^|[^[:alnum:]_])(sorry|admit|unsafe)([^[:alnum:]_]|$)|^[[:space:]]*axiom([^[:alnum:]_]|$)' \
-  ICM2022NumCS97 ICM2022NumCS97.lean
+  OneChannelCNNUniversality OneChannelCNNUniversality.lean
 ```
 
 Compiler linter warnings are style diagnostics rather than unproved goals. The
