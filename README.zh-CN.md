@@ -96,11 +96,21 @@ $$
 象限内具有至少 $c$ 间隙的唯一最低点。对于紧集上的连续信号族，一个共享标量偏置就能
 在该寄存器实施指定 ReLU，并让该象限内其余寄存器全部保持在线性支路。
 
+[`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean)
+把上述公式接回真实的共享标量偏置网络对象。它引入带显式输出尺寸的
+`SharedBiasNetworkTo`，证明紧信号族上的任意有限次形式卷积都能由每层一个标量偏置的
+网络精确线性化，并把完整的横向再纵向 Pascal 变换构造成固定 $2\times2$ 核形状网络。
+对于非负输入，文件还给出一个完全显式的版本，其中所有 Pascal 层的偏置均为零。
+最后的受保护选择恒等式也已由真实的扩张型 $2\times2$ 共享偏置卷积／ReLU 层实现，
+不再只是证明层面的逐点激活公式。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
 允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能。
 任意目标现在已经能在“保护其东南象限”的条件下被选择，这消除了原先只能选择西北角的
-限制。要得到万能编译器，仍需构造一个在 ReLU 层中同步生成地址与可变信号的具体共享偏置
-网络，保护单个象限以外所需的寄存器，并在不受扩张边缘值干扰的条件下组合多次局部更新。
+限制。目前信号／载波分解层面的共同生成以及非负状态上的显式零偏置 Pascal 阶段已经完成；
+下一步仍需精确计算首个线性化偏置产生的载波，证明它经过全部零偏置 Pascal 层后仍保留
+东南保护间隙，然后保护单个象限以外所需的寄存器，并在不受扩张边缘值干扰的条件下组合
+多次局部更新。
 
 ## 证明架构
 
@@ -121,6 +131,7 @@ $$
 | [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | 两个单射共享偏置地址层、受保护寄存器上的精确西北间隙，以及端到端西北选择层 |
 | [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | 重复正横向累加、精确 Pascal 前缀地址、单射性与受保护行后缀选择 |
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | 单射二维 Pascal 地址，以及东南受保护象限上的任意目标选择 |
+| [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | 显式尺寸真实共享偏置网络、紧集有限次线性化、非负状态零偏置 Pascal 层与扩张型最终选择层 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

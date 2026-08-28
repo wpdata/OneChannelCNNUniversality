@@ -119,16 +119,29 @@ continuous signal family, one shared scalar bias then performs the requested
 ReLU at that register and leaves every other register in that quadrant in the
 linear branch.
 
+[`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean)
+connects these formulas back to genuine shared-scalar-bias network objects.
+It introduces an explicitly output-typed `SharedBiasNetworkTo`, proves that
+any finite repetition of a fixed formal convolution can be linearized on a compact
+signal family using one scalar bias per layer, and constructs the complete
+horizontal-then-vertical Pascal transform as a fixed-`2 × 2`-shape network.
+For nonnegative inputs it gives a fully explicit version whose every Pascal
+layer has bias zero.  It also realizes the final protected selection identity
+with an actual expansive `2 × 2` shared-bias convolution/ReLU layer rather
+than a proof-level pointwise activation.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem.  The verified theorem above still permits an arbitrary
 position-dependent bias image.  It remains open in this development whether
 the shared-scalar-bias subclass is universal or non-universal.  Arbitrary
 targets can now be selected under southeast-quadrant protection, which removes
-the earlier northwest-only restriction.  A universal compiler still needs a
-concrete shared-bias network construction that co-generates the address and
-variable signal through its ReLU layers, preserves the required registers
-outside a single quadrant, and composes repeated local updates without
-interference from expansion-fringe values.
+the earlier northwest-only restriction.  Shared-bias signal/carrier
+co-generation is now available at the decomposition level, and the
+nonnegative zero-bias Pascal stage is explicit.  The remaining end-to-end step
+is to compute the carrier contributed by the initial linearizing bias, prove
+that its protected southeast gap survives every zero-bias Pascal layer, and
+then compose repeated local updates while preserving the required registers
+outside a single quadrant and avoiding expansion-fringe interference.
 
 ## Proof architecture
 
@@ -149,6 +162,7 @@ interference from expansion-fringe values.
 | [`SharedBiasAddress.lean`](OneChannelCNNUniversality/SharedBiasAddress.lean) | Two injective shared-bias address layers, an exact northwest gap on protected registers, and an end-to-end northwest selection layer |
 | [`SharedBiasScan.lean`](OneChannelCNNUniversality/SharedBiasScan.lean) | Repeated positive horizontal accumulation, exact Pascal-prefix addresses, injectivity, and protected row-suffix selection |
 | [`SharedBiasGridScan.lean`](OneChannelCNNUniversality/SharedBiasGridScan.lean) | Injective two-dimensional Pascal addresses and arbitrary-target selection on a southeast protected quadrant |
+| [`SharedBiasGridNetwork.lean`](OneChannelCNNUniversality/SharedBiasGridNetwork.lean) | Explicitly typed genuine shared-bias networks, compact finite-iteration linearization, zero-bias Pascal layers on nonnegative states, and an expansive final selection layer |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

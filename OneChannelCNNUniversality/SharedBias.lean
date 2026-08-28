@@ -92,4 +92,65 @@ def single (kernel : Kernel kRows kCols) (bias : ℝ) :
     net.toNetwork.realize weight constant x = net.realize weight constant x := rfl
 
 end SharedBiasNetwork
+
+/-- A shared-bias network bundled with explicit final dimensions.  This is
+the scalar-bias analogue of `NetworkTo` and keeps recursive constructions
+free of dependent casts. -/
+structure SharedBiasNetworkTo
+    (kRows kCols inRows inCols outRows outCols : ℕ) where
+  net : SharedBiasNetwork kRows kCols inRows inCols
+  rows_eq : net.outRows = outRows
+  cols_eq : net.outCols = outCols
+
+namespace SharedBiasNetworkTo
+
+/-- Evaluation reindexed to the explicit output rectangle. -/
+def eval {kRows kCols inRows inCols outRows outCols : ℕ}
+    (net : SharedBiasNetworkTo kRows kCols inRows inCols outRows outCols)
+    (x : Image inRows inCols) : Image outRows outCols :=
+  fun i j ↦ net.net.eval x
+    ⟨i, by simpa [net.rows_eq] using i.isLt⟩
+    ⟨j, by simpa [net.cols_eq] using j.isLt⟩
+
+/-- The depth-zero explicitly typed shared-bias network. -/
+def nil (rows cols kRows kCols : ℕ) :
+    SharedBiasNetworkTo kRows kCols rows cols rows cols :=
+  ⟨SharedBiasNetwork.nil rows cols, rfl, rfl⟩
+
+/-- Prepend one genuine scalar-bias convolution/ReLU layer. -/
+def cons {kRows kCols rows cols outRows outCols : ℕ}
+    (kernel : Kernel kRows kCols) (bias : ℝ)
+    (tail : SharedBiasNetworkTo kRows kCols
+      (rows + kRows - 1) (cols + kCols - 1) outRows outCols) :
+    SharedBiasNetworkTo kRows kCols rows cols outRows outCols :=
+  ⟨SharedBiasNetwork.cons kernel bias tail.net, tail.rows_eq, tail.cols_eq⟩
+
+/-- A single explicitly typed shared-bias layer. -/
+def single {kRows kCols rows cols : ℕ}
+    (kernel : Kernel kRows kCols) (bias : ℝ) :
+    SharedBiasNetworkTo kRows kCols rows cols
+      (rows + kRows - 1) (cols + kCols - 1) :=
+  cons kernel bias (nil _ _ kRows kCols)
+
+@[simp] theorem eval_nil {kRows kCols rows cols : ℕ}
+    (x : Image rows cols) :
+    (nil rows cols kRows kCols).eval x = x := by
+  funext i j
+  rfl
+
+@[simp] theorem eval_cons {kRows kCols rows cols outRows outCols : ℕ}
+    (kernel : Kernel kRows kCols) (bias : ℝ)
+    (tail : SharedBiasNetworkTo kRows kCols
+      (rows + kRows - 1) (cols + kCols - 1) outRows outCols)
+    (x : Image rows cols) :
+    (cons kernel bias tail).eval x = tail.eval (sharedLayerEval kernel bias x) := by
+  funext i j
+  rfl
+
+@[simp] theorem eval_single {kRows kCols rows cols : ℕ}
+    (kernel : Kernel kRows kCols) (bias : ℝ) (x : Image rows cols) :
+    (single kernel bias).eval x = sharedLayerEval kernel bias x := by
+  rw [single, eval_cons, eval_nil]
+
+end SharedBiasNetworkTo
 end OneChannelCNNUniversality

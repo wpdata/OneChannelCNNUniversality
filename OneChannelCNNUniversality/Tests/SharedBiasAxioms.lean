@@ -1,4 +1,4 @@
-import OneChannelCNNUniversality.SharedBiasGridScan
+import OneChannelCNNUniversality.SharedBiasGridNetwork
 
 #print axioms OneChannelCNNUniversality.exists_shared_bias_carrier_layer
 #print axioms OneChannelCNNUniversality.horizontalBoundaryTransform_injective
@@ -20,3 +20,7 @@ import OneChannelCNNUniversality.SharedBiasGridScan
 #print axioms OneChannelCNNUniversality.protectedPascalGridAddress_eq
 #print axioms OneChannelCNNUniversality.pascalGridTransform_injective
 #print axioms OneChannelCNNUniversality.exists_southeast_selected_relu
+#print axioms OneChannelCNNUniversality.exists_shared_bias_full_iterations
+#print axioms OneChannelCNNUniversality.exists_shared_bias_pascal_grid_layers
+#print axioms OneChannelCNNUniversality.zeroBiasPascalGridNetwork_eval_of_nonnegative
+#print axioms OneChannelCNNUniversality.exists_sharedLayer_southeast_pascal_selection
