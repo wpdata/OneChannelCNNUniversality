@@ -1,4 +1,4 @@
-# ICM 2022-numcs-97: verified two-dimensional one-channel case
+# Lean formalization of two-dimensional one-channel universality
 
 This Lean 4 project proves universal approximation for the following exact
 model:
@@ -40,8 +40,8 @@ The project pins Lean `4.32.1` and Mathlib `v4.32.1`. Mathlib is recorded as
 a Git submodule, so clone with:
 
 ```sh
-git clone --recurse-submodules git@github.com:wpdata/2022-numcs-97.git
-cd 2022-numcs-97
+git clone --recurse-submodules git@github.com:wpdata/lean-2d-one-channel-universality.git
+cd lean-2d-one-channel-universality
 ```
 
 If the repository was cloned without submodules, initialize Mathlib with:
