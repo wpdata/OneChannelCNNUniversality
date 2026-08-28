@@ -174,17 +174,27 @@ $$
 $Q_{r,s}$ 内不同。如果输入在根位置 $(r,s)$ 也相同，那么“去掉根点的东南象限”
 $Q_{r,s}\setminus\{(r,s)\}$ 会被保持，且根位置的输出继续相同。因此，已经存放在这个
 去根象限内的信息，即使经过后续非线性共享偏置层，也不会向西北泄漏或扰动下一个目标。
-这个支撑定理是证明完整带偏置选择块相对单射性的必要基础，但其本身还不等于相对单射性。
-它也只保护东南象限内可比较的位置；若要扫描完整矩形网格，仍需额外的布局或次序来处理
-坐标不可比较的位置。
+这个支撑定理只保护东南象限内可比较的位置；若要扫描完整矩形网格，仍需额外的布局或
+次序来处理坐标不可比较的位置。
+
+[`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean)
+补上了一个完整带偏置选择块的恢复缺口。Lean 首先证明：只知道同一个有限西北矩形上的
+输出一致，就可以反演任意次横向与纵向 Pascal 累加。因此，传输信号限制在原始图像矩形
+上的映射已经是单射，不需要观察扩张边缘。随后把该反演结论与东南支撑传播、封装网络的
+精确求值公式结合，得到定理
+`BundledPascalGridSelectionSpec.injective_on_rootPuncturedSoutheast`：若两个输入只可能在
+$Q_{r,s}\setminus\{(r,s)\}$ 内不同，而真实共享偏置网络的输出相等，则两幅输入特征图
+必然相等。因此，在一次局部更新所需的精确保护不变量下，共享偏置和最终 ReLU 都不会
+破坏输入信息。
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
-西北角以及只在证明层面假设载波的限制。剩余工作已经变成另一项任务：组合多次局部更新，
-同时保存当前象限之外的寄存器；控制更新之间的扩张边缘值；最终把这种共享偏置编译器接到
-适用于共享标量偏置子类的稠密性论证上。
+西北角以及只在证明层面假设载波的限制。剩余工作已经变成另一项任务：选择一种有限布局
+或次序，把所需的寄存器变化都转化为受保护的可比较关系；组合已验证相对单射的局部更新；
+控制更新之间的扩张边缘值；最终把这种共享偏置编译器接到适用于共享标量偏置子类的稠密性
+论证上。
 
 ## 证明架构
 
@@ -209,6 +219,7 @@ $Q_{r,s}\setminus\{(r,s)\}$ 会被保持，且根位置的输出继续相同。�
 | [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | 完整卷积、真实共享偏置 ReLU 层、任意有限网络及受保护 Pascal 信号的西北不干扰定理 |
 | [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Pascal 传输的线性左逆、有限仿射读出权重的精确坐标恢复，以及非负特征上具体零偏置网络的恢复定理 |
 | [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | 真实共享偏置 ReLU 层和任意有限网络中的东南支撑传播，以及去根东南象限差异下的根位置保护 |
+| [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | 从受保护原始矩形反演 Pascal 传输，以及完整带偏置选择块的相对单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

@@ -215,11 +215,24 @@ genuine shared-bias convolution/ReLU layer, or an arbitrary finite
 punctured-southeast condition $Q_{r,s}\setminus\{(r,s)\}$ is preserved and the
 root output remains equal. Consequently, information already stored in that
 punctured quadrant cannot leak toward the northwest or perturb the next target,
-even through later nonlinear shared-bias layers. This support result is a
-prerequisite for, but does not by itself establish, relative injectivity of a
-complete biased selection block. It also protects only comparable sites in a
-southeast quadrant; a scan covering an entire rectangular grid still needs a
-layout or ordering that handles incomparable coordinates.
+even through later nonlinear shared-bias layers. It protects only comparable
+sites in a southeast quadrant; a scan covering an entire rectangular grid
+still needs a layout or ordering that handles incomparable coordinates.
+
+[`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean)
+closes the recovery gap for one complete biased selection block. Lean first
+proves that horizontal and vertical Pascal accumulation can be inverted from
+agreement on the same finite northwest rectangle. Hence the restriction of
+the transported signal to the original image rectangle is already injective;
+no expansion-fringe observation is needed. It then combines this inverse with
+southeast support propagation and the exact bundled-network evaluation law.
+The resulting theorem
+`BundledPascalGridSelectionSpec.injective_on_rootPuncturedSoutheast` says that,
+for two inputs differing only in
+$Q_{r,s}\setminus\{(r,s)\}$, equality of the genuine shared-bias network
+outputs implies equality of the input feature images. Thus the shared bias
+and final ReLU do not destroy information under precisely the protected
+variation invariant needed for one local update.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
@@ -228,10 +241,11 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is substantially different: compose many such local updates
-while preserving registers outside the active quadrant, control
-expansion-fringe sites between updates, and connect that compiler to a density
-argument for the shared-scalar-bias subclass.
+What remains is substantially different: choose a finite layout or ordering
+that turns all required register variations into protected comparable ones,
+compose the certified relatively injective updates, control expansion-fringe
+sites between updates, and connect that compiler to a density argument for
+the shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -256,6 +270,7 @@ argument for the shared-scalar-bias subclass.
 | [`SharedBiasCausality.lean`](OneChannelCNNUniversality/SharedBiasCausality.lean) | Northwest noninterference for full convolution, genuine shared-bias ReLU layers, arbitrary finite networks, and the protected Pascal signal |
 | [`SharedBiasRecovery.lean`](OneChannelCNNUniversality/SharedBiasRecovery.lean) | Linear left inversion of Pascal transport and exact coordinate recovery by finite affine-readout weights, including the concrete zero-bias network on nonnegative features |
 | [`SharedBiasSupport.lean`](OneChannelCNNUniversality/SharedBiasSupport.lean) | Southeast-support propagation and root-punctured-quadrant protection through genuine shared-bias ReLU layers and arbitrary finite networks |
+| [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | Inversion from the protected original rectangle and relative injectivity of a complete bundled biased selection block |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

@@ -10,3 +10,4 @@ import OneChannelCNNUniversality.SharedBiasGridNetwork
 import OneChannelCNNUniversality.SharedBiasCausality
 import OneChannelCNNUniversality.SharedBiasRecovery
 import OneChannelCNNUniversality.SharedBiasSupport
+import OneChannelCNNUniversality.SharedBiasRelativeInjectivity
