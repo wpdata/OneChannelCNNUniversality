@@ -36,6 +36,28 @@ theorem twoDimensional_oneChannel_universal_approximation
       ∀ x : K, |net.realize weight constant x.1 - f x| < epsilon
 ```
 
+## 共享标量偏置拓展：当前状态
+
+仓库现在还包含一个约束更强、也更接近常见实现的隐藏层模型：
+
+$$
+H_\ell(X)=\mathrm{ReLU}\!\left(W_\ell*H_{\ell-1}(X)+b_\ell\mathbf 1\right),
+$$
+
+即第 $\ell$ 层只有一个标量偏置 $b_\ell$，并把它广播到所有空间位置。
+[`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) 精确定义了这类网络，
+并证明它的求值语义可以原样嵌入一般的逐位置偏置模型。
+
+[`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
+对零延拓全卷积产生的边界效应进行了机器验证：零卷积核加正共享偏置会产生常数矩形；
+横向一阶差分再经过 ReLU 会精确保留正的左边界；继续做纵向一阶差分会精确保留西北角
+单点。定理覆盖所有有限尺寸，包括空矩形的退化情形。
+
+这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。上面的已验证主定理仍然
+允许任意逐位置偏置数组。本工程目前尚未判定共享标量偏置子类究竟万能还是不万能：已经
+验证的边界单点还不足以在保留任意输入寄存器的同时，为任意有限位置提供彼此独立的载体
+间隔，从而实施局部 ReLU。
+
 ## 证明架构
 
 | 文件 | 职责 |
@@ -48,6 +70,8 @@ theorem twoDimensional_oneChannel_universal_approximation
 | [`GridMachine.lean`](OneChannelCNNUniversality/GridMachine.lean)、[`LatticeCompiler.lean`](OneChannelCNNUniversality/LatticeCompiler.lean) | 使用 ReLU 的最小值／最大值恒等式精确计算有限仿射格表达式 |
 | [`Ridge.lean`](OneChannelCNNUniversality/Ridge.lean)、[`Universal.lean`](OneChannelCNNUniversality/Universal.lean) | 通过 Mathlib 的格版本 Stone--Weierstrass 定理证明稠密性 |
 | [`Simulation.lean`](OneChannelCNNUniversality/Simulation.lean)、[`Main.lean`](OneChannelCNNUniversality/Main.lean) | 汇总精确编译与稠密性，得到最终网络定理 |
+| [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) | 共享标量偏置的精确语义，以及到一般模型的保语义嵌入 |
+| [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | 使用共享偏置精确生成常数、左边界与西北角位置信号 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
@@ -123,5 +147,7 @@ rg -n --glob '*.lean' \
 
 ## 范围与状态
 
-本仓库发布 Lean 源码及其可由机器复核的定理。Lean 内核验证说明该定理可由给定定义
-与报告中的基础推出；它本身不等同于外部同行评审，也不构成历史优先权判断。
+本仓库发布 Lean 源码及其可由机器复核的结果。Lean 内核验证说明：逐位置偏置万能逼近
+定理和约束更强的共享偏置边界引理都可由给定定义与报告中的基础推出；但这并不会把尚未
+解决的共享偏置万能性问题变成定理。机器验证本身也不等同于外部同行评审，不构成历史
+优先权判断。

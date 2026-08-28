@@ -39,6 +39,34 @@ theorem twoDimensional_oneChannel_universal_approximation
       ∀ x : K, |net.realize weight constant x.1 - f x| < epsilon
 ```
 
+## Shared-scalar-bias extension: current status
+
+The repository also contains verified infrastructure for the stricter and
+more implementation-standard hidden-layer rule
+
+$$
+H_\ell(X)=\mathrm{ReLU}\!\left(W_\ell*H_{\ell-1}(X)+b_\ell\mathbf 1\right),
+$$
+
+where each layer has only one scalar bias $b_\ell$, broadcast to every spatial
+site.  [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) defines
+this exact network class and proves that its semantics embeds without change
+into the general position-dependent-bias model.
+
+[`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
+machine-checks exact boundary effects of zero-extended full convolution.  A
+zero kernel and positive shared bias create a constant rectangle; horizontal
+first differencing followed by ReLU isolates its positive left edge; vertical
+first differencing then isolates its northwest corner.  These theorems cover
+all finite dimensions, including empty rectangles.
+
+This is experimental proof infrastructure, **not** a shared-bias universal-
+approximation theorem.  The verified theorem above still permits an arbitrary
+position-dependent bias image.  It remains open in this development whether
+the shared-scalar-bias subclass is universal or non-universal: the boundary
+seed alone does not yet provide the independently separated carrier values
+needed to preserve arbitrary input registers while applying a local ReLU.
+
 ## Proof architecture
 
 | Files | Role |
@@ -51,6 +79,8 @@ theorem twoDimensional_oneChannel_universal_approximation
 | [`GridMachine.lean`](OneChannelCNNUniversality/GridMachine.lean), [`LatticeCompiler.lean`](OneChannelCNNUniversality/LatticeCompiler.lean) | Exact evaluation of finite affine lattice expressions using ReLU min/max identities |
 | [`Ridge.lean`](OneChannelCNNUniversality/Ridge.lean), [`Universal.lean`](OneChannelCNNUniversality/Universal.lean) | Density via Mathlib's lattice Stone--Weierstrass theorem |
 | [`Simulation.lean`](OneChannelCNNUniversality/Simulation.lean), [`Main.lean`](OneChannelCNNUniversality/Main.lean) | Assembly of exact compilation and density into the final network theorem |
+| [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) | Exact shared-scalar-bias semantics and semantics-preserving embedding into the general model |
+| [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean) | Exact constant, left-boundary, and northwest-corner position signals generated with shared biases |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
@@ -129,7 +159,9 @@ forbidden-source scan, and the axiom report above.
 
 ## Scope and status
 
-This repository publishes the Lean source and its machine-checkable theorem.
-Lean kernel verification establishes that the theorem follows from the stated
-definitions and reported foundations; it does not by itself establish external
-peer review or historical priority.
+This repository publishes the Lean source and its machine-checkable results.
+Lean kernel verification establishes that the position-dependent-bias
+universal-approximation theorem and the narrower shared-bias boundary lemmas
+follow from the stated definitions and reported foundations.  It does not
+turn the unresolved shared-bias universality question into a theorem, and it
+does not by itself establish external peer review or historical priority.
