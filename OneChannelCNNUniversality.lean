@@ -1,1 +1,2 @@
 import OneChannelCNNUniversality.Main
+import OneChannelCNNUniversality.SharedBias
