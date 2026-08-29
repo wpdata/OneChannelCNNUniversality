@@ -358,6 +358,30 @@ argument. A useful compiler must separate protected state from the mutable
 register on which a nonconstant ReLU is performed, or use a different
 recovery invariant.
 
+[`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean)
+implements and verifies the first such alternative without duplicating the
+whole network. On a one-row feature image, it stores the mutable root value
+$x_0$ once more in the adjacent eastern register, so $x_1=x_0$. If the
+selector's horizontal Pascal transport has `extraColSteps` additional layers,
+Lean proves the exact protected boundary formulas
+
+$$
+S_0(x)=x_0,
+\qquad
+S_1(x)=x_1+(\texttt{extraColSteps}+1)x_0.
+$$
+
+Hence on the redundant subspace,
+$S_1(x)=(\texttt{extraColSteps}+2)x_0$, and the strictly positive coefficient
+recovers the root even though the selected ReLU overwrites $S_0(x)$. The
+theorem
+`BundledPascalGridSelectionSpec.injective_on_eastRootDuplicate` verifies that
+the complete genuine shared-scalar-bias selection network is injective on
+this subspace. In particular, the selected value may vary across the input
+family; the previous target-constancy obstruction no longer applies. This
+costs one adjacent spatial register, not a second channel or a full-width
+network copy.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -365,11 +389,10 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is substantially different: realize a protected-state copy and
-a mutable work copy inside one spatial channel, route and recombine them with
-explicit depth/area bounds, replace the now-refuted global same-root premise
-by an invariant for that duplicated state, and connect the resulting compiler
-to a density argument for the shared-scalar-bias subclass.
+What remains is to construct and preserve the adjacent-copy invariant using
+genuine shared-bias CNN layers across a finite sequence of computations, give
+explicit routing and depth/area bounds, and connect the resulting compiler to
+a density argument for the shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -404,6 +427,7 @@ to a density argument for the shared-scalar-bias subclass.
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | Dependent finite successor schedules, recursive compactness witness construction, exact internal-seed equations, and extraction of one final composed CNN |
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | Recovery adapters for compiled selector blocks, schedule-length recovery chains, final-output recovery, and conditional injectivity of the final CNN |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | The target-constancy obstruction for global pairwise protection, constancy of the selected ReLU, and its specialization to appended selector steps |
+| [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

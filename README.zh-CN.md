@@ -282,14 +282,32 @@ $$
 推论本身不是计算万能性的证明。有效编译器必须把受保护的状态副本与执行非恒定 ReLU 的
 可变工作寄存器分开，或者改用不同的恢复不变量。
 
+[`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean)
+已经实现并形式化验证了第一种替代方案，而且不需要复制整个网络。对单行特征图，只把可变
+根值 $x_0$ 额外存入东侧相邻寄存器一次，即令 $x_1=x_0$。若选择器的横向 Pascal 传输还
+包含 `extraColSteps` 层，Lean 已证明精确的受保护边界公式
+
+$$
+S_0(x)=x_0,
+\qquad
+S_1(x)=x_1+(\texttt{extraColSteps}+1)x_0.
+$$
+
+所以在这个冗余子空间上，
+$S_1(x)=(\texttt{extraColSteps}+2)x_0$。其系数严格为正，因此即使选择 ReLU 覆盖了
+$S_0(x)$，仍能从相邻位置恢复根值。定理
+`BundledPascalGridSelectionSpec.injective_on_eastRootDuplicate` 进一步验证：完整、真实的
+共享标量偏置选择网络在该子空间上是单射的。特别地，目标值现在允许随输入变化，前面的
+“目标必须为常数”障碍不再适用。这里的代价只是一个相邻空间寄存器，而不是增加第二通道，
+也不是复制一整套等宽网络。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
-工作已经变成另一项任务：在一个空间通道中实现受保护状态副本与可变工作副本，给出路由和
-重新合并的明确深度／面积界，用双副本不变量替换已经被否定的同根全局保护前提，最后把
-所得共享偏置编译器接到适用于共享标量偏置子类的稠密性论证上。
+下一步是在真实共享偏置 CNN 层中构造并跨越有限计算序列保持这个相邻副本不变量，给出明确
+的路由与深度／面积界，最后把所得共享偏置编译器接到适用于共享标量偏置子类的稠密性论证上。
 
 ## 证明架构
 
@@ -324,6 +342,7 @@ $$
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | 依赖类型有限后继日程、紧致性见证的递归构造、内部种子精确等式，以及最终单一组合 CNN 的导出 |
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | 已编译选择块的恢复适配器、等长日程恢复链、最终输出恢复，以及最终 CNN 的条件单射性 |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | 全局成对保护导致目标常值、选择 ReLU 恒定的障碍定理，以及对追加选择器步骤的专门结论 |
+| [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
