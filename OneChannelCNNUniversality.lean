@@ -24,3 +24,4 @@ import OneChannelCNNUniversality.SharedBiasRedundantRecovery
 import OneChannelCNNUniversality.SharedBiasAdjacentCopy
 import OneChannelCNNUniversality.SharedBiasMonotoneCode
 import OneChannelCNNUniversality.SharedBiasMonotoneSchedule
+import OneChannelCNNUniversality.SharedBiasFrontier

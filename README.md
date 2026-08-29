@@ -455,6 +455,29 @@ $$
 f_{s+1}(t)=\mathrm{ReLU}(f_s(t)+\theta_s).
 $$
 
+[`SharedBiasFrontier.lean`](OneChannelCNNUniversality/SharedBiasFrontier.lean)
+identifies a structural limit of keeping that work site fixed. Northwest
+causality implies that inputs with the same value at $(0,0)$ have the same
+northwest output after every finite expansive shared-bias CNN, independently
+of depth and kernel size. Consequently, a scalar target that varies inside
+one such input-root fiber cannot be realized at the northwest output. The
+module derives this non-realizability criterion from the existing causality
+theorem rather than reproving causality.
+
+The positive alternative is a moving computation frontier. One genuine
+$2\times2$ shared-bias layer is verified to compute at its eastern frontier
+
+$$
+y_{0,1}=\mathrm{ReLU}(x_{0,0}+x_{0,1}+\theta).
+$$
+
+At $\theta=0$ on nonnegative input families, the complete layer remains
+injective and this coordinate equals $x_{0,0}+x_{0,1}$. Thus the construction
+performs a genuine two-register arithmetic operation without discarding the
+rest of the state. This is the first checked primitive for replacing the
+impossible “route everything back northwest” strategy by computation sites
+that advance east or south.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -463,13 +486,13 @@ or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
 The finite recursion is now closed for repeated northwest-register
-selections.  What remains is substantially different: route several mutable
-registers and affine combinations through the northwest work site, preserve
-enough independent state for multivariate computation, give explicit
-multi-step routing and depth/area bounds, and connect that richer compiler to
-a density argument for the shared-scalar-bias subclass.  Repeated scalar
-updates of the displayed form alone are not a universal-approximation
-theorem.
+selections. Causality shows that routing eastern or southern registers back
+to the northwest work site is not a viable next step. What remains is to
+maintain a protected backup/frontier invariant, chain arithmetic while the
+work site moves southeast, derive explicit depth/area bounds, and connect that
+richer compiler to a density argument for the shared-scalar-bias subclass.
+The single frontier-addition layer and repeated scalar updates displayed
+above are not by themselves a universal-approximation theorem.
 
 ## Proof architecture
 
@@ -508,6 +531,7 @@ theorem.
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |
 | [`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean) | Induction through arbitrary finite northwest-targeted schedules and an end-to-end injective compiled CNN initialized by the genuine adjacent-copy layer |
+| [`SharedBiasFrontier.lean`](OneChannelCNNUniversality/SharedBiasFrontier.lean) | Northwest-output non-realizability on input-root fibers and a genuine injective two-register addition layer at a moving eastern frontier |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
