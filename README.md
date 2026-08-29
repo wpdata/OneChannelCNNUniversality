@@ -337,6 +337,27 @@ length. Equality of final-network outputs then recovers equality of the head
 features; if the head feature map is injective on $K$ and every pair in $K$
 satisfies the chain obligation, the final single CNN is injective on $K$.
 
+[`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean)
+shows that this last pairwise premise cannot justify a nontrivial selected
+activation at the same target. For a fixed root $(r,c)$, Lean proves
+
+$$
+\left(\forall x,y\in K,\;
+  \operatorname{AgreeOutsideStrictSoutheast}(V(x),V(y);r,c)\right)
+\Longrightarrow
+\left(\forall x,y\in K,\;V(x)_{r,c}=V(y)_{r,c}\right).
+$$
+
+Consequently $\operatorname{ReLU}(V(x)_{r,c}+\theta)$ is constant on $K$
+for every threshold $\theta$. The result is also specialized to the actual
+appended-selector recovery step: two inputs with different selected successor
+features formally refute its global pairwise-protection premise. Thus the
+scheduled-recovery theorem is a valid state-preservation result, but its
+strongest global corollary is not by itself a computational universality
+argument. A useful compiler must separate protected state from the mutable
+register on which a nonconstant ReLU is performed, or use a different
+recovery invariant.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -344,11 +365,11 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is substantially different: synthesize a layout or ordering
-whose requests satisfy the local southeast-protection obligations, connect
-that protected compiler to a density argument for the shared-scalar-bias
-subclass, and determine whether the required protection can be achieved
-without making the architecture impractically expansive.
+What remains is substantially different: realize a protected-state copy and
+a mutable work copy inside one spatial channel, route and recombine them with
+explicit depth/area bounds, replace the now-refuted global same-root premise
+by an invariant for that duplicated state, and connect the resulting compiler
+to a density argument for the shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -382,6 +403,7 @@ without making the architecture impractically expansive.
 | [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | Heterogeneous finite recovery chains, backward induction, concatenation laws, and concrete selector/bridge adapters |
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | Dependent finite successor schedules, recursive compactness witness construction, exact internal-seed equations, and extraction of one final composed CNN |
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | Recovery adapters for compiled selector blocks, schedule-length recovery chains, final-output recovery, and conditional injectivity of the final CNN |
+| [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | The target-constancy obstruction for global pairwise protection, constancy of the selected ReLU, and its specialization to appended selector steps |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
