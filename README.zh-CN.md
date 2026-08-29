@@ -230,6 +230,12 @@ $$
 `exists_two_bundled_pascal_selection_stages` 进一步返回两个由紧致性生成的受保护选择器，
 它们的桥接与组合是同一个真实 `SharedBiasNetworkTo`，两块之间没有插入任何网络外操作。
 
+[`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean)
+闭合了相应的两阶段恢复链。该文件证明扩张 delta 卷积既单射又保持去根东南支撑，然后沿
+组合网络反向应用两次局部恢复定理。因此，只要一对原输入在两个被选择的自然坐标上同时
+满足受保护变化条件，最终两阶段输出相等就推出原始特征图相等。这里的“双根同时保护”
+假设是显式条件；如何安排有限扫描，使每一步都满足该条件，仍属于尚未完成的编译器问题。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -267,6 +273,7 @@ $$
 | [`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean) | 前缀／支撑等价，以及由紧致性生成且带相对恢复保证的真实行链选择块 |
 | [`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean) | 真实扩张恒等种子层、公共载体下的支撑不变性、连续性／非负性接口及精确带种子组合 |
 | [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | 紧致构造后继受保护选择块，以及真实的两阶段共享偏置选择证书 |
+| [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | delta 桥接的单射性／支撑保持，以及完整两阶段组合网络的相对单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

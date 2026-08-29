@@ -287,6 +287,16 @@ the exact composed evaluation law, and the exact depth increment. The theorem
 generated protected selectors whose bridge and composition form one genuine
 `SharedBiasNetworkTo`; no external operation is inserted between the blocks.
 
+[`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean)
+closes the corresponding two-stage recovery loop. It proves that expansive
+delta convolution is injective and preserves root-punctured southeast
+support, then runs the two local recovery theorems backward through the
+composed network. Consequently, if a pair of original inputs satisfies the
+protected-variation hypotheses at both selected natural coordinates, equality
+of the final two-stage outputs implies equality of the original feature
+images. The simultaneous two-root hypothesis is explicit; arranging a finite
+scan so that it holds at every step remains part of the open compiler problem.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -328,6 +338,7 @@ shared-scalar-bias subclass.
 | [`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean) | Prefix/support equivalence and a compactly generated genuine row-chain selection block with relative recovery |
 | [`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean) | Genuine expansive identity seed layer, support invariance under common carriers, continuity/nonnegativity interfaces, and exact seeded composition |
 | [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | Compact construction of a protected successor block and a genuine two-stage shared-bias selection certificate |
+| [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | Injectivity/support of the delta bridge and relative injectivity of the complete two-stage composed network |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
