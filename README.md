@@ -321,6 +321,22 @@ The certificate exports one final `SharedBiasNetworkTo`, so an arbitrary
 finite scheduled sequence is now an actual CNN rather than a metalevel list
 of separately asserted blocks.
 
+[`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean)
+connects that compiler certificate to the finite recovery logic. Each
+compiled selector is converted into one recovery step from the preceding
+network output to the genuinely composed output. Its local obligation is
+
+$$
+\operatorname{AgreeOutsideStrictSoutheast}
+  \bigl(S_s(x),S_s(y);r_s,c_s\bigr),
+$$
+
+where $S_s$ is the successor feature at stage $s$. Lean forms their
+conjunction through a recovery chain whose length is exactly the schedule
+length. Equality of final-network outputs then recovers equality of the head
+features; if the head feature map is injective on $K$ and every pair in $K$
+satisfies the chain obligation, the final single CNN is injective on $K$.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -330,9 +346,9 @@ targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
 What remains is substantially different: synthesize a layout or ordering
 whose requests satisfy the local southeast-protection obligations, connect
-the compiled schedule to the finite recovery chain under those obligations,
-and then connect that protected compiler to a density argument for the
-shared-scalar-bias subclass.
+that protected compiler to a density argument for the shared-scalar-bias
+subclass, and determine whether the required protection can be achieved
+without making the architecture impractically expansive.
 
 ## Proof architecture
 
@@ -365,6 +381,7 @@ shared-scalar-bias subclass.
 | [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | Injectivity/support of the delta bridge and relative injectivity of the complete two-stage composed network |
 | [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | Heterogeneous finite recovery chains, backward induction, concatenation laws, and concrete selector/bridge adapters |
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | Dependent finite successor schedules, recursive compactness witness construction, exact internal-seed equations, and extraction of one final composed CNN |
+| [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | Recovery adapters for compiled selector blocks, schedule-length recovery chains, final-output recovery, and conditional injectivity of the final CNN |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

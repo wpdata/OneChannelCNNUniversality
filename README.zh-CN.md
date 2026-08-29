@@ -251,14 +251,28 @@ $$
 最终证书导出一个 `SharedBiasNetworkTo`。因此，任意有限预定后继序列现在对应一张真实的
 组合 CNN，而不再只是元语言中分别断言存在的网络块列表。
 
+[`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean)
+把这个编译证书接到了有限恢复逻辑上。每个已编译选择器都被转成一个从前级网络输出到真实
+组合输出的恢复步骤，其局部义务为
+
+$$
+\operatorname{AgreeOutsideStrictSoutheast}
+  \bigl(S_s(x),S_s(y);r_s,c_s\bigr),
+$$
+
+其中 $S_s$ 是第 $s$ 阶段的后继特征。Lean 把所有局部义务组成合取，并构造长度严格等于
+日程长度的恢复链。因此，最终网络输出相等可以反推出头网络特征相等；若头特征映射在
+$K$ 上单射，并且 $K$ 中每对输入都满足整条链的保护义务，则最终那一张 CNN 在 $K$ 上
+仍然单射。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
 工作已经变成另一项任务：合成一种有限布局或次序，使其请求确实满足每一步的局部东南保护
-义务；在这些义务下把已编译日程接到有限恢复链；最终把这种受保护的共享偏置编译器接到
-适用于共享标量偏置子类的稠密性论证上。
+义务；把这种受保护的共享偏置编译器接到适用于共享标量偏置子类的稠密性论证上；并判断
+所需保护能否在不过度扩张、仍有实际意义的网络结构中实现。
 
 ## 证明架构
 
@@ -291,6 +305,7 @@ $$
 | [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | delta 桥接的单射性／支撑保持，以及完整两阶段组合网络的相对单射性 |
 | [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | 异构有限恢复链、反向归纳、拼接组合律，以及具体选择器／桥接适配器 |
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | 依赖类型有限后继日程、紧致性见证的递归构造、内部种子精确等式，以及最终单一组合 CNN 的导出 |
+| [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | 已编译选择块的恢复适配器、等长日程恢复链、最终输出恢复，以及最终 CNN 的条件单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
