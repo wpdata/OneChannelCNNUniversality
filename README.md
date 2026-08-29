@@ -360,8 +360,8 @@ recovery invariant.
 
 [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean)
 implements and verifies the first such alternative without duplicating the
-whole network. On a one-row feature image, it stores the mutable root value
-$x_0$ once more in the adjacent eastern register, so $x_1=x_0$. If the
+whole network. On any nonempty feature rectangle, it stores the mutable root
+value $x_0$ once more in the adjacent eastern register, so $x_1=x_0$. If the
 selector's horizontal Pascal transport has `extraColSteps` additional layers,
 Lean proves the exact protected boundary formulas
 
@@ -382,6 +382,30 @@ family; the previous target-constancy obstruction no longer applies. This
 costs one adjacent spatial register, not a second channel or a full-width
 network copy.
 
+[`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean)
+now constructs that redundancy with actual CNN layers. The input layout
+reserves the eastern work site as zero, $x_{0,1}=0$, and the nonnegative state
+is passed through one genuine zero-bias horizontal accumulation layer. Lean
+verifies
+
+$$
+D(x)_{0,0}=x_{0,0},
+\qquad
+D(x)_{0,1}=x_{0,1}+x_{0,0}=x_{0,0}.
+$$
+
+The same layer is globally injective on nonnegative images, so creating the
+copy does not discard the remaining state. The duplicate also survives the
+genuine expansive delta seed bridge. Finally,
+`exists_injective_adjacentCopy_selection` composes the copy layer, a positive
+internal seed bridge, and a compactly generated Pascal selector into one
+shared-scalar-bias CNN. For every compact family of continuous, nonnegative,
+injectively encoded states satisfying the vacant-neighbor layout, the
+returned complete CNN is injective on that family and its bundled
+specification performs the selected northwest ReLU. Thus a nonconstant
+selected computation and information preservation now coexist in an actual
+one-channel network, rather than only under an assumed duplicate invariant.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -389,10 +413,10 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is to construct and preserve the adjacent-copy invariant using
-genuine shared-bias CNN layers across a finite sequence of computations, give
-explicit routing and depth/area bounds, and connect the resulting compiler to
-a density argument for the shared-scalar-bias subclass.
+What remains is to restore or relocate the vacant eastern work site after
+each selection and preserve this layout across a finite computation, give
+explicit multi-step routing and depth/area bounds, and connect the resulting
+compiler to a density argument for the shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -428,6 +452,7 @@ a density argument for the shared-scalar-bias subclass.
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | Recovery adapters for compiled selector blocks, schedule-length recovery chains, final-output recovery, and conditional injectivity of the final CNN |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | The target-constancy obstruction for global pairwise protection, constancy of the selected ReLU, and its specialization to appended selector steps |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
+| [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

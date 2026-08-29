@@ -283,8 +283,9 @@ $$
 可变工作寄存器分开，或者改用不同的恢复不变量。
 
 [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean)
-已经实现并形式化验证了第一种替代方案，而且不需要复制整个网络。对单行特征图，只把可变
-根值 $x_0$ 额外存入东侧相邻寄存器一次，即令 $x_1=x_0$。若选择器的横向 Pascal 传输还
+已经实现并形式化验证了第一种替代方案，而且不需要复制整个网络。对特征图，只把可变
+根值 $x_0$ 额外存入东侧相邻寄存器一次，即令 $x_1=x_0$；该证明现已推广到任意非空特征
+矩形。若选择器的横向 Pascal 传输还
 包含 `extraColSteps` 层，Lean 已证明精确的受保护边界公式
 
 $$
@@ -301,13 +302,31 @@ $S_0(x)$，仍能从相邻位置恢复根值。定理
 “目标必须为常数”障碍不再适用。这里的代价只是一个相邻空间寄存器，而不是增加第二通道，
 也不是复制一整套等宽网络。
 
+[`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean)
+现在进一步用真实 CNN 层构造了这个冗余关系。输入布局把根右侧工作位置预留为零，
+$x_{0,1}=0$；非负状态随后通过一个真实的零偏置横向累加层。Lean 已验证
+
+$$
+D(x)_{0,0}=x_{0,0},
+\qquad
+D(x)_{0,1}=x_{0,1}+x_{0,0}=x_{0,0}.
+$$
+
+同一层在全部非负图像上是全局单射的，所以建立副本不会丢失其余状态。该副本还会穿过真实
+扩张 delta 种子桥而保持。最后，`exists_injective_adjacentCopy_selection` 把复制层、正内部
+种子桥和由紧致性生成的 Pascal 选择器组合成一张共享标量偏置 CNN。对任何连续、非负、
+单射编码并满足“相邻位置空闲”布局的紧输入族，返回的完整 CNN 在该输入族上保持单射，
+其封装规格同时执行西北根上的选定 ReLU。因此，非恒定局部计算与信息保持现在已经在一张
+真实单通道网络中共存，不再只是把副本关系作为外部假设。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
-下一步是在真实共享偏置 CNN 层中构造并跨越有限计算序列保持这个相邻副本不变量，给出明确
-的路由与深度／面积界，最后把所得共享偏置编译器接到适用于共享标量偏置子类的稠密性论证上。
+下一步是在每次选择后恢复或迁移空闲的东侧工作位置，让该布局跨越任意有限计算序列，给出
+明确的多步路由与深度／面积界，最后把所得共享偏置编译器接到适用于共享标量偏置子类的
+稠密性论证上。
 
 ## 证明架构
 
@@ -343,6 +362,7 @@ $S_0(x)$，仍能从相邻位置恢复根值。定理
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | 已编译选择块的恢复适配器、等长日程恢复链、最终输出恢复，以及最终 CNN 的条件单射性 |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | 全局成对保护导致目标常值、选择 ReLU 恒定的障碍定理，以及对追加选择器步骤的专门结论 |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
+| [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

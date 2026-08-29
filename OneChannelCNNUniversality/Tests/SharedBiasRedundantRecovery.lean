@@ -34,7 +34,7 @@ example {X : Type*} {K : Set X} {n : ℕ} (hn : 2 ≤ n)
       net.eval (V y + constantImage 1 n c)) :
     V x = V y := by
   exact hspec.injective_on_eastRootDuplicate
-    hn hx hy hxdup hydup heval
+    (by omega) hn hx hy hxdup hydup heval
 
 #check EastRootDuplicate
 #check BundledPascalGridSelectionSpec.injective_on_eastRootDuplicate
