@@ -495,7 +495,7 @@ horizontal layers. If the northwest row initially contains registers
 $a,b$ followed by a vacant eastern tail, then after $s$ layers Lean verifies
 
 $$
-z_{0,s}=a+s b,qquad z_{0,s+1}=b,qquad
+z_{0,s}=a+s b,\qquad z_{0,s+1}=b,\qquad
 z_{0,q}=0\quad(q\geq s+2).
 $$
 
@@ -504,6 +504,26 @@ moves one column east per layer. On nonnegative input families the exact CNN
 evaluation satisfies this invariant and remains injective, so the arithmetic
 advance does not discard the rest of the image state. This is an arbitrary-
 depth moving-frontier certificate, rather than a one-layer formula.
+
+[`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean)
+then turns this horizontal frontier south. For a northwest two-register seed
+whose eastern tail and lower rows are vacant, the genuine horizontal-then-
+vertical network reaches any frontier coordinate $(r,c)$ and satisfies
+
+$$
+z_{r,c}=a+c b,\qquad z_{r,c+1}=b,\qquad
+z_{p,c}=z_{p,c+1}=0\quad(p\geq r+1).
+$$
+
+The complete network is injective on nonnegative seed families, and its depth
+is exactly the Manhattan distance
+
+$$
+L=r+c.
+$$
+
+Thus the active work/backup pair can make one verified two-dimensional turn
+without losing its values or the information stored by the full feature map.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
@@ -521,8 +541,8 @@ richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer and repeated scalar updates displayed
 above are not by themselves a universal-approximation theorem. The verified
 chain repeatedly adds one fixed nonnegative backup; arbitrary signed affine
-updates, turns from horizontal to vertical motion, and interaction with
-selected ReLU gates remain to be compiled.
+updates, repeated turns between multiple frontier segments, and interaction
+with selected ReLU gates remain to be compiled.
 
 ## Proof architecture
 
@@ -563,6 +583,7 @@ selected ReLU gates remain to be compiled.
 | [`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean) | Induction through arbitrary finite northwest-targeted schedules and an end-to-end injective compiled CNN initialized by the genuine adjacent-copy layer |
 | [`SharedBiasFrontier.lean`](OneChannelCNNUniversality/SharedBiasFrontier.lean) | Northwest-output non-realizability on input-root fibers and a genuine injective two-register addition layer at a moving eastern frontier |
 | [`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean) | Arbitrary-depth lossless horizontal frontier motion with exact work/backup/tail formulas on nonnegative states |
+| [`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean) | A lossless east-then-south frontier turn, exact active-column vacancy below the frontier, injectivity, and the depth identity $L=r+c$ |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
