@@ -489,6 +489,22 @@ rest of the state. This is the first checked primitive for replacing the
 impossible “route everything back northwest” strategy by computation sites
 that advance east or south.
 
+[`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean)
+closes this primitive under an arbitrary finite number of genuine zero-bias
+horizontal layers. If the northwest row initially contains registers
+$a,b$ followed by a vacant eastern tail, then after $s$ layers Lean verifies
+
+$$
+z_{0,s}=a+s b,qquad z_{0,s+1}=b,qquad
+z_{0,q}=0\quad(q\geq s+2).
+$$
+
+The pair consisting of the updated work value and the unchanged backup thus
+moves one column east per layer. On nonnegative input families the exact CNN
+evaluation satisfies this invariant and remains injective, so the arithmetic
+advance does not discard the rest of the image state. This is an arbitrary-
+depth moving-frontier certificate, rather than a one-layer formula.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -503,7 +519,10 @@ maintain a protected backup/frontier invariant, chain arithmetic while the
 work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer and repeated scalar updates displayed
-above are not by themselves a universal-approximation theorem.
+above are not by themselves a universal-approximation theorem. The verified
+chain repeatedly adds one fixed nonnegative backup; arbitrary signed affine
+updates, turns from horizontal to vertical motion, and interaction with
+selected ReLU gates remain to be compiled.
 
 ## Proof architecture
 
@@ -543,6 +562,7 @@ above are not by themselves a universal-approximation theorem.
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |
 | [`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean) | Induction through arbitrary finite northwest-targeted schedules and an end-to-end injective compiled CNN initialized by the genuine adjacent-copy layer |
 | [`SharedBiasFrontier.lean`](OneChannelCNNUniversality/SharedBiasFrontier.lean) | Northwest-output non-realizability on input-root fibers and a genuine injective two-register addition layer at a moving eastern frontier |
+| [`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean) | Arbitrary-depth lossless horizontal frontier motion with exact work/backup/tail formulas on nonnegative states |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

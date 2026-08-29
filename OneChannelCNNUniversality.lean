@@ -25,3 +25,4 @@ import OneChannelCNNUniversality.SharedBiasAdjacentCopy
 import OneChannelCNNUniversality.SharedBiasMonotoneCode
 import OneChannelCNNUniversality.SharedBiasMonotoneSchedule
 import OneChannelCNNUniversality.SharedBiasFrontier
+import OneChannelCNNUniversality.SharedBiasFrontierChain

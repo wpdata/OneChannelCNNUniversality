@@ -389,6 +389,19 @@ $x_{0,0}+x_{0,1}$。也就是说，这个网络能够完成真实的双寄存器
 其余状态。这是用“向东或向南推进计算位置”取代不可能的“把所有信息送回西北角”路线
 的第一个已机器检查原语。
 
+[`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean)
+进一步把这个原语闭合到任意有限个真实零偏置横向层。若西北行最初含有寄存器 $a,b$，
+且其后的东侧尾部为空，则经过 $s$ 层后，Lean 验证
+
+$$
+z_{0,s}=a+s b,qquad z_{0,s+1}=b,qquad
+z_{0,q}=0\quad(q\geq s+2).
+$$
+
+因此，“更新后的工作值／不变的备份值”这一对寄存器每层向东移动一列。在非负输入族上，
+真实 CNN 的求值满足这个精确不变量并继续保持单射，所以算术推进不会丢失图像其余状态。
+这已经是一张任意深度的移动前沿证书，而不再只是单层公式。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -398,6 +411,8 @@ $x_{0,0}+x_{0,1}$。也就是说，这个网络能够完成真实的双寄存器
 南侧寄存器送回西北工作位置并不是可行的下一步。后续需要建立受保护的备份／前沿不变量，
 在计算位置向东南移动时串联算术操作，给出明确的深度／面积界，最后把这个更强的共享偏置
 编译器接到稠密性论证上。单个前沿加法层和上式的重复标量更新本身仍不构成万能逼近定理。
+目前验证的链只会重复加入同一个非负备份；任意带符号仿射更新、从横向转为纵向移动，
+以及与选择性 ReLU 门的组合仍有待编译。
 
 ## 证明架构
 
@@ -437,6 +452,7 @@ $x_{0,0}+x_{0,1}$。也就是说，这个网络能够完成真实的双寄存器
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
 | [`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean) | 任意有限西北目标日程的归纳证明，以及由真实相邻复制层初始化的端到端单射编译 CNN |
 | [`SharedBiasFrontier.lean`](OneChannelCNNUniversality/SharedBiasFrontier.lean) | 输入根纤维上的西北输出不可实现性，以及移动东侧前沿处真实、单射的双寄存器加法层 |
+| [`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean) | 非负状态上任意深度、无损的横向前沿移动，以及精确工作／备份／空尾公式 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
