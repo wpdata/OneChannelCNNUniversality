@@ -276,7 +276,7 @@ now provide the first verified multi-step interface. A genuine expansive
 delta-identity layer maps every nonnegative intermediate image $z$ exactly to
 
 $$
-\operatorname{FullConv}(\delta,z)+c\mathbf 1,
+\mathrm{FullConv}(\delta,z)+c\mathbf 1,
 $$
 
 so it generates the fresh compactness seed required by the next selector
@@ -327,7 +327,7 @@ compiled selector is converted into one recovery step from the preceding
 network output to the genuinely composed output. Its local obligation is
 
 $$
-\operatorname{AgreeOutsideStrictSoutheast}
+\mathrm{AgreeOutsideStrictSoutheast}
   \bigl(S_s(x),S_s(y);r_s,c_s\bigr),
 $$
 
@@ -343,12 +343,12 @@ activation at the same target. For a fixed root $(r,c)$, Lean proves
 
 $$
 \left(\forall x,y\in K,\;
-  \operatorname{AgreeOutsideStrictSoutheast}(V(x),V(y);r,c)\right)
+  \mathrm{AgreeOutsideStrictSoutheast}(V(x),V(y);r,c)\right)
 \Longrightarrow
 \left(\forall x,y\in K,\;V(x)_{r,c}=V(y)_{r,c}\right).
 $$
 
-Consequently $\operatorname{ReLU}(V(x)_{r,c}+\theta)$ is constant on $K$
+Consequently $\mathrm{ReLU}(V(x)_{r,c}+\theta)$ is constant on $K$
 for every threshold $\theta$. The result is also specialized to the actual
 appended-selector recovery step: two inputs with different selected successor
 features formally refute its global pairwise-protection premise. Thus the
@@ -406,6 +406,32 @@ specification performs the selected northwest ReLU. Thus a nonconstant
 selected computation and information preservation now coexist in an actual
 one-channel network, rather than only under an assumed duplicate invariant.
 
+[`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean)
+removes the need to recreate an exact duplicate after every selection.  The
+copy layer is used only once, to initialize two northwest coordinates as
+
+$$
+x_{0,0}=f(t),\qquad x_{0,1}=g(t),
+$$
+
+with $f$ monotone and $g$ strictly monotone in a common latent code $t$.
+After a selected block, Lean verifies that the two new factors have the form
+
+$$
+f_{\mathrm{new}}(t)=\mathrm{ReLU}(f(t)+\theta),
+\qquad
+g_{\mathrm{new}}(t)=g(t)+(m+1)f(t)+C,
+$$
+
+where $m\geq 0$ is the number of extra horizontal transport steps and $C$ is
+independent of $t$.  Therefore $f_{\mathrm{new}}$ remains monotone and
+$g_{\mathrm{new}}$ remains strictly monotone.  The eastern coordinate still
+recovers $t$, so equality of selector outputs recovers the complete selector
+input.  The invariant is proved both for the abstract bundled selector and
+for the actual `appendWithSeed` network evaluation; if the preceding network
+is injective on $K$, the genuinely composed network remains injective on
+$K$.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -413,10 +439,10 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is to restore or relocate the vacant eastern work site after
-each selection and preserve this layout across a finite computation, give
-explicit multi-step routing and depth/area bounds, and connect the resulting
-compiler to a density argument for the shared-scalar-bias subclass.
+What remains is to thread the new monotone-code certificate through the
+dependent recursion that compiles an arbitrary finite selection schedule,
+give explicit multi-step routing and depth/area bounds, and connect the
+resulting compiler to a density argument for the shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -453,6 +479,7 @@ compiler to a density argument for the shared-scalar-bias subclass.
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | The target-constancy obstruction for global pairwise protection, constancy of the selected ReLU, and its specialization to appended selector steps |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
+| [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

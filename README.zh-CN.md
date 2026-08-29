@@ -221,7 +221,7 @@ $$
 变换为
 
 $$
-\operatorname{FullConv}(\delta,z)+c\mathbf 1,
+\mathrm{FullConv}(\delta,z)+c\mathbf 1,
 $$
 
 因此，下一选择块所需的紧集常数种子是在 CNN 内部生成的。Lean 已验证：添加相同载体不
@@ -256,7 +256,7 @@ $$
 组合输出的恢复步骤，其局部义务为
 
 $$
-\operatorname{AgreeOutsideStrictSoutheast}
+\mathrm{AgreeOutsideStrictSoutheast}
   \bigl(S_s(x),S_s(y);r_s,c_s\bigr),
 $$
 
@@ -271,12 +271,12 @@ $K$ 上单射，并且 $K$ 中每对输入都满足整条链的保护义务，�
 
 $$
 \left(\forall x,y\in K,\;
-  \operatorname{AgreeOutsideStrictSoutheast}(V(x),V(y);r,c)\right)
+  \mathrm{AgreeOutsideStrictSoutheast}(V(x),V(y);r,c)\right)
 \Longrightarrow
 \left(\forall x,y\in K,\;V(x)_{r,c}=V(y)_{r,c}\right).
 $$
 
-所以对任意阈值 $\theta$，$\operatorname{ReLU}(V(x)_{r,c}+\theta)$ 在 $K$ 上也是常数。
+所以对任意阈值 $\theta$，$\mathrm{ReLU}(V(x)_{r,c}+\theta)$ 在 $K$ 上也是常数。
 该结论还被专门应用到真实的追加选择器恢复步骤：只要两个输入的目标后继特征不同，其全局
 成对保护前提就被形式化否定。因此，日程恢复定理是正确的状态保持结论，但它最强的全局
 推论本身不是计算万能性的证明。有效编译器必须把受保护的状态副本与执行非恒定 ReLU 的
@@ -319,14 +319,36 @@ $$
 其封装规格同时执行西北根上的选定 ReLU。因此，非恒定局部计算与信息保持现在已经在一张
 真实单通道网络中共存，不再只是把副本关系作为外部假设。
 
+[`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean)
+进一步证明：不需要在每次选择后重新制造精确副本。复制层只需使用一次，用来把西北角两个
+坐标初始化为
+
+$$
+x_{0,0}=f(t),\qquad x_{0,1}=g(t),
+$$
+
+其中 $f$ 关于公共潜在编码 $t$ 单调，$g$ 关于 $t$ 严格单调。经过一个选择块后，Lean
+验证新的两个因子具有形式
+
+$$
+f_{\mathrm{new}}(t)=\mathrm{ReLU}(f(t)+\theta),
+\qquad
+g_{\mathrm{new}}(t)=g(t)+(m+1)f(t)+C,
+$$
+
+这里 $m\geq 0$ 是额外横向传输步数，$C$ 与 $t$ 无关。因此
+$f_{\mathrm{new}}$ 仍然单调，$g_{\mathrm{new}}$ 仍然严格单调；东侧坐标继续能够恢复
+$t$，进而由选择器输出相等恢复整个选择器输入。该不变量不仅对抽象封装的选择器成立，
+也已经提升到真实 `appendWithSeed` 组合网络的求值；只要前级网络在 $K$ 上单射，真实
+组合后的网络仍在 $K$ 上单射。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
-下一步是在每次选择后恢复或迁移空闲的东侧工作位置，让该布局跨越任意有限计算序列，给出
-明确的多步路由与深度／面积界，最后把所得共享偏置编译器接到适用于共享标量偏置子类的
-稠密性论证上。
+下一步是把新的单调编码证书贯穿到编译任意有限选择日程的依赖递归中，给出明确的多步路由
+与深度／面积界，最后把所得共享偏置编译器接到适用于共享标量偏置子类的稠密性论证上。
 
 ## 证明架构
 
@@ -363,6 +385,7 @@ $$
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | 全局成对保护导致目标常值、选择 ReLU 恒定的障碍定理，以及对追加选择器步骤的专门结论 |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
+| [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
