@@ -19,4 +19,7 @@ example {rows cols : ℕ} (hcols : 0 < cols)
 
 #check NorthwestRealizesOn.eq_of_inputRoot_eq
 #check not_exists_northwestRealization_of_root_eq_target_ne
+#check NorthwestApproximatesOn
+#check northwest_two_point_error_lower_bound
+#check not_exists_northwestApproximation_of_error_lt_half_gap
 #check eastFrontierLayer_injectiveOn_and_east_add

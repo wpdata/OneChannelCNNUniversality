@@ -462,7 +462,18 @@ northwest output after every finite expansive shared-bias CNN, independently
 of depth and kernel size. Consequently, a scalar target that varies inside
 one such input-root fiber cannot be realized at the northwest output. The
 module derives this non-realizability criterion from the existing causality
-theorem rather than reproving causality.
+theorem rather than reproving causality. It also proves the quantitative
+two-point bound
+
+$$
+|f(x)-f(y)|\leq |N(F(x))_{0,0}-f(x)|
+  +|N(F(y))_{0,0}-f(y)|.
+$$
+
+Thus, when the two target values differ by $\Delta$, every such northwest
+readout has error at least $\Delta/2$ at one of the two inputs. In particular,
+this is an obstruction to uniform approximation, not only to exact
+realization.
 
 The positive alternative is a moving computation frontier. One genuine
 $2\times2$ shared-bias layer is verified to compute at its eastern frontier
