@@ -236,6 +236,15 @@ $$
 满足受保护变化条件，最终两阶段输出相等就推出原始特征图相等。这里的“双根同时保护”
 假设是显式条件；如何安排有限扫描，使每一步都满足该条件，仍属于尚未完成的编译器问题。
 
+[`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean)
+把上述反向论证从两阶段推广到任意有限异构链。`RelativeRecoveryStep` 记录一次局部保护
+谓词及其“输出相等反射输入特征相等”定理；`RelativeRecoveryChain` 允许每个中间特征
+类型变化，因此也允许扩张图像尺寸逐步变化。Lean 已证明有限链的反向归纳恢复、链拼接、
+长度可加，以及拼接后的保护义务等价于两段保护义务的合取。真实 Pascal 选择器被注册为
+有条件恢复步骤，扩张 delta 桥被注册为无条件恢复步骤；现有两选择器构造则被封装为三步
+恢复链。这解决的是有限链的“恢复逻辑”，尚未为任意预定有限目标表同时构造所有依赖紧致
+性的参数；后者是下一层编译器任务。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -274,6 +283,7 @@ $$
 | [`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean) | 真实扩张恒等种子层、公共载体下的支撑不变性、连续性／非负性接口及精确带种子组合 |
 | [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | 紧致构造后继受保护选择块，以及真实的两阶段共享偏置选择证书 |
 | [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | delta 桥接的单射性／支撑保持，以及完整两阶段组合网络的相对单射性 |
+| [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | 异构有限恢复链、反向归纳、拼接组合律，以及具体选择器／桥接适配器 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

@@ -297,6 +297,20 @@ of the final two-stage outputs implies equality of the original feature
 images. The simultaneous two-root hypothesis is explicit; arranging a finite
 scan so that it holds at every step remains part of the open compiler problem.
 
+[`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean)
+generalizes this backward argument from two stages to an arbitrary finite
+heterogeneous chain. A `RelativeRecoveryStep` records one local protection
+predicate and its equality-reflection theorem. A `RelativeRecoveryChain`
+allows every intermediate feature type—and therefore every expanded image
+size—to change. Lean proves recovery by backward induction, supplies chain
+concatenation, proves additive length and identifies the concatenated
+protection obligation with conjunction. Genuine Pascal selectors and
+expansive delta bridges are registered as conditional and unconditional
+steps, respectively; the existing two-selector construction is packaged as
+a three-step chain. This settles the finite *recovery logic*. It does not yet
+construct all compactness-dependent parameters for an arbitrary scheduled
+finite list of targets; that is the next compiler layer.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -339,6 +353,7 @@ shared-scalar-bias subclass.
 | [`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean) | Genuine expansive identity seed layer, support invariance under common carriers, continuity/nonnegativity interfaces, and exact seeded composition |
 | [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | Compact construction of a protected successor block and a genuine two-stage shared-bias selection certificate |
 | [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | Injectivity/support of the delta bridge and relative injectivity of the complete two-stage composed network |
+| [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | Heterogeneous finite recovery chains, backward induction, concatenation laws, and concrete selector/bridge adapters |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
