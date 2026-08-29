@@ -307,9 +307,19 @@ concatenation, proves additive length and identifies the concatenated
 protection obligation with conjunction. Genuine Pascal selectors and
 expansive delta bridges are registered as conditional and unconditional
 steps, respectively; the existing two-selector construction is packaged as
-a three-step chain. This settles the finite *recovery logic*. It does not yet
-construct all compactness-dependent parameters for an arbitrary scheduled
-finite list of targets; that is the next compiler layer.
+a three-step chain. This settles the finite *recovery logic*, but does not by
+itself construct the compactness-dependent parameters.
+
+[`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean)
+adds that next compiler layer for every finite **successor-selection
+schedule** following a positive-depth head network. The schedule is dependent:
+each later target is typed against the dimensions produced by all earlier
+blocks. Lean recursively applies the compact protected-selection theorem and
+stores, at every stage, a positive seed, a positive selector bias, the full
+selection specification, and the exact internal-seed evaluation equation.
+The certificate exports one final `SharedBiasNetworkTo`, so an arbitrary
+finite scheduled sequence is now an actual CNN rather than a metalevel list
+of separately asserted blocks.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
@@ -318,10 +328,10 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is substantially different: generalize the verified two-stage
-construction to a finite induction while carrying the required protected
-relations, choose a layout or ordering that makes all register variations
-comparable, and connect that compiler to a density argument for the
+What remains is substantially different: synthesize a layout or ordering
+whose requests satisfy the local southeast-protection obligations, connect
+the compiled schedule to the finite recovery chain under those obligations,
+and then connect that protected compiler to a density argument for the
 shared-scalar-bias subclass.
 
 ## Proof architecture
@@ -354,6 +364,7 @@ shared-scalar-bias subclass.
 | [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | Compact construction of a protected successor block and a genuine two-stage shared-bias selection certificate |
 | [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | Injectivity/support of the delta bridge and relative injectivity of the complete two-stage composed network |
 | [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | Heterogeneous finite recovery chains, backward induction, concatenation laws, and concrete selector/bridge adapters |
+| [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | Dependent finite successor schedules, recursive compactness witness construction, exact internal-seed equations, and extraction of one final composed CNN |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

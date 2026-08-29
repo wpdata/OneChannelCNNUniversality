@@ -242,17 +242,23 @@ $$
 类型变化，因此也允许扩张图像尺寸逐步变化。Lean 已证明有限链的反向归纳恢复、链拼接、
 长度可加，以及拼接后的保护义务等价于两段保护义务的合取。真实 Pascal 选择器被注册为
 有条件恢复步骤，扩张 delta 桥被注册为无条件恢复步骤；现有两选择器构造则被封装为三步
-恢复链。这解决的是有限链的“恢复逻辑”，尚未为任意预定有限目标表同时构造所有依赖紧致
-性的参数；后者是下一层编译器任务。
+恢复链。这解决的是有限链的“恢复逻辑”，但该文件本身不构造依赖紧致性的参数。
+
+[`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean)
+完成了正深度头网络之后任意有限“后继选择日程”的下一层编译。这个日程是依赖类型：每个
+后续目标都按照前面所有选择块产生的新尺寸进行类型检查。Lean 在递归的每一步调用紧致
+受保护选择定理，并保存正种子、正选择偏置、完整选择规格以及内部种子层的精确求值等式；
+最终证书导出一个 `SharedBiasNetworkTo`。因此，任意有限预定后继序列现在对应一张真实的
+组合 CNN，而不再只是元语言中分别断言存在的网络块列表。
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
-西北角以及只在证明层面假设载波的限制。剩余工作已经变成另一项任务：选择一种有限布局
-或次序，把所需的寄存器变化都转化为受保护的可比较关系；把已经验证的两阶段构造推广为
-携带保护关系的有限归纳；最终把这种共享偏置编译器接到适用于共享标量偏置子类的稠密性
-论证上。
+西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
+工作已经变成另一项任务：合成一种有限布局或次序，使其请求确实满足每一步的局部东南保护
+义务；在这些义务下把已编译日程接到有限恢复链；最终把这种受保护的共享偏置编译器接到
+适用于共享标量偏置子类的稠密性论证上。
 
 ## 证明架构
 
@@ -284,6 +290,7 @@ $$
 | [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | 紧致构造后继受保护选择块，以及真实的两阶段共享偏置选择证书 |
 | [`SharedBiasTwoStageRecovery.lean`](OneChannelCNNUniversality/SharedBiasTwoStageRecovery.lean) | delta 桥接的单射性／支撑保持，以及完整两阶段组合网络的相对单射性 |
 | [`SharedBiasFiniteRecovery.lean`](OneChannelCNNUniversality/SharedBiasFiniteRecovery.lean) | 异构有限恢复链、反向归纳、拼接组合律，以及具体选择器／桥接适配器 |
+| [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | 依赖类型有限后继日程、紧致性见证的递归构造、内部种子精确等式，以及最终单一组合 CNN 的导出 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
