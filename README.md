@@ -267,9 +267,25 @@ their network outputs agree, the entire input chains are equal. Finally,
 `exists_bundled_rowChain_protected_selection` uses compactness to return the
 positive seed, first shared bias, genuine typed network, exact depth and
 selection contract together with this prefix-relative recovery guarantee.
-This is a certified single scan step; iterating it still requires a typed
-construction that transports the protected chain through each block's
-expanded output and controls the new fringe.
+This is a certified single scan step.
+
+[`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean)
+and
+[`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean)
+now provide the first verified multi-step interface. A genuine expansive
+delta-identity layer maps every nonnegative intermediate image $z$ exactly to
+
+$$
+\operatorname{FullConv}(\delta,z)+c\mathbf 1,
+$$
+
+so it generates the fresh compactness seed required by the next selector
+inside the CNN itself. Lean verifies common-carrier support invariance,
+coordinatewise continuity, nonnegativity of every positive-depth network,
+the exact composed evaluation law, and the exact depth increment. The theorem
+`exists_two_bundled_pascal_selection_stages` then returns two compactly
+generated protected selectors whose bridge and composition form one genuine
+`SharedBiasNetworkTo`; no external operation is inserted between the blocks.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
@@ -278,11 +294,11 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is substantially different: choose a finite layout or ordering
-that turns all required register variations into protected comparable ones,
-compose the certified relatively injective updates, control expansion-fringe
-sites between updates, and connect that compiler to a density argument for
-the shared-scalar-bias subclass.
+What remains is substantially different: generalize the verified two-stage
+construction to a finite induction while carrying the required protected
+relations, choose a layout or ordering that makes all register variations
+comparable, and connect that compiler to a density argument for the
+shared-scalar-bias subclass.
 
 ## Proof architecture
 
@@ -310,6 +326,8 @@ the shared-scalar-bias subclass.
 | [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | Inversion from the protected original rectangle and relative injectivity of a complete bundled biased selection block |
 | [`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean) | Impossibility and length bounds for southeast-monotone scans, plus an injective row-major chain representation |
 | [`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean) | Prefix/support equivalence and a compactly generated genuine row-chain selection block with relative recovery |
+| [`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean) | Genuine expansive identity seed layer, support invariance under common carriers, continuity/nonnegativity interfaces, and exact seeded composition |
+| [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | Compact construction of a protected successor block and a genuine two-stage shared-bias selection certificate |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

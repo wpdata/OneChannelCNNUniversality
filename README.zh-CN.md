@@ -212,16 +212,31 @@ $$
 链式版本：若两个链状态在 $t$ 之前及 $t$ 处一致，并且网络输出相等，则两条输入链完全
 相等。最后，`exists_bundled_rowChain_protected_selection` 利用紧致性同时返回正种子、
 首层共享偏置、真实带类型网络、精确深度、选择公式和上述前缀相对恢复保证。这已经是一
-个经过认证的单次扫描步骤；若要迭代，还需构造带类型的组合，把受保护链穿过每个选择块
-的扩张输出，并控制新产生的边缘位置。
+个经过认证的单次扫描步骤。
+
+[`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean)
+与
+[`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean)
+给出了首个经过验证的多步接口。真实的扩张 delta 恒等层会把任意非负中间图像 $z$ 精确
+变换为
+
+$$
+\operatorname{FullConv}(\delta,z)+c\mathbf 1,
+$$
+
+因此，下一选择块所需的紧集常数种子是在 CNN 内部生成的。Lean 已验证：添加相同载体不
+改变支撑关系；网络求值与后继特征保持逐坐标连续；每个正深度网络的输出非负；带种子组合
+具有精确求值公式和精确深度增量。定理
+`exists_two_bundled_pascal_selection_stages` 进一步返回两个由紧致性生成的受保护选择器，
+它们的桥接与组合是同一个真实 `SharedBiasNetworkTo`，两块之间没有插入任何网络外操作。
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。剩余工作已经变成另一项任务：选择一种有限布局
-或次序，把所需的寄存器变化都转化为受保护的可比较关系；组合已验证相对单射的局部更新；
-控制更新之间的扩张边缘值；最终把这种共享偏置编译器接到适用于共享标量偏置子类的稠密性
+或次序，把所需的寄存器变化都转化为受保护的可比较关系；把已经验证的两阶段构造推广为
+携带保护关系的有限归纳；最终把这种共享偏置编译器接到适用于共享标量偏置子类的稠密性
 论证上。
 
 ## 证明架构
@@ -250,6 +265,8 @@ $$
 | [`SharedBiasRelativeInjectivity.lean`](OneChannelCNNUniversality/SharedBiasRelativeInjectivity.lean) | 从受保护原始矩形反演 Pascal 传输，以及完整带偏置选择块的相对单射性 |
 | [`SharedBiasChainLayout.lean`](OneChannelCNNUniversality/SharedBiasChainLayout.lean) | 东南单调扫描的不可能性与长度上界，以及无损的行主序链式表示 |
 | [`SharedBiasChainSelection.lean`](OneChannelCNNUniversality/SharedBiasChainSelection.lean) | 前缀／支撑等价，以及由紧致性生成且带相对恢复保证的真实行链选择块 |
+| [`SharedBiasSeedTransport.lean`](OneChannelCNNUniversality/SharedBiasSeedTransport.lean) | 真实扩张恒等种子层、公共载体下的支撑不变性、连续性／非负性接口及精确带种子组合 |
+| [`SharedBiasSuccessorSelection.lean`](OneChannelCNNUniversality/SharedBiasSuccessorSelection.lean) | 紧致构造后继受保护选择块，以及真实的两阶段共享偏置选择证书 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
