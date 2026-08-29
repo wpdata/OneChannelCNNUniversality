@@ -342,13 +342,35 @@ $t$，进而由选择器输出相等恢复整个选择器输入。该不变量�
 也已经提升到真实 `appendWithSeed` 组合网络的求值；只要前级网络在 $K$ 上单射，真实
 组合后的网络仍在 $K$ 上单射。
 
+[`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean)
+进一步把这个不变量闭合到依赖类型的任意有限递归中。谓词
+`SuccessorSelectionSchedule.NorthwestTargeted` 明确记录：一个通常允许任意空间目标的日程
+中，每个请求都选择西北工作寄存器。对任何满足该谓词的已编译日程，Lean 沿真实内部种子
+组合逐步归纳，同时证明每一阶段 $s$ 都满足
+
+$$
+\mathrm{NorthwestMonotoneCodeOn}(K,N_s,t)
+\quad\text{和}\quad
+\mathrm{InjOn}(N_s,K).
+$$
+
+端到端定理 `exists_injective_compiledNorthwestSchedule` 从真实相邻复制层开始，利用紧致性
+编译任意有限西北日程，并返回一张最终共享标量偏置 CNN 以及上述两个证书。其工作坐标的
+递推精确为
+
+$$
+f_{s+1}(t)=\mathrm{ReLU}(f_s(t)+\theta_s).
+$$
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
 任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
 西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
-下一步是把新的单调编码证书贯穿到编译任意有限选择日程的依赖递归中，给出明确的多步路由
-与深度／面积界，最后把所得共享偏置编译器接到适用于共享标量偏置子类的稠密性论证上。
+任意有限递归现在已经在“重复选择西北寄存器”的范围内闭合。下一步是一个实质上不同的
+问题：把多个可变寄存器及其仿射组合路由到西北工作位置，为多变量计算保留足够多的独立
+状态，给出明确的多步路由与深度／面积界，最后把这个更强的共享偏置编译器接到稠密性
+论证上。仅靠上式所示的重复标量更新，还不能构成万能逼近定理。
 
 ## 证明架构
 
@@ -386,6 +408,7 @@ $t$，进而由选择器输出相等恢复整个选择器输入。该不变量�
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
+| [`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean) | 任意有限西北目标日程的归纳证明，以及由真实相邻复制层初始化的端到端单射编译 CNN |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

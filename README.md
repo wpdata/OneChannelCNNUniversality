@@ -432,6 +432,29 @@ for the actual `appendWithSeed` network evaluation; if the preceding network
 is injective on $K$, the genuinely composed network remains injective on
 $K$.
 
+[`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean)
+closes this invariant under dependent finite recursion.  The predicate
+`SuccessorSelectionSchedule.NorthwestTargeted` records that every request in
+an otherwise general spatial schedule selects the northwest work register.
+For any compiled schedule satisfying that predicate, induction through the
+actual internal-seed compositions proves simultaneously that
+
+$$
+\mathrm{NorthwestMonotoneCodeOn}(K,N_s,t)
+\quad\text{and}\quad
+\mathrm{InjOn}(N_s,K)
+$$
+
+hold at every stage $s$.  The end-to-end theorem
+`exists_injective_compiledNorthwestSchedule` starts with the genuine adjacent
+copy layer, uses compactness to compile an arbitrary finite northwest
+schedule, and returns one final shared-scalar-bias CNN together with both
+certificates.  Its work-coordinate recurrence is exactly
+
+$$
+f_{s+1}(t)=\mathrm{ReLU}(f_s(t)+\theta_s).
+$$
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -439,10 +462,14 @@ open in this development whether the shared-scalar-bias subclass is universal
 or non-universal. Arbitrary
 targets can now be selected end to end under southeast-quadrant protection,
 which removes the earlier northwest-only and proof-level-carrier restrictions.
-What remains is to thread the new monotone-code certificate through the
-dependent recursion that compiles an arbitrary finite selection schedule,
-give explicit multi-step routing and depth/area bounds, and connect the
-resulting compiler to a density argument for the shared-scalar-bias subclass.
+The finite recursion is now closed for repeated northwest-register
+selections.  What remains is substantially different: route several mutable
+registers and affine combinations through the northwest work site, preserve
+enough independent state for multivariate computation, give explicit
+multi-step routing and depth/area bounds, and connect that richer compiler to
+a density argument for the shared-scalar-bias subclass.  Repeated scalar
+updates of the displayed form alone are not a universal-approximation
+theorem.
 
 ## Proof architecture
 
@@ -480,6 +507,7 @@ resulting compiler to a density argument for the shared-scalar-bias subclass.
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |
+| [`SharedBiasMonotoneSchedule.lean`](OneChannelCNNUniversality/SharedBiasMonotoneSchedule.lean) | Induction through arbitrary finite northwest-targeted schedules and an end-to-end injective compiled CNN initialized by the genuine adjacent-copy layer |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

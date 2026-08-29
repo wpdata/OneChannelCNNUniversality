@@ -54,17 +54,17 @@ theorem NorthwestMonotoneCodeOn.of_eqOn
   rw [hVW x hx]
   exact hfactor x hx
 
-/-- The genuine adjacent-copy layer followed by the genuine delta seed
-bridge initializes the monotone code with both factors equal to identity. -/
-theorem northwestMonotoneCodeOn_successor_adjacentCopy
+/-- The genuine adjacent-copy layer itself initializes the monotone code,
+before inserting any successor seed bridge. -/
+theorem northwestMonotoneCodeOn_adjacentCopy
     {X : Type*} {K : Set X} {rows cols : ℕ}
     (hrows : 0 < rows) (hcols : 0 < cols)
     (F : X → Image rows cols)
     (hFnonnegative : ∀ x ∈ K, ImageNonnegative (F x))
     (hFvacant : ∀ x ∈ K, EastNeighborVacant (F x)) :
     NorthwestMonotoneCodeOn K
-      (successorFeature
-        (adjacentCopyLayer (rows := rows) (cols := cols)) F)
+      (fun x ↦
+        (adjacentCopyLayer (rows := rows) (cols := cols)).eval (F x))
       (fun x ↦ zeroExtend (F x) 0 0) := by
   refine ⟨id, id, monotone_id, strictMono_id, ?_⟩
   intro x hx
@@ -77,18 +77,29 @@ theorem northwestMonotoneCodeOn_successor_adjacentCopy
       zeroExtend_fullConvImage,
       fullConv_horizontalAccumulationKernel_nat]
     simp
-  have hsuccessor := hcopy.successorFeature
-  unfold EastRootDuplicate at hsuccessor
+  unfold EastRootDuplicate at hcopy
   constructor
-  · unfold successorFeature
-    rw [zeroExtend_fullConvImage,
-      fullConv_expansiveIdentityKernel_nat, hroot]
-    rfl
-  · rw [← hsuccessor]
-    unfold successorFeature
-    rw [zeroExtend_fullConvImage,
-      fullConv_expansiveIdentityKernel_nat, hroot]
-    rfl
+  · exact hroot
+  · change zeroExtend
+      ((adjacentCopyLayer (rows := rows) (cols := cols)).eval (F x))
+        0 1 = zeroExtend (F x) 0 0
+    rw [← hcopy, hroot]
+
+/-- The genuine adjacent-copy layer followed by the genuine delta seed
+bridge initializes the monotone code with both factors equal to identity. -/
+theorem northwestMonotoneCodeOn_successor_adjacentCopy
+    {X : Type*} {K : Set X} {rows cols : ℕ}
+    (hrows : 0 < rows) (hcols : 0 < cols)
+    (F : X → Image rows cols)
+    (hFnonnegative : ∀ x ∈ K, ImageNonnegative (F x))
+    (hFvacant : ∀ x ∈ K, EastNeighborVacant (F x)) :
+    NorthwestMonotoneCodeOn K
+      (successorFeature
+        (adjacentCopyLayer (rows := rows) (cols := cols)) F)
+      (fun x ↦ zeroExtend (F x) 0 0) := by
+  unfold successorFeature
+  exact (northwestMonotoneCodeOn_adjacentCopy hrows hcols F
+    hFnonnegative hFvacant).expansiveIdentity
 
 /-- Exact northwest-root output of a bundled selector, written with natural
 coordinates so it can be used directly by code invariants. -/
