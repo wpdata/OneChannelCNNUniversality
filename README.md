@@ -621,6 +621,37 @@ set.  This removes the former restriction to one isolated scalar register;
 it does not yet prove that such recoverable rows can be composed into an
 arbitrary finite computation.
 
+[`SharedBiasGridGate.lean`](OneChannelCNNUniversality/SharedBiasGridGate.lean)
+removes the one-row input restriction while keeping the active gate on the
+northern boundary.  For an arbitrary $R\times C$ input with
+$|x_{r,j}|\le M$, set
+
+$$
+B=(1+|a|)M+|c|.
+$$
+
+The same depth-two genuine shared-bias CNN satisfies
+
+$$
+z_{0,j}=\mathrm{ReLU}(a x_{0,j}+c),
+\qquad
+z_{r+1,j}=x_{r,j}+a x_{r+1,j}+B+c,
+$$
+
+where the zero boundary convention sets $x_{R,j}=0$.  The protected rows are
+therefore decoded exactly from south to north by
+
+$$
+x_{r,j}=z_{r+1,j}-(B+c)-a x_{r+1,j}.
+$$
+
+Lean verifies that this triangular code is injective for every real $a$ and
+that the complete network remains injective on uniformly bounded injective
+image families.  Compactness again supplies one uniform $M$.  The verified
+decoder is a mathematical inverse; it is not yet compiled into a causal
+shared-bias CNN, and the nonlinear gate is still confined to the northern
+input row.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -635,11 +666,14 @@ maintain a protected backup/frontier invariant, chain arithmetic while the
 work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer, repeated scalar updates, and protected
-row signed gate displayed above are not by themselves a universal-
-approximation theorem.  The remaining decisive task is to extend the
-recoverable one-row gate to a moving-frontier state of arbitrary height,
-prove that repeated composition preserves earlier gate values or their exact
-decoders, and then compile arbitrary finite affine lattice expressions.
+grid gate displayed above are not by themselves a universal-approximation
+theorem.  Arbitrary-height input recovery is now verified, but the active
+nonlinearity remains on the northern boundary and its south-to-north decoder
+runs against the network's causal direction.  The remaining decisive task is
+to construct a causal moving-frontier transition that exposes successive
+registers to nonlinear gates while preserving earlier values or usable
+forward decoders, and then compile arbitrary finite affine lattice
+expressions.
 
 ## Proof architecture
 
@@ -685,6 +719,7 @@ decoders, and then compile arbitrary finite affine lattice expressions.
 | [`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean) | Direction-dependent nonnegative shared biases, exact affine route evaluation, injectivity, and the order-sensitive gap $(ES)_{1,1}-(SE)_{1,1}=\alpha-\beta$ |
 | [`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean) | A depth-two input-dependent signed affine ReLU gate, redundant exact input recovery, injectivity on bounded families, and compact uniform parameter selection |
 | [`SharedBiasRowGate.lean`](OneChannelCNNUniversality/SharedBiasRowGate.lean) | A depth-two pointwise signed ReLU gate on an arbitrary finite row, coordinatewise exact decoding, injectivity, and compact uniform parameter selection |
+| [`SharedBiasGridGate.lean`](OneChannelCNNUniversality/SharedBiasGridGate.lean) | A depth-two northern-row signed ReLU gate on arbitrary-height images, an exact south-triangular full-image decoder, injectivity, and compact uniform parameter selection |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

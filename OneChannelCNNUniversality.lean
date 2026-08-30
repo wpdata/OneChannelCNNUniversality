@@ -31,3 +31,4 @@ import OneChannelCNNUniversality.SharedBiasFrontierRoute
 import OneChannelCNNUniversality.SharedBiasFrontierAffineRoute
 import OneChannelCNNUniversality.SharedBiasSignedGate
 import OneChannelCNNUniversality.SharedBiasRowGate
+import OneChannelCNNUniversality.SharedBiasGridGate
