@@ -27,3 +27,4 @@ import OneChannelCNNUniversality.SharedBiasMonotoneSchedule
 import OneChannelCNNUniversality.SharedBiasFrontier
 import OneChannelCNNUniversality.SharedBiasFrontierChain
 import OneChannelCNNUniversality.SharedBiasFrontierTurn
+import OneChannelCNNUniversality.SharedBiasFrontierRoute

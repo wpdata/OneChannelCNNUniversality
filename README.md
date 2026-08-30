@@ -525,6 +525,35 @@ $$
 Thus the active work/backup pair can make one verified two-dimensional turn
 without losing its values or the information stored by the full feature map.
 
+[`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean)
+compiles an arbitrary finite direction list
+$\sigma\in\{E,S\}^{L}$ to one genuine zero-bias shared-ReLU layer per step.
+If $e(\sigma)$ and $s(\sigma)$ count its eastern and southern steps, then
+horizontal and vertical full convolution commute, and the formalization proves
+pointwise equality after zero extension between the interleaved route and
+
+$$
+V^{s(\sigma)}H^{e(\sigma)}x.
+$$
+
+Consequently every repeated-turn route has exact depth
+
+$$
+L=|\sigma|=e(\sigma)+s(\sigma),
+$$
+
+remains injective on nonnegative input families, and on northwest
+two-register seeds satisfies
+
+$$
+z_{s(\sigma),e(\sigma)}=a+e(\sigma)b,\qquad
+z_{s(\sigma),e(\sigma)+1}=b.
+$$
+
+The order of the turns does not affect this terminal state because these two
+particular Pascal operators commute. This is a verified arbitrary-route
+transport theorem, but not yet a route-dependent arithmetic compiler.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -541,7 +570,7 @@ richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer and repeated scalar updates displayed
 above are not by themselves a universal-approximation theorem. The verified
 chain repeatedly adds one fixed nonnegative backup; arbitrary signed affine
-updates, repeated turns between multiple frontier segments, and interaction
+updates, noncommuting direction-dependent frontier operations, and interaction
 with selected ReLU gates remain to be compiled.
 
 ## Proof architecture
@@ -584,6 +613,7 @@ with selected ReLU gates remain to be compiled.
 | [`SharedBiasFrontier.lean`](OneChannelCNNUniversality/SharedBiasFrontier.lean) | Northwest-output non-realizability on input-root fibers and a genuine injective two-register addition layer at a moving eastern frontier |
 | [`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean) | Arbitrary-depth lossless horizontal frontier motion with exact work/backup/tail formulas on nonnegative states |
 | [`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean) | A lossless east-then-south frontier turn, exact active-column vacancy below the frontier, injectivity, and the depth identity $L=r+c$ |
+| [`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean) | Arbitrary finite east/south routes, horizontal-vertical commutation, canonical Pascal-grid normalization, exact depth, terminal frontier formulas, and injectivity |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
