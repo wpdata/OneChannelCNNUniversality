@@ -466,6 +466,25 @@ $$
 所以当 $\alpha\ne\beta$ 时，仅仅交换方向次序就会得到两个输出可证明不同的二层、
 二维单通道共享偏置 ReLU CNN。这是仓库中第一条经过验证的不可交换仿射前沿原语。
 
+[`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean)
+跨过了下一道非线性检查点。对任意满足 $|x|\le M$ 的有界标量输入，以及任意带符号
+系数 $a,c\in\mathbb R$，两个真实的 $2\times2$ 共享偏置层先把 $x$ 冗余编码为
+$M+|c|+x$ 与 $M+|c|-x$，随后在一个输出坐标精确计算
+
+$$
+\mathrm{ReLU}(a x+c).
+$$
+
+同一个第二层还保留两个南侧坐标，并具有精确解码公式
+
+$$
+x=\frac{z_{2,0}-z_{2,1}}{2}.
+$$
+
+因此，完整隐藏表示在任意有界单射标量族上仍保持单射。对于紧集上的连续标量族，另一个
+定理利用紧致性自动选择统一的 $M$。这是严格共享偏置模型中第一条经过验证的输入相关
+带符号 ReLU 门；与此前的仿射路径差不同，它的非线性输出真正依赖输入。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -474,9 +493,9 @@ $$
 任意有限递归现在已经在“重复选择西北寄存器”的范围内闭合；而因果性表明，把东侧或
 南侧寄存器送回西北工作位置并不是可行的下一步。后续需要建立受保护的备份／前沿不变量，
 在计算位置向东南移动时串联算术操作，给出明确的深度／面积界，最后把这个更强的共享偏置
-编译器接到稠密性论证上。单个前沿加法层和上式的重复标量更新本身仍不构成万能逼近定理。
-目前验证的链仍使用非负仿射载波；任意带符号寄存器更新、输入相关的方向门，
-以及与选择性 ReLU 门的组合仍有待编译。
+编译器接到稠密性论证上。单个前沿加法层、重复标量更新以及受保护的标量带符号门本身仍
+不构成万能逼近定理。现在最关键的剩余任务，是把这个标量门嵌入多寄存器移动前沿状态，
+在不破坏先前门输出的情况下反复组合，最后编译任意有限仿射格表达式。
 
 ## 证明架构
 
@@ -520,6 +539,7 @@ $$
 | [`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean) | 无损的先东后南前沿转向、前沿下方活跃列精确为空、单射性及深度恒等式 $L=r+c$ |
 | [`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean) | 任意有限东／南路径、水平—纵向交换律、标准 Pascal 网格正规化、精确深度、终端前沿公式与单射性 |
 | [`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean) | 方向相关非负共享偏置、精确仿射路径求值、单射性，以及顺序敏感差值 $(ES)_{1,1}-(SE)_{1,1}=\alpha-\beta$ |
+| [`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean) | 二层输入相关带符号仿射 ReLU 门、冗余精确输入恢复、有界族上的单射性，以及紧集上的统一参数选择 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

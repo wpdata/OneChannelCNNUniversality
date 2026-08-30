@@ -580,6 +580,29 @@ whose outputs are provably different solely because the direction order was
 swapped. This is the first verified noncommuting affine frontier primitive in
 the repository.
 
+[`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean)
+crosses the next nonlinear checkpoint.  For every bounded scalar input
+$|x|\le M$ and arbitrary signed coefficients $a,c\in\mathbb R$, two genuine
+$2\times2$ shared-bias layers first encode $x$ redundantly as $M+|c|+x$ and
+$M+|c|-x$, then compute at one output coordinate
+
+$$
+\mathrm{ReLU}(a x+c).
+$$
+
+The same second layer preserves two southern coordinates with exact decoder
+
+$$
+x=\frac{z_{2,0}-z_{2,1}}{2}.
+$$
+
+Consequently the complete hidden representation remains injective on every
+bounded injective scalar family.  A compactness theorem chooses one common
+$M$ for any continuous scalar family on a compact set.  This is the first
+verified input-dependent signed ReLU gate in the strict model; unlike the
+preceding affine route gap, its nonlinear output genuinely depends on the
+input.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -593,11 +616,12 @@ to the northwest work site is not a viable next step. What remains is to
 maintain a protected backup/frontier invariant, chain arithmetic while the
 work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
-The single frontier-addition layer and repeated scalar updates displayed
-above are not by themselves a universal-approximation theorem. The verified
-chain still uses nonnegative affine carriers; arbitrary signed register
-updates, input-dependent direction gates, and interaction with selected ReLU
-gates remain to be compiled.
+The single frontier-addition layer, repeated scalar updates, and protected
+scalar signed gate displayed above are not by themselves a universal-
+approximation theorem.  The remaining decisive task is to embed the scalar
+gate into a multi-register moving-frontier state, compose it repeatedly
+without corrupting earlier gates, and then compile arbitrary finite affine
+lattice expressions.
 
 ## Proof architecture
 
@@ -641,6 +665,7 @@ gates remain to be compiled.
 | [`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean) | A lossless east-then-south frontier turn, exact active-column vacancy below the frontier, injectivity, and the depth identity $L=r+c$ |
 | [`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean) | Arbitrary finite east/south routes, horizontal-vertical commutation, canonical Pascal-grid normalization, exact depth, terminal frontier formulas, and injectivity |
 | [`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean) | Direction-dependent nonnegative shared biases, exact affine route evaluation, injectivity, and the order-sensitive gap $(ES)_{1,1}-(SE)_{1,1}=\alpha-\beta$ |
+| [`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean) | A depth-two input-dependent signed affine ReLU gate, redundant exact input recovery, injectivity on bounded families, and compact uniform parameter selection |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
