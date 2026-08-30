@@ -603,6 +603,24 @@ verified input-dependent signed ReLU gate in the strict model; unlike the
 preceding affine route gap, its nonlinear output genuinely depends on the
 input.
 
+[`SharedBiasRowGate.lean`](OneChannelCNNUniversality/SharedBiasRowGate.lean)
+lifts this scalar construction to an arbitrary finite register row.  For
+$x=(x_0,\ldots,x_{n-1})$ with $|x_j|\le M$, the same depth-two genuine
+shared-bias CNN simultaneously satisfies, for every $j$,
+
+$$
+z_{0,j}=\mathrm{ReLU}(a x_j+c),
+\qquad
+z_{1,j}-(M+|c|+c)=x_j.
+$$
+
+Thus every gated coordinate has an exact surviving decoder, the complete
+row representation remains injective on bounded injective families, and
+compactness selects one uniform $M$ for a continuous row family on a compact
+set.  This removes the former restriction to one isolated scalar register;
+it does not yet prove that such recoverable rows can be composed into an
+arbitrary finite computation.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -617,11 +635,11 @@ maintain a protected backup/frontier invariant, chain arithmetic while the
 work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer, repeated scalar updates, and protected
-scalar signed gate displayed above are not by themselves a universal-
-approximation theorem.  The remaining decisive task is to embed the scalar
-gate into a multi-register moving-frontier state, compose it repeatedly
-without corrupting earlier gates, and then compile arbitrary finite affine
-lattice expressions.
+row signed gate displayed above are not by themselves a universal-
+approximation theorem.  The remaining decisive task is to extend the
+recoverable one-row gate to a moving-frontier state of arbitrary height,
+prove that repeated composition preserves earlier gate values or their exact
+decoders, and then compile arbitrary finite affine lattice expressions.
 
 ## Proof architecture
 
@@ -666,6 +684,7 @@ lattice expressions.
 | [`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean) | Arbitrary finite east/south routes, horizontal-vertical commutation, canonical Pascal-grid normalization, exact depth, terminal frontier formulas, and injectivity |
 | [`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean) | Direction-dependent nonnegative shared biases, exact affine route evaluation, injectivity, and the order-sensitive gap $(ES)_{1,1}-(SE)_{1,1}=\alpha-\beta$ |
 | [`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean) | A depth-two input-dependent signed affine ReLU gate, redundant exact input recovery, injectivity on bounded families, and compact uniform parameter selection |
+| [`SharedBiasRowGate.lean`](OneChannelCNNUniversality/SharedBiasRowGate.lean) | A depth-two pointwise signed ReLU gate on an arbitrary finite row, coordinatewise exact decoding, injectivity, and compact uniform parameter selection |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
