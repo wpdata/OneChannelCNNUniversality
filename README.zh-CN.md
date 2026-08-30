@@ -526,6 +526,35 @@ Lean 已验证该三角编码对每个实数 $a$ 都是单射，并且完整网�
 上仍保持单射；紧致性同样给出统一的 $M$。这里验证的解码器是数学逆映射，尚未被编译成
 具有同一因果方向的共享偏置 CNN；非线性门也仍只作用于输入最北行。
 
+[`SharedBiasGridGateComposition.lean`](OneChannelCNNUniversality/SharedBiasGridGateComposition.lean)
+证明受保护表示可以直接交给下一个受保护门块，而不必先执行外部逆映射。两个二层块组成一个
+真实的四层 CNN，其北侧行满足
+
+$$
+z_{0,j}=\mathrm{ReLU}\!\left(
+  a_2\,\mathrm{ReLU}(a_1x_{0,j}+c_1)+c_2\right),
+$$
+
+并且完整四层表示仍保持单射。紧致性会在第一个非线性块之后重新选择统一界，而不是假设
+存在一个未经证明、可供所有阶段共用的全局大常数。
+
+[`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean)
+进一步闭合了有限归纳。对任意有限列表
+$((a_1,c_1),\ldots,(a_L,c_L))$，存在一个精确深度为 $2L$ 的真实扩张型单通道共享偏置
+CNN，其北侧行计算
+
+$$
+t_0=x_{0,j},
+\qquad
+t_{\ell+1}=\mathrm{ReLU}(a_{\ell+1}t_\ell+c_{\ell+1}),
+\qquad
+z_{0,j}=t_L,
+$$
+
+同时完整特征表示在紧输入族上仍保持单射。这是仓库中严格共享偏置模型的第一条任意深度
+非线性组合定理。不过它仍是逐坐标的标量日程：同一个门作用于北侧行的每个坐标，尚不能
+混合不同寄存器，也不能把更深的输入行送到北侧边界。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -534,11 +563,12 @@ Lean 已验证该三角编码对每个实数 $a$ 都是单射，并且完整网�
 任意有限递归现在已经在“重复选择西北寄存器”的范围内闭合；而因果性表明，把东侧或
 南侧寄存器送回西北工作位置并不是可行的下一步。后续需要建立受保护的备份／前沿不变量，
 在计算位置向东南移动时串联算术操作，给出明确的深度／面积界，最后把这个更强的共享偏置
-编译器接到稠密性论证上。单个前沿加法层、重复标量更新以及受保护的二维网格门本身仍不
-构成万能逼近定理。任意高度输入的数学恢复现在已经得到验证，但有效非线性仍位于北侧边界，
-而从南向北的解码方向与网络的因果方向相反。现在最关键的剩余任务，是构造因果的移动前沿
-转移，使后续寄存器依次进入非线性门，同时保留先前结果或可由前向网络使用的解码器，最后
-编译任意有限仿射格表达式。
+编译器接到稠密性论证上。单个前沿加法层与受保护的二维网格门本身仍不构成万能逼近定理。
+任意深度非线性组合和任意高度输入恢复现在已经得到验证，但组合仍限于北侧边界上的逐坐标
+运算：它既不混合不同寄存器，也不能把更深行送到该边界；已知的全图解码方向还与网络因果
+方向相反。现在最关键的剩余任务，是构造因果的移动前沿转移，使后续寄存器及其仿射组合
+依次进入这些非线性门，同时保留先前结果或可由前向网络使用的解码器，最后编译任意有限
+仿射格表达式。
 
 ## 证明架构
 
@@ -585,6 +615,8 @@ Lean 已验证该三角编码对每个实数 $a$ 都是单射，并且完整网�
 | [`SharedBiasSignedGate.lean`](OneChannelCNNUniversality/SharedBiasSignedGate.lean) | 二层输入相关带符号仿射 ReLU 门、冗余精确输入恢复、有界族上的单射性，以及紧集上的统一参数选择 |
 | [`SharedBiasRowGate.lean`](OneChannelCNNUniversality/SharedBiasRowGate.lean) | 任意有限行上的二层逐点带符号 ReLU 门、逐坐标精确解码、单射性，以及紧集上的统一参数选择 |
 | [`SharedBiasGridGate.lean`](OneChannelCNNUniversality/SharedBiasGridGate.lean) | 任意高度图像上的二层北侧行带符号 ReLU 门、精确的南向三角全图解码、单射性，以及紧集上的统一参数选择 |
+| [`SharedBiasGridGateComposition.lean`](OneChannelCNNUniversality/SharedBiasGridGateComposition.lean) | 两个受保护网格门组成的真实四层网络、精确嵌套 ReLU 公式、逐阶段紧致界与单射性 |
+| [`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean) | 将任意有限带符号仿射 ReLU 日程编译成精确深度共享偏置 CNN，并验证北侧行逐点语义与完整状态单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
