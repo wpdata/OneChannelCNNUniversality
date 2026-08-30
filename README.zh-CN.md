@@ -445,6 +445,27 @@ $$
 由于这里使用的两个 Pascal 算子可交换，转向的先后顺序不会改变终态。因此，这是一条
 经过验证的任意路径运输定理，但还不是“路径顺序决定不同算术”的编译器。
 
+[`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean)
+在仍然使用真实空间共享标量偏置的前提下打破了这种顺序不变性。令每个向东步骤使用
+非负偏置 $\alpha$，每个向南步骤使用非负偏置 $\beta$。对非负输入，ReLU 始终处于
+线性支，因此所得仿射路径仍具有精确求值、每方向一步一层和单射性。然而，共享偏置载波
+会与下一层卷积发生方向相关的作用。形式化证明在坐标 $(1,1)$ 给出
+
+$$
+(ES)(x)_{1,1}=C(x)+2\alpha+\beta,
+\qquad
+(SE)(x)_{1,1}=C(x)+\alpha+2\beta,
+$$
+
+因而
+
+$$
+(ES)(x)_{1,1}-(SE)(x)_{1,1}=\alpha-\beta.
+$$
+
+所以当 $\alpha\ne\beta$ 时，仅仅交换方向次序就会得到两个输出可证明不同的二层、
+二维单通道共享偏置 ReLU CNN。这是仓库中第一条经过验证的不可交换仿射前沿原语。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -454,8 +475,8 @@ $$
 南侧寄存器送回西北工作位置并不是可行的下一步。后续需要建立受保护的备份／前沿不变量，
 在计算位置向东南移动时串联算术操作，给出明确的深度／面积界，最后把这个更强的共享偏置
 编译器接到稠密性论证上。单个前沿加法层和上式的重复标量更新本身仍不构成万能逼近定理。
-目前验证的链只会重复加入同一个非负备份；任意带符号仿射更新、
-不可交换的方向相关前沿操作，以及与选择性 ReLU 门的组合仍有待编译。
+目前验证的链仍使用非负仿射载波；任意带符号寄存器更新、输入相关的方向门，
+以及与选择性 ReLU 门的组合仍有待编译。
 
 ## 证明架构
 
@@ -498,6 +519,7 @@ $$
 | [`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean) | 非负状态上任意深度、无损的横向前沿移动，以及精确工作／备份／空尾公式 |
 | [`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean) | 无损的先东后南前沿转向、前沿下方活跃列精确为空、单射性及深度恒等式 $L=r+c$ |
 | [`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean) | 任意有限东／南路径、水平—纵向交换律、标准 Pascal 网格正规化、精确深度、终端前沿公式与单射性 |
+| [`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean) | 方向相关非负共享偏置、精确仿射路径求值、单射性，以及顺序敏感差值 $(ES)_{1,1}-(SE)_{1,1}=\alpha-\beta$ |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

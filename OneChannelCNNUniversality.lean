@@ -28,3 +28,4 @@ import OneChannelCNNUniversality.SharedBiasFrontier
 import OneChannelCNNUniversality.SharedBiasFrontierChain
 import OneChannelCNNUniversality.SharedBiasFrontierTurn
 import OneChannelCNNUniversality.SharedBiasFrontierRoute
+import OneChannelCNNUniversality.SharedBiasFrontierAffineRoute

@@ -554,6 +554,32 @@ The order of the turns does not affect this terminal state because these two
 particular Pascal operators commute. This is a verified arbitrary-route
 transport theorem, but not yet a route-dependent arithmetic compiler.
 
+[`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean)
+breaks that order invariance while staying inside genuine spatially shared
+scalar biases. Assign a nonnegative bias $\alpha$ to every eastern step and a
+nonnegative bias $\beta$ to every southern step. ReLU remains in its linear
+branch on nonnegative inputs, so the resulting affine route is still exact
+and injective, with one layer per direction. Nevertheless the shared bias
+carriers interact differently with the next convolution. At coordinate
+$(1,1)$ the formalization proves
+
+$$
+(ES)(x)_{1,1}=C(x)+2\alpha+\beta,
+\qquad
+(SE)(x)_{1,1}=C(x)+\alpha+2\beta,
+$$
+
+and therefore
+
+$$
+(ES)(x)_{1,1}-(SE)(x)_{1,1}=\alpha-\beta.
+$$
+
+Thus $\alpha\ne\beta$ gives two depth-two, one-channel shared-bias ReLU CNNs
+whose outputs are provably different solely because the direction order was
+swapped. This is the first verified noncommuting affine frontier primitive in
+the repository.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -569,9 +595,9 @@ work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer and repeated scalar updates displayed
 above are not by themselves a universal-approximation theorem. The verified
-chain repeatedly adds one fixed nonnegative backup; arbitrary signed affine
-updates, noncommuting direction-dependent frontier operations, and interaction
-with selected ReLU gates remain to be compiled.
+chain still uses nonnegative affine carriers; arbitrary signed register
+updates, input-dependent direction gates, and interaction with selected ReLU
+gates remain to be compiled.
 
 ## Proof architecture
 
@@ -614,6 +640,7 @@ with selected ReLU gates remain to be compiled.
 | [`SharedBiasFrontierChain.lean`](OneChannelCNNUniversality/SharedBiasFrontierChain.lean) | Arbitrary-depth lossless horizontal frontier motion with exact work/backup/tail formulas on nonnegative states |
 | [`SharedBiasFrontierTurn.lean`](OneChannelCNNUniversality/SharedBiasFrontierTurn.lean) | A lossless east-then-south frontier turn, exact active-column vacancy below the frontier, injectivity, and the depth identity $L=r+c$ |
 | [`SharedBiasFrontierRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierRoute.lean) | Arbitrary finite east/south routes, horizontal-vertical commutation, canonical Pascal-grid normalization, exact depth, terminal frontier formulas, and injectivity |
+| [`SharedBiasFrontierAffineRoute.lean`](OneChannelCNNUniversality/SharedBiasFrontierAffineRoute.lean) | Direction-dependent nonnegative shared biases, exact affine route evaluation, injectivity, and the order-sensitive gap $(ES)_{1,1}-(SE)_{1,1}=\alpha-\beta$ |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
