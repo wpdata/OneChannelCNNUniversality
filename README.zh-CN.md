@@ -595,6 +595,40 @@ $$
 感受野定理进一步证明，第 $j$ 个坐标只依赖初始坐标
 $\max(0,j-L),\ldots,j$。
 
+[`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean)
+在任意一致有界输入族上消除了上述三层混合块对系数分解的限制。对于任意
+$\alpha,\beta,\gamma\in\mathbb R$，一个真实的两层共享偏置网络会在每个非西侧北行
+寄存器精确计算
+
+$$
+\mathrm{ReLU}(\alpha x_{0,j-1}+\beta x_{0,j}+\gamma).
+$$
+
+与此同时，每个输入坐标都会向东南移动一步，并保存在精确的三角备份编码
+
+$$
+x_{i,j}+\alpha x_{i+1,j}+\beta x_{i+1,j+1}+C
+$$
+
+中，边界使用零延拓。Lean 已通过从南到北的恢复证明该编码单射，并证明紧致性会为任意
+连续单射输入族选出一个统一载波。因此，任意相邻仿射 ridge 可以在不丢失完整输入状态
+的情况下加入网络；但若要反复加入彼此独立的 ridge，仍需构造符合因果方向的操作数布局。
+
+[`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
+给出了覆盖任意最终仿射读出的定量限制。深度为 $L$ 的扩张型 $2\times2$ 网络，其感受野
+半径至多为 $L$。把符号 $\sigma,\tau\in\{-1,1\}$ 分别放在
+$1\times(L+2)$ 输入的第 $0$ 列和第 $L+1$ 列，并用 $R_{\sigma,\tau}$ 表示最终特征图的
+任意仿射读出。Lean 证明了精确的混合差恒等式
+
+$$
+R_{-1,-1}+R_{1,1}=R_{-1,1}+R_{1,-1}.
+$$
+
+连续的端点乘积目标在这个有限紧集上的取值为 $1,-1,-1,1$，所以任何深度不超过 $L$
+的网络，其一致误差都至少为 $1$；若误差严格小于 $1$，网络深度就必须至少为 $L+1$。
+这是长程非线性交互的深度下界，而不是对无界深度网络的非万能定理。证明只使用有限感受野
+和最终读出的线性性，并不依赖偏置共享，因此不能把该下界错误归因于共享标量偏置这一限制。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
 不万能。
@@ -659,6 +693,8 @@ $\max(0,j-L),\ldots,j$。
 | [`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean) | 将任意有限带符号仿射 ReLU 日程编译成精确深度共享偏置 CNN，并验证北侧行逐点语义与完整状态单射性 |
 | [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | 相邻北侧寄存器的任意带符号混合、加权水平变换的单射性、三层受保护 ReLU 门，以及紧集参数选择 |
 | [`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean) | 任意有限带符号局部门日程的精确编译、前缀依赖、深度 $3L$、逐阶段紧致载波与完整状态单射性 |
+| [`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean) | 两层任意相邻仿射 ridge、精确东南移位三角备份、从南到北恢复、紧集载波选择与完整状态单射性 |
+| [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

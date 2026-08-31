@@ -733,6 +733,50 @@ coordinate.  The complete feature image remains injective throughout.  A
 prefix and receptive-field theorems prove that coordinate $j$ depends only on
 initial coordinates $\max(0,j-L),\ldots,j$.
 
+[`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean)
+removes the coefficient-factorization restriction of the preceding
+depth-three mixing block on every uniformly bounded input family.  Given arbitrary
+$\alpha,\beta,\gamma\in\mathbb R$, a genuine depth-two shared-bias network
+computes, at every nonwestern northern register,
+
+$$
+\mathrm{ReLU}(\alpha x_{0,j-1}+\beta x_{0,j}+\gamma).
+$$
+
+At the same time, every input coordinate survives one step southeast in the
+exact triangular backup code
+
+$$
+x_{i,j}+\alpha x_{i+1,j}+\beta x_{i+1,j+1}+C,
+$$
+
+with zero extension at the boundary.  Lean proves that this code is
+injective by south-to-north recovery and that compactness supplies one
+uniform carrier for every continuous injective input family.  Thus an
+arbitrary adjacent affine ridge can be added without losing the complete
+input state, although iterating independently chosen ridges still requires a
+causal operand layout.
+
+[`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
+gives a quantitative limitation that includes the arbitrary final affine
+readout.  A depth-$L$ expansive $2\times2$ network has receptive radius at
+most $L$.  Put signs $\sigma,\tau\in\{-1,1\}$ in columns $0$ and $L+1$ of a
+$1\times(L+2)$ input and write $R_{\sigma,\tau}$ for any affine readout of
+the final feature image.  Lean proves the exact mixed-difference identity
+
+$$
+R_{-1,-1}+R_{1,1}=R_{-1,1}+R_{1,-1}.
+$$
+
+The continuous endpoint-product target has values
+$1,-1,-1,1$ on this finite compact set, so every network of depth at most
+$L$ has uniform error at least $1$.  Consequently, strict error below $1$
+forces depth at least $L+1$.  This is a long-range interaction depth lower
+bound, not a non-universality theorem for unbounded depth.  Its proof uses
+finite receptive fields and linearity of the final readout; it does not rely
+on bias sharing and therefore must not be attributed specifically to the
+shared-scalar-bias restriction.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -808,6 +852,8 @@ lattice expressions.
 | [`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean) | Compilation of every finite signed affine ReLU schedule to an exact-depth shared-bias CNN with pointwise northern-row semantics and injective complete state |
 | [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | Arbitrary signed mixing of adjacent northern registers, injectivity of the weighted horizontal transform, a depth-three protected ReLU gate, and compact parameter selection |
 | [`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean) | Exact compilation of arbitrary finite signed local-gate schedules, prefix dependence, depth $3L$, stagewise compact carriers, and injective complete state |
+| [`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean) | A depth-two arbitrary adjacent affine ridge, exact southeast-shifted triangular backup, south-to-north recovery, compact carrier selection, and injective complete state |
+| [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities
