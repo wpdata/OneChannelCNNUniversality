@@ -710,7 +710,28 @@ while the complete representation remains injective.  Compactness chooses
 both required uniform carriers for any continuous injective finite-image
 family.  In particular, negative $\lambda$ is allowed, so this primitive
 supports differences as well as sums; it is the first verified nonlinear
-gate here that mixes two distinct input registers.
+gate here that mixes two distinct input registers.  The stronger all-coordinate
+theorem verifies the same formula simultaneously for every original northern
+register, using a zero western boundary at $j=0$.
+
+[`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean)
+closes the finite induction for these spatially shared local gates.  For a
+schedule $((\lambda_1,a_1,c_1),\ldots,(\lambda_L,a_L,c_L))$, define
+
+$$
+t_{0,j}=x_{0,j},
+\qquad
+t_{\ell+1,j}=\mathrm{ReLU}\!\left(
+  a_{\ell+1}
+  \bigl(t_{\ell,j}+\lambda_{\ell+1}t_{\ell,j-1}\bigr)
+  +c_{\ell+1}\right),
+$$
+
+with $t_{\ell,-1}=0$.  Lean now constructs one genuine shared-bias CNN of
+exact depth $3L$ satisfying $z_{0,j}=t_{L,j}$ at every original northern
+coordinate.  The complete feature image remains injective throughout.  A
+prefix and receptive-field theorems prove that coordinate $j$ depends only on
+initial coordinates $\max(0,j-L),\ldots,j$.
 
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
@@ -727,14 +748,16 @@ work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer and protected grid gates displayed above
 are not by themselves a universal-approximation theorem.  Arbitrary-depth
-nonlinear composition, arbitrary-height input recovery, and one arbitrary
-signed affine mixture of adjacent northern registers are now verified.  What
-is not yet verified is an iterable compiler that moves across arbitrarily
-many registers or brings deeper rows to the northern boundary; the known
-full-image decoder also runs against the network's causal direction.  The
-remaining decisive task is to compose the new mixing gate with a causal
-moving-frontier invariant, preserve reusable work registers through repeated
-mixing, and then compile arbitrary finite affine lattice expressions.
+nonlinear composition, arbitrary-height input recovery, and arbitrary finite
+schedules of signed local northern-row mixing gates are now verified.  This
+is an iterable causal local CNN compiler, but every stage is still spatially
+shared and only reads the current and western neighboring registers.  It does
+not yet implement position-specific affine combinations, global access to an
+arbitrary register, or transport from deeper rows to the northern boundary;
+the known full-image decoder also runs against the network's causal direction.
+The remaining decisive task is to combine the local schedule with a causal
+moving-frontier/address mechanism and then compile arbitrary finite affine
+lattice expressions.
 
 ## Proof architecture
 
@@ -784,6 +807,7 @@ mixing, and then compile arbitrary finite affine lattice expressions.
 | [`SharedBiasGridGateComposition.lean`](OneChannelCNNUniversality/SharedBiasGridGateComposition.lean) | A genuine depth-four composition of two protected grid gates, the exact nested ReLU formula, stagewise compact bounds, and injectivity |
 | [`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean) | Compilation of every finite signed affine ReLU schedule to an exact-depth shared-bias CNN with pointwise northern-row semantics and injective complete state |
 | [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | Arbitrary signed mixing of adjacent northern registers, injectivity of the weighted horizontal transform, a depth-three protected ReLU gate, and compact parameter selection |
+| [`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean) | Exact compilation of arbitrary finite signed local-gate schedules, prefix dependence, depth $3L$, stagewise compact carriers, and injective complete state |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

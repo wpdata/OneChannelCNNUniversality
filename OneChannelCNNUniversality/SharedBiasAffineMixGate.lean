@@ -127,6 +127,33 @@ theorem weightedMixGateNetwork_gate
   congr 1
   ring
 
+/-- Every original northern-row coordinate is gated after mixing with its
+western predecessor.  At the western boundary the predecessor term is zero. -/
+theorem weightedMixGateNetwork_gate_at
+    {rows cols : ℕ} (x : Image rows cols) (weight b a c M : ℝ)
+    (hlinear : ∀ p q,
+      (weightedMixLayer (rows := rows) (cols := cols) weight b).eval x p q =
+        fullConv (horizontalWeightedKernel weight) x p q + b)
+    (hM : 0 ≤ M)
+    (hbound : ∀ i j,
+      |(weightedMixLayer weight b).eval x i j| ≤ M)
+    (j : Fin cols) :
+    zeroExtend
+        ((weightedMixGateNetwork weight b a c M).eval x) 0 j =
+      relu (a * (zeroExtend x 0 j +
+        if 1 ≤ (j : ℕ) then
+          weight * zeroExtend x 0 ((j : ℕ) - 1)
+        else 0) + c) := by
+  rw [weightedMixGateNetwork, SharedBiasNetworkTo.eval_append]
+  have hgate := protectedGridGateNetwork_gate
+    ((weightedMixLayer weight b).eval x) a (c - a * b) M hM hbound
+    (⟨j, by omega⟩ : Fin (cols + 2 - 1))
+  rw [hgate]
+  rw [zeroExtend_of_lt _ (by omega) (by omega), hlinear]
+  rw [fullConv_horizontalWeightedKernel_nat]
+  congr 1
+  ring
+
 /-- Exact linearization of the mixing layer makes it injective on an
 injectively parameterized family. -/
 theorem weightedMixLayer_injectiveOn

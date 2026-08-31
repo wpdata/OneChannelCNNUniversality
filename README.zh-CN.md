@@ -574,7 +574,26 @@ $$
 
 与此同时，完整特征表示仍保持单射；对于连续单射的有限图像紧族，紧致性会自动选择
 两个统一载波。特别地，$\lambda$ 可以为负，所以该原语既能表达求和也能表达差分；这是
-仓库中第一条已经验证、会在非线性门前混合两个不同输入寄存器的定理。
+仓库中第一条已经验证、会在非线性门前混合两个不同输入寄存器的定理。更强的全坐标定理
+还验证了同一公式会同时作用于每个原始北侧寄存器，并在 $j=0$ 使用西侧零边界。
+
+[`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean)
+闭合了这类空间共享局部门的有限归纳。给定日程
+$((\lambda_1,a_1,c_1),\ldots,(\lambda_L,a_L,c_L))$，定义
+
+$$
+t_{0,j}=x_{0,j},
+\qquad
+t_{\ell+1,j}=\mathrm{ReLU}\!\left(
+  a_{\ell+1}
+  \bigl(t_{\ell,j}+\lambda_{\ell+1}t_{\ell,j-1}\bigr)
+  +c_{\ell+1}\right),
+$$
+
+并规定 $t_{\ell,-1}=0$。Lean 现在会构造一个精确深度为 $3L$ 的真实共享偏置 CNN，
+在每个原始北侧坐标满足 $z_{0,j}=t_{L,j}$，且完整特征图始终保持单射。前缀定理和
+感受野定理进一步证明，第 $j$ 个坐标只依赖初始坐标
+$\max(0,j-L),\ldots,j$。
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
@@ -585,11 +604,11 @@ $$
 南侧寄存器送回西北工作位置并不是可行的下一步。后续需要建立受保护的备份／前沿不变量，
 在计算位置向东南移动时串联算术操作，给出明确的深度／面积界，最后把这个更强的共享偏置
 编译器接到稠密性论证上。单个前沿加法层与受保护的二维网格门本身仍不构成万能逼近定理。
-任意深度非线性组合、任意高度输入恢复，以及一对相邻北侧寄存器的任意带符号仿射混合
-现在都已经得到验证。尚未验证的是一个能够遍历任意多个寄存器、或把更深行送到北侧边界
-的可迭代编译器；已知的全图解码方向还与网络因果方向相反。现在最关键的剩余任务，是把
-新的混合门接入因果移动前沿不变量，在重复混合时保留可再次使用的工作寄存器，最后编译
-任意有限仿射格表达式。
+任意深度非线性组合、任意高度输入恢复，以及任意有限的带符号北侧局部混合日程现在都
+已经得到验证。这已经是一个可迭代的因果局部 CNN 编译器，但每个阶段仍然空间共享，并且
+只读取当前寄存器及其西侧相邻寄存器。它尚不能实现逐位置不同的仿射组合、任意寄存器的
+全局访问，或把更深行送到北侧边界；已知的全图解码方向还与网络因果方向相反。现在最关键
+的剩余任务，是把局部日程接入因果移动前沿／地址机制，最后编译任意有限仿射格表达式。
 
 ## 证明架构
 
@@ -639,6 +658,7 @@ $$
 | [`SharedBiasGridGateComposition.lean`](OneChannelCNNUniversality/SharedBiasGridGateComposition.lean) | 两个受保护网格门组成的真实四层网络、精确嵌套 ReLU 公式、逐阶段紧致界与单射性 |
 | [`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean) | 将任意有限带符号仿射 ReLU 日程编译成精确深度共享偏置 CNN，并验证北侧行逐点语义与完整状态单射性 |
 | [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | 相邻北侧寄存器的任意带符号混合、加权水平变换的单射性、三层受保护 ReLU 门，以及紧集参数选择 |
+| [`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean) | 任意有限带符号局部门日程的精确编译、前缀依赖、深度 $3L$、逐阶段紧致载波与完整状态单射性 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式
