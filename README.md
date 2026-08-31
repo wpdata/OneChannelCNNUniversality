@@ -813,8 +813,71 @@ injective on every compact injective feature family.  This second
 nonadjacent base case validates the finite polynomial mechanism beyond three
 registers, but it is not yet a theorem for arbitrary $n$, general
 two-dimensional feature images, an iterable lattice compiler, or shared-bias
-universal approximation.  A Lagrange-based algebraic prototype for arbitrary
-$n$ is under study and is not claimed here as a proved repository result.
+universal approximation.  The arbitrary-width algebra and its pure-
+convolution realization are now machine-checked below; what remains open is
+the shared carrier and ReLU-network part of the construction.
+
+[`SharedBiasGeneralRidgePolynomial.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgePolynomial.lean)
+formalizes the Lagrange factorization for every depth $d$.  It uses the monic
+nodal factors
+
+$$
+A_i(X)=X+(i+1),\qquad 0\le i<d,
+$$
+
+and defines the target polynomial $R_w$ so that its coefficient of $X^j$ is
+$w(\mathrm{Fin.rev}(j))$; this built-in reversal exactly matches convolution
+at the natural output column.  Lean proves a Lagrange decomposition of $R_w$
+into the nodal product $\prod_i A_i$ and its one-factor complements.  Given
+numbers $\eta_i$ with $\sum_i\eta_i=w_0$, it then constructs linear lower
+factors $B_i$ and proves
+
+$$
+[Y]\prod_{i=0}^{d-1}\bigl(A_i(X)+YB_i(X)\bigr)=R_w(X).
+$$
+
+This is an arbitrary-$d$ machine-checked algebraic theorem, rather than an
+extrapolation from the three- and four-register cases.
+
+[`SharedBiasGeneralRidgeConvolution.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeConvolution.lean)
+turns every factor $A_i(X)+YB_i(X)$ into the genuine $2\times2$ kernel
+
+$$
+K_i=
+\begin{pmatrix}
+i+1 & 1\\
+\beta_i+\eta_i(i+1) & \eta_i
+\end{pmatrix}.
+$$
+
+For an arbitrary heterogeneous list of such kernels, Lean identifies the
+northern and first-southern row recursions with the coefficients of the
+bivariate factor product.  The specialized pure full-convolution chain
+therefore satisfies
+
+$$
+\mathrm{FullConvChain}(x)_{1,d}
+  =\sum_{j=0}^{d}w_jx_j.
+$$
+
+for positive depth.  The algebra also covers the degenerate case $d=0$;
+there the allocation condition forces $w_0=0$, and the southern coordinate
+is outside the depth-zero output.
+
+Its northern boundary is the triangular polynomial transport
+
+$$
+G_d(X)\,\mathrm{Row}_0(x),\qquad
+G_d(X)=\prod_{i=0}^{d-1}\bigl(X+(i+1)\bigr).
+$$
+
+The file also packages any heterogeneous kernel list as a genuine zero-bias
+`SharedBiasNetworkTo`, but its equality with the pure convolution chain is
+proved only under the explicit `LinearBranchAlong` hypothesis that every
+encountered preactivation is nonnegative.  No theorem yet constructs a
+uniform shared carrier establishing that hypothesis, protects the northern
+boundary through the final ReLU, proves its recovery for the genuine ReLU
+network, or establishes shared-bias universal approximation.
 
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 gives a quantitative limitation that includes the arbitrary final affine
@@ -868,13 +931,15 @@ temporary algebraic storage.  The adjacent lattice theorem also supplies exact
 terminal minimum/maximum readouts, while the anisotropic lower bound identifies
 the unavoidable depth cost of long-range interactions.
 
-The decisive missing theorem is now an arbitrary-dimension extension step:
-given a recoverable finite feature image $F$ and an arbitrary affine
-functional $\ell$, append a genuine shared-bias block that keeps $F$
-recoverable and exposes $\mathrm{ReLU}(\ell(F))$ as an internal recoverable
-feature.  Such a theorem would make repeated lattice compilation possible;
-the present $1\times3$ and $1\times4$ constructions prove two nonadjacent
-finite base cases but do not justify the general induction.
+The decisive missing theorem is now the nonlinear network lift of the
+arbitrary-width convolution factorization: given a recoverable finite feature
+image $F$ and an arbitrary affine functional $\ell$, construct shared carriers
+that keep every intermediate factor in the required linear branch, protect
+and recover the northern triangular code through the final ReLU, and expose
+$\mathrm{ReLU}(\ell(F))$ as an internal recoverable feature.  Such a theorem
+would make repeated lattice compilation possible.  The new arbitrary-$d$
+factorization settles its algebraic and pure-convolution core, while the
+genuine shared-bias carrier/recovery induction remains open.
 
 ## Proof architecture
 
@@ -929,6 +994,8 @@ finite base cases but do not justify the general induction.
 | [`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean) | Linear left inversion of the adjacent-ridge backup, exact coordinate recovery by affine readouts, and terminal adjacent minimum/maximum readouts from one depth-two network |
 | [`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean) | A depth-two arbitrary affine ReLU of all three coordinates of a $1\times3$ input, explicit triangular affine recovery, compact parameter selection, and injective complete state |
 | [`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean) | A depth-three arbitrary affine ReLU of all four coordinates of a bounded $1\times4$ input, the triangular northern filter $1+6z+11z^2+6z^3$, explicit affine recovery, compact parameter selection, and injective complete state |
+| [`SharedBiasGeneralRidgePolynomial.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgePolynomial.lean) | Arbitrary-$d$ Lagrange decomposition with reversed target coefficients and exact extraction of $R_w$ as the $Y$ coefficient of a product of bilinear factors |
+| [`SharedBiasGeneralRidgeConvolution.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeConvolution.lean) | Genuine $2\times2$ kernels for every factor, heterogeneous full-convolution chains realizing $\sum_j w_jx_j$ at $(1,d)$, northern nodal-product transport, and a zero-bias ReLU-network bridge conditional on `LinearBranchAlong` |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
