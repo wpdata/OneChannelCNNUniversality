@@ -811,11 +811,11 @@ The carrier terms are known constants, so an explicit affine decoder recovers
 all four input coordinates.  Consequently the complete network remains
 injective on every compact injective feature family.  This second
 nonadjacent base case validates the finite polynomial mechanism beyond three
-registers, but it is not yet a theorem for arbitrary $n$, general
-two-dimensional feature images, an iterable lattice compiler, or shared-bias
-universal approximation.  The arbitrary-width algebra and its pure-
-convolution realization are now machine-checked below; what remains open is
-the shared carrier and ReLU-network part of the construction.
+registers.  The arbitrary-width construction below now subsumes the
+three- and four-register cases for every one-row input width $m\ge 3$.
+It is still a single-ridge extension theorem, not yet a compiler for general
+two-dimensional states, iterated ridge insertion, or shared-bias universal
+approximation.
 
 [`SharedBiasGeneralRidgePolynomial.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgePolynomial.lean)
 formalizes the Lagrange factorization for every depth $d$.  It uses the monic
@@ -874,10 +874,72 @@ $$
 The file also packages any heterogeneous kernel list as a genuine zero-bias
 `SharedBiasNetworkTo`, but its equality with the pure convolution chain is
 proved only under the explicit `LinearBranchAlong` hypothesis that every
-encountered preactivation is nonnegative.  No theorem yet constructs a
-uniform shared carrier establishing that hypothesis, protects the northern
-boundary through the final ReLU, proves its recovery for the genuine ReLU
-network, or establishes shared-bias universal approximation.
+encountered preactivation is nonnegative.  The following carrier, separation,
+selection, and recovery modules discharge that condition for one complete
+arbitrary-width ridge block on a compact input family.
+
+[`SharedBiasGeneralRidgeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCarrier.lean)
+chooses an explicit lower-factor allocation for every $d\ge 2$.  Writing
+$\beta_{d-1}$ for the last Lagrange coefficient, its carrier scale is
+
+$$
+T=\frac{|\beta_{d-1}|+d+2}{d+1},
+$$
+
+and the selected allocation still satisfies $\sum_i\eta_i=w_0$.
+[`SharedBiasGeneralRidgeSeparation.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeSeparation.lean)
+then proves that the final kernel applied to the unit constant carrier of
+size $d\times 2d$ has a uniform gap: every northern coordinate exceeds the
+southern target $(1,d)$ by at least $2$.
+
+[`SharedBiasHeterogeneousCarrier.lean`](OneChannelCNNUniversality/SharedBiasHeterogeneousCarrier.lean)
+lifts an arbitrary heterogeneous factor prefix to genuine shared-bias ReLU
+layers on compact continuous input families.  A tunable nonnegative boost in
+the last prefix layer becomes a spatial address after the terminal
+convolution.  [`SharedBiasTerminalSelection.lean`](OneChannelCNNUniversality/SharedBiasTerminalSelection.lean)
+uses the unit address gap and compactness to choose one global boost and one
+final shared scalar bias.  The target follows the nonlinear ReLU branch,
+while every protected northern coordinate remains the pure signal plus a
+fixed, input-independent offset.
+
+[`SharedBiasGeneralRidgeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeRecovery.lean)
+proves that the complete northern row is injective.  Its generating
+polynomial is the input row polynomial multiplied by the nonzero monic factor
+$G_d$ above, so equality of northern rows forces equality of inputs; adding a
+fixed offset preserves this conclusion.
+
+Finally,
+[`SharedBiasGeneralRidgeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeNetwork.lean)
+assembles these parts into the genuine nonlinear network theorem.  Let
+$m\ge 3$, let $K$ be compact, and let
+$F:X\to\mathbb R^{1\times m}$ be coordinatewise continuous on $K$.  For
+arbitrary $w\in\mathbb R^m$ and $\gamma\in\mathbb R$, Lean constructs a
+one-channel expansive $2\times2$ shared-bias ReLU network $N$ with
+
+$$
+\mathrm{depth}(N)=m-1,
+\qquad
+N(F(x))\in\mathbb R^{m\times(2m-1)},
+$$
+
+such that, for every $x\in K$,
+
+$$
+N(F(x))_{1,m-1}
+=\mathrm{ReLU}\!\left(\sum_{j=0}^{m-1}w_jF(x)_{0,j}+\gamma\right).
+$$
+
+For every northern coordinate $q$, the output also satisfies
+
+$$
+N(F(x))_{0,q}
+=\bigl[G_{m-1}(X)\,\mathrm{Row}_0(F(x))\bigr]_q+c_q,
+$$
+
+where $c_q$ is fixed independently of $x$.  If $F$ is additionally injective
+on $K$, then $N\circ F$ remains injective there.  Thus the arbitrary-width
+single-ridge network lift, including the shared carriers and the final ReLU
+recovery argument, is now machine-checked.
 
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 gives a quantitative limitation that includes the arbitrary final affine
@@ -920,26 +982,29 @@ The same conclusion therefore holds for the shared-bias subclass.  This is a
 sharp fixed-depth locality bound; it is not a non-universality result when
 depth is allowed to grow.
 
-This is experimental proof infrastructure, **not** a shared-bias universal-
-approximation theorem.  The repository's existing full universal-
-approximation theorem still permits arbitrary position-dependent bias images,
-and it remains open in this development whether the shared-scalar-bias
-subclass is universal or non-universal.  The verified three- and four-register
-constructions show that shared kernels and one feature channel do not prevent
-these nonlocal signed affine ReLUs: the unused spatial direction can act as
-temporary algebraic storage.  The adjacent lattice theorem also supplies exact
-terminal minimum/maximum readouts, while the anisotropic lower bound identifies
-the unavoidable depth cost of long-range interactions.
+This result closes the arbitrary-width single-ridge subproblem in this
+formalization, but it is **not** a shared-bias universal-approximation theorem.
+Here the width $m=d+1$ is the spatial length of the input row, not a channel
+count: the network still has exactly one feature channel, a fixed $2\times2$
+kernel shape, and one scalar bias shared across all spatial positions in each
+layer.  The construction pays for those restrictions with depth $d$ and an
+expansive output workspace of size $(d+1)\times(2d+1)$.  It is therefore an
+exact expressivity and compilation result for finite feature vectors embedded
+as one row, not a claim about training efficiency, fixed-resolution image
+architectures, or arbitrary two-dimensional input states.  The repository's
+existing full universal-approximation theorem still permits arbitrary
+position-dependent bias images, and universality of the shared-scalar-bias
+subclass remains open.
 
-The decisive missing theorem is now the nonlinear network lift of the
-arbitrary-width convolution factorization: given a recoverable finite feature
-image $F$ and an arbitrary affine functional $\ell$, construct shared carriers
-that keep every intermediate factor in the required linear branch, protect
-and recover the northern triangular code through the final ReLU, and expose
-$\mathrm{ReLU}(\ell(F))$ as an internal recoverable feature.  Such a theorem
-would make repeated lattice compilation possible.  The new arbitrary-$d$
-factorization settles its algebraic and pure-convolution core, while the
-genuine shared-bias carrier/recovery induction remains open.
+The decisive remaining gap is **composition**, not construction of one
+ridge.  After one block, the recoverable representation has shape
+$m\times(2m-1)$, whereas the arbitrary-width ridge theorem starts from a
+one-row state.  A future compiler must normalize or route that two-dimensional
+state, retain several independently chosen ridge features through later
+shared-bias ReLUs, and then implement the finite lattice combinations used by
+the density argument.  Until that finite multi-ridge compiler is proved, the
+present result must not be described as a shared-bias universal-approximation
+theorem.
 
 ## Proof architecture
 
@@ -996,6 +1061,12 @@ genuine shared-bias carrier/recovery induction remains open.
 | [`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean) | A depth-three arbitrary affine ReLU of all four coordinates of a bounded $1\times4$ input, the triangular northern filter $1+6z+11z^2+6z^3$, explicit affine recovery, compact parameter selection, and injective complete state |
 | [`SharedBiasGeneralRidgePolynomial.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgePolynomial.lean) | Arbitrary-$d$ Lagrange decomposition with reversed target coefficients and exact extraction of $R_w$ as the $Y$ coefficient of a product of bilinear factors |
 | [`SharedBiasGeneralRidgeConvolution.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeConvolution.lean) | Genuine $2\times2$ kernels for every factor, heterogeneous full-convolution chains realizing $\sum_j w_jx_j$ at $(1,d)$, northern nodal-product transport, and a zero-bias ReLU-network bridge conditional on `LinearBranchAlong` |
+| [`SharedBiasGeneralRidgeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCarrier.lean) | Explicit arbitrary-width lower-factor allocation, positive carrier scale, exact allocation sum, and the separated last-factor bound |
+| [`SharedBiasGeneralRidgeSeparation.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeSeparation.lean) | Prefix/final-factor splitting and a uniform gap of at least two between every northern carrier response and the southern ridge target |
+| [`SharedBiasHeterogeneousCarrier.lean`](OneChannelCNNUniversality/SharedBiasHeterogeneousCarrier.lean) | Compact shared-bias linearization for heterogeneous bilinear-kernel prefixes and a tunable terminal carrier boost |
+| [`SharedBiasTerminalSelection.lean`](OneChannelCNNUniversality/SharedBiasTerminalSelection.lean) | Compact terminal compiler selecting one nonlinear target while preserving protected coordinates as pure signal plus a fixed offset |
+| [`SharedBiasGeneralRidgeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeRecovery.lean) | Injectivity of the complete northern nodal-polynomial code, including preservation under an arbitrary fixed offset |
+| [`SharedBiasGeneralRidgeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeNetwork.lean) | A genuine depth-$d$ arbitrary-width affine-ReLU ridge network, exact target evaluation, protected northern recovery, and injectivity on compact injective feature families |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
@@ -1078,7 +1149,8 @@ forbidden-source scan, and the axiom report above.
 
 This repository publishes the Lean source and its machine-checkable results.
 Lean kernel verification establishes that the position-dependent-bias
-universal-approximation theorem and the narrower shared-bias boundary/carrier lemmas
+universal-approximation theorem and the narrower shared-bias arbitrary-width
+single-ridge theorem with its supporting boundary/carrier lemmas
 follow from the stated definitions and reported foundations.  It does not
 turn the unresolved shared-bias universality question into a theorem, and it
 does not by itself establish external peer review or historical priority.

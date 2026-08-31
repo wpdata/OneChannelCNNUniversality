@@ -656,9 +656,9 @@ $$
 
 给出。载波项是已知常数，因此一个显式仿射解码器可以精确恢复全部四个输入坐标；由此，
 完整网络在任意紧的单射特征族上保持单射。这是第二个非相邻基例，并验证了有限多项式机制
-确实能越过三寄存器情形；但它还不是任意 $n$、一般二维特征图、可迭代格编译器或共享偏置
-万能逼近定理。任意宽度的代数分解及其纯卷积实现现已在下述模块中通过机器检查；仍未完成
-的是共享载波与 ReLU 网络部分。
+确实能越过三寄存器情形。下面的任意宽度构造现已把三寄存器和四寄存器基例推广到所有
+$m\ge 3$ 的单行输入。它仍然是单个 ridge 的扩展定理，还不是一般二维状态、重复加入 ridge
+或共享偏置万能逼近的编译器。
 
 [`SharedBiasGeneralRidgePolynomial.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgePolynomial.lean)
 对任意深度 $d$ 形式化了 Lagrange 分解。它采用首一节点因子
@@ -709,8 +709,63 @@ $$
 
 该文件也把任意逐层变化的卷积核列表封装成真实的零偏置 `SharedBiasNetworkTo`，但只有在
 显式 `LinearBranchAlong` 假设下——即沿途遇到的每个预激活都非负——才证明其求值等于
-纯卷积链。目前尚未证明：构造统一共享载波以保证该假设；在最终 ReLU 中保护北侧边界；
-为真实 ReLU 网络证明北侧编码恢复；或得到共享偏置万能逼近定理。
+纯卷积链。下面的载波、分离、选择与恢复模块已经对紧输入族上的一个完整任意宽度 ridge
+块消除了这一条件。
+
+[`SharedBiasGeneralRidgeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCarrier.lean)
+对每个 $d\ge 2$ 选择一个显式的下因子分配。若 $\beta_{d-1}$ 是最后一个 Lagrange 系数，
+载波尺度取为
+
+$$
+T=\frac{|\beta_{d-1}|+d+2}{d+1},
+$$
+
+同时仍有 $\sum_i\eta_i=w_0$。
+[`SharedBiasGeneralRidgeSeparation.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeSeparation.lean)
+进一步证明：最后一个卷积核作用在大小为 $d\times 2d$ 的单位常值载波上时，每个北侧坐标
+都至少比南侧目标 $(1,d)$ 高 $2$。
+
+[`SharedBiasHeterogeneousCarrier.lean`](OneChannelCNNUniversality/SharedBiasHeterogeneousCarrier.lean)
+把任意逐层变化的因子前缀提升为紧连续输入族上的真实共享偏置 ReLU 层。前缀最后一层中
+可调的非负增量经过终端卷积后变成空间地址。
+[`SharedBiasTerminalSelection.lean`](OneChannelCNNUniversality/SharedBiasTerminalSelection.lean)
+利用单位地址间隙与紧致性，统一选出一个全局增量和最后一个共享标量偏置：目标进入非线性
+ReLU 分支，而每个受保护的北侧坐标仍等于纯信号加一个与输入无关的固定偏移。
+
+[`SharedBiasGeneralRidgeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeRecovery.lean)
+证明完整北侧行是单射编码。其生成多项式等于输入行多项式乘以上面的非零首一因子 $G_d$，
+所以北侧行相等会强制输入相等；加上固定偏移也不改变这一结论。
+
+最后，
+[`SharedBiasGeneralRidgeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeNetwork.lean)
+把这些部件装配成真实的非线性网络定理。设 $m\ge 3$，$K$ 为紧集，且
+$F:X\to\mathbb R^{1\times m}$ 在 $K$ 上逐坐标连续。对任意
+$w\in\mathbb R^m$ 与 $\gamma\in\mathbb R$，Lean 构造一个采用 $2\times2$ 卷积核、
+单通道、逐层共享标量偏置的扩张型 ReLU 网络 $N$，满足
+
+$$
+\mathrm{depth}(N)=m-1,
+\qquad
+N(F(x))\in\mathbb R^{m\times(2m-1)},
+$$
+
+并且对每个 $x\in K$ 都有
+
+$$
+N(F(x))_{1,m-1}
+=\mathrm{ReLU}\!\left(\sum_{j=0}^{m-1}w_jF(x)_{0,j}+\gamma\right).
+$$
+
+对每个北侧坐标 $q$，输出还满足
+
+$$
+N(F(x))_{0,q}
+=\bigl[G_{m-1}(X)\,\mathrm{Row}_0(F(x))\bigr]_q+c_q,
+$$
+
+其中 $c_q$ 与 $x$ 无关。如果 $F$ 在 $K$ 上还满足单射性，那么 $N\circ F$ 在 $K$ 上
+仍然单射。也就是说，任意宽度的单个 ridge 网络提升——包括共享载波和最终 ReLU 后的
+恢复论证——现已全部通过机器检查。
 
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 给出了覆盖任意最终仿射读出的定量限制。深度为 $L$ 的扩张型 $2\times2$ 网络，其感受野
@@ -745,17 +800,19 @@ $$
 因此共享偏置子类当然也满足同一必要条件。这是锐利的固定深度局部性下界；允许深度
 增长时，它并不是非万能性结论。
 
-这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
-逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
-不万能。已经验证的三寄存器和四寄存器构造说明，共享卷积核和单一通道并不会排除这些
-非局部带符号仿射 ReLU：闲置的空间方向可以充当临时代数存储。相邻格定理则给出精确的
-终端最小值／最大值读出，而二维各向异性下界确定了长程交互不可避免的深度代价。
+这个结论解决了本形式化工程中的任意宽度单 ridge 子问题，但它**不是**共享偏置万能逼近
+定理。这里的宽度 $m=d+1$ 是输入行的空间长度，而不是通道数：网络始终只有一个特征通道，
+采用固定的 $2\times2$ 卷积核形状，并且每层只有一个在所有空间位置共享的标量偏置。为满足
+这些限制，构造使用深度 $d$，并把空间工作区扩张到 $(d+1)\times(2d+1)$。因此，它对于把
+有限特征向量编码为一行后的精确表达能力和网络编译具有明确意义；但它不是关于训练效率、
+固定分辨率图像架构或任意二维输入状态的结论。仓库中已有的完整万能逼近定理仍使用任意
+逐位置偏置图像，而共享标量偏置子类是否万能仍然是开放问题。
 
-当前决定性的缺口，是把任意宽度卷积分解提升为非线性网络定理：给定一个可恢复的有限
-特征图 $F$ 和任意仿射泛函 $\ell$，需要构造共享载波，使每个中间因子都处于所需线性支，
-并让北侧三角编码穿过最终 ReLU 后仍受保护、可恢复，同时把
-$\mathrm{ReLU}(\ell(F))$ 暴露为新的内部可恢复特征。这样的定理才能支持反复编译格表达式。
-新的任意 $d$ 分解已经解决其代数与纯卷积核心，但真实共享偏置网络的载波／恢复归纳仍未完成。
+当前决定性的缺口已经变成**组合**，而不是构造单个 ridge。一个块执行后，可恢复表示的
+形状是 $m\times(2m-1)$，但任意宽度 ridge 定理的输入仍是单行状态。后续编译器必须规范化
+或路由这个二维状态，让多个彼此独立选取的 ridge 特征穿过后续共享偏置 ReLU 后仍可保留，
+再实现稠密性论证所需的有限格组合。在这个有限多 ridge 编译器被证明以前，当前结果不能被
+称为共享偏置万能逼近定理。
 
 ## 证明架构
 
@@ -812,6 +869,12 @@ $\mathrm{ReLU}(\ell(F))$ 暴露为新的内部可恢复特征。这样的定理�
 | [`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean) | 对有界 $1\times4$ 全部四坐标的三层任意仿射 ReLU、北侧三角滤波器 $1+6z+11z^2+6z^3$、显式仿射恢复、紧集参数选择与完整状态单射性 |
 | [`SharedBiasGeneralRidgePolynomial.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgePolynomial.lean) | 任意 $d$ 的 Lagrange 分解、反序目标系数，以及从双线性因子乘积的 $Y$ 系数精确提取 $R_w$ |
 | [`SharedBiasGeneralRidgeConvolution.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeConvolution.lean) | 每个因子的真实 $2\times2$ 核、在 $(1,d)$ 实现 $\sum_jw_jx_j$ 的逐层变化完整卷积链、北侧节点乘积传输，以及以 `LinearBranchAlong` 为条件的零偏置 ReLU 网络桥 |
+| [`SharedBiasGeneralRidgeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCarrier.lean) | 任意宽度下因子的显式分配、正载波尺度、精确分配和及最后因子的分离界 |
+| [`SharedBiasGeneralRidgeSeparation.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeSeparation.lean) | 前缀／末两因子拆分，以及每个北侧载波响应相对南侧 ridge 目标至少为二的统一间隙 |
+| [`SharedBiasHeterogeneousCarrier.lean`](OneChannelCNNUniversality/SharedBiasHeterogeneousCarrier.lean) | 逐层变化双线性核前缀的紧集共享偏置线性化，以及可调的终端载波增量 |
+| [`SharedBiasTerminalSelection.lean`](OneChannelCNNUniversality/SharedBiasTerminalSelection.lean) | 选择单个非线性目标、同时把受保护坐标保持为纯信号加固定偏移的紧集终端编译器 |
+| [`SharedBiasGeneralRidgeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeRecovery.lean) | 完整北侧节点多项式编码的单射性，以及任意固定偏移下的保持 |
+| [`SharedBiasGeneralRidgeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeNetwork.lean) | 真实的深度 $d$ 任意宽度仿射 ReLU ridge 网络、目标精确求值、北侧受保护恢复，以及紧单射特征族上的单射性 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
@@ -890,6 +953,7 @@ rg -n --glob '*.lean' \
 ## 范围与状态
 
 本仓库发布 Lean 源码及其可由机器复核的结果。Lean 内核验证说明：逐位置偏置万能逼近
-定理和约束更强的共享偏置边界／载波引理都可由给定定义与报告中的基础推出；但这并不会把尚未
-解决的共享偏置万能性问题变成定理。机器验证本身也不等同于外部同行评审，不构成历史
+定理和约束更强的共享偏置任意宽度单 ridge 定理及其边界／载波引理，都可由给定定义与
+报告中的基础推出；但这并不会把尚未解决的共享偏置万能性问题变成定理。机器验证本身也
+不等同于外部同行评审，不构成历史
 优先权判断。
