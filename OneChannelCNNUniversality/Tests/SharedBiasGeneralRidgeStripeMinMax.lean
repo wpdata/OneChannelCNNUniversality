@@ -1,0 +1,16 @@
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeMinMax
+
+/-! # Regression tests for signed-stripe min/max readouts -/
+
+namespace OneChannelCNNUniversality
+
+#check generalRidgeStripeTargetLinearMap
+#check generalRidgeStripeMinLinearMap
+#check generalRidgeStripeMaxLinearMap
+#check generalRidgeStripeMinReadoutWeight
+#check generalRidgeStripeMaxReadoutWeight
+#check exists_generalRidgeStripeMinMaxReadouts_on_compact
+
+#print axioms exists_generalRidgeStripeMinMaxReadouts_on_compact
+
+end OneChannelCNNUniversality

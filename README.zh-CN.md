@@ -951,8 +951,19 @@ $$
 受保护坐标都保持在末层 ReLU 的线性分支。
 [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean)
 进一步证明：当 $T\ne0$ 时，完整北侧行是原输入的单射线性编码；它还构造了精确恢复
-输入的线性左逆，并证明整个真实 ridge 网络在紧单射特征族上仍保持单射。因此，
-“任意宽度单 ridge”子问题现已完成。
+输入的线性左逆，并证明整个真实 ridge 网络在紧单射特征族上仍保持单射；此外还构造了
+有限仿射读出权重，可从同一个最终特征图精确恢复任意另选的输入仿射函数。
+[`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean)
+把恢复的仿射值与受保护 ridge 坐标组合起来，证明对任意两个输入仿射函数 $A,B$ 都存在
+精确的终端读出：
+
+$$
+\min(A,B)=A-\mathrm{ReLU}(A-B),\qquad
+\max(A,B)=B+\mathrm{ReLU}(A-B).
+$$
+
+所得完整状态仍保持单射。因此，“任意宽度单 ridge”子问题及其第一个二元格运算接口
+现已完成。
 通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
 同时保留最后线性组合所需的状态。
 
@@ -1100,7 +1111,8 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean) | 真实 seed 加 proper-factor 网络：一个紧集阈值同时保证前缀线性化及其与形式状态的北侧两行一致性 |
 | [`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean) | 带符号条带因子对 seed 地址、局部地址和任意线性 ridge 信号的精确实现 |
 | [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | 已完成的深度 $n+3$ 真实单通道共享偏置 $2\times2$ 网络：在紧输入族上精确计算任意仿射 ReLU ridge |
-| [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | 北侧条带编码的单射性和线性左逆，以及整个真实 ridge 状态在紧单射特征族上的单射性 |
+| [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | 北侧条带编码的单射性与线性左逆、有限读出权重的精确仿射恢复，以及整个真实 ridge 状态的单射性 |
+| [`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean) | 任意两个输入仿射函数的精确终端最小值／最大值读出，并保持真实 ridge 完整状态的单射性 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

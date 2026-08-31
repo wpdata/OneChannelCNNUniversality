@@ -13,11 +13,22 @@ open Set
 #check generalRidgeStripeVariableNorthLinearMap_injective
 #check generalRidgeStripeVariableNorthLeftInverse
 #check generalRidgeStripeVariableNorthLeftInverse_apply
+#check generalRidgeStripeNorthProjection
+#check generalRidgeStripeNorthOffset
+#check generalRidgeStripeAffineRecoveryLinearMap
+#check generalRidgeStripeAffineReadoutWeight
+#check generalRidgeStripeAffineReadoutConstant
+#check generalRidgeStripeAffineReadout_spec
+#check generalRidgeStripeNetwork_row_zero_eq_code_add_offset
 #check exists_injective_generalRidgeStripeNetwork_on_compact
+#check exists_generalRidgeStripeNetwork_with_affine_readout_on_compact
 
 #print axioms generalRidgeStripeVariableNorthRow_injective
 #print axioms generalRidgeStripeVariableNorthLeftInverse_apply
+#print axioms generalRidgeStripeAffineReadout_spec
+#print axioms generalRidgeStripeNetwork_row_zero_eq_code_add_offset
 #print axioms exists_injective_generalRidgeStripeNetwork_on_compact
+#print axioms exists_generalRidgeStripeNetwork_with_affine_readout_on_compact
 
 /-- The smallest-width variable northern code is faithful for every nonzero
 reciprocal scale. -/

@@ -1,5 +1,6 @@
 import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeNetwork
 import OneChannelCNNUniversality.SharedBiasGeneralRidgeRecovery
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeReadout
 
 /-!
 # Recovery from the genuine signed-stripe ridge network
@@ -152,6 +153,124 @@ theorem generalRidgeStripeVariableNorthLeftInverse_apply {n : ℕ}
   exact LinearMap.ker_eq_bot.mpr
     (generalRidgeStripeVariableNorthLinearMap_injective w T hT)
 
+/-- Projection of the complete signed-stripe output onto its northern row. -/
+def generalRidgeStripeNorthProjection (n : ℕ) :
+    Image (n + 4) (2 * (n + 2) + 1) →ₗ[ℝ]
+      (Fin (2 * (n + 2) + 1) → ℝ) where
+  toFun z q := z ⟨0, by omega⟩ q
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- Fixed affine offset carried by row zero of the completed genuine ridge
+network. -/
+noncomputable def generalRidgeStripeNorthOffset {n : ℕ}
+    (w : Fin (n + 2) → ℝ) (T c t theta : ℝ) :
+    Fin (2 * (n + 2) + 1) → ℝ :=
+  fun q ↦
+    c * generalRidgeStripeSeedAddressImage w T ⟨0, by omega⟩ q +
+      t * generalRidgeStripeFinalLocalAddressImage w T ⟨0, by omega⟩ q +
+      (theta - c * generalRidgeStripeSeedAddressImage w T
+          (generalRidgeStripeTarget n).1 (generalRidgeStripeTarget n).2 -
+        t * generalRidgeStripeFinalLocalAddressImage w T
+          (generalRidgeStripeTarget n).1 (generalRidgeStripeTarget n).2)
+
+/-- Linear part of decoding an arbitrary input linear functional from a
+complete signed-stripe output image. -/
+noncomputable def generalRidgeStripeAffineRecoveryLinearMap {n : ℕ}
+    (w : Fin (n + 2) → ℝ) (T : ℝ) (a : Fin (n + 2) → ℝ) :
+    Image (n + 4) (2 * (n + 2) + 1) →ₗ[ℝ] ℝ :=
+  (generalRidgeAffineInputLinearMap a).comp
+    ((generalRidgeStripeVariableNorthLeftInverse w T).comp
+      (generalRidgeStripeNorthProjection n))
+
+/-- Ordinary finite readout weights implementing signed-stripe affine
+recovery. -/
+noncomputable def generalRidgeStripeAffineReadoutWeight {n : ℕ}
+    (w : Fin (n + 2) → ℝ) (T : ℝ) (a : Fin (n + 2) → ℝ) :
+    Image (n + 4) (2 * (n + 2) + 1) :=
+  linearReadoutWeights (generalRidgeStripeAffineRecoveryLinearMap w T a)
+
+/-- Constant correction removing the fixed row-zero carrier offset. -/
+noncomputable def generalRidgeStripeAffineReadoutConstant {n : ℕ}
+    (w : Fin (n + 2) → ℝ) (T c t theta : ℝ)
+    (a : Fin (n + 2) → ℝ) (alpha : ℝ) : ℝ :=
+  alpha - generalRidgeAffineInputLinearMap a
+    (generalRidgeStripeVariableNorthLeftInverse w T
+      (generalRidgeStripeNorthOffset w T c t theta))
+
+/-- Any output whose northern row is the signed-stripe linear code plus its
+fixed offset admits exact recovery of every input affine functional. -/
+theorem generalRidgeStripeAffineReadout_spec {n : ℕ}
+    (w : Fin (n + 2) → ℝ) (T c t theta : ℝ) (hT : T ≠ 0)
+    (a : Fin (n + 2) → ℝ) (alpha : ℝ)
+    (z : Image (n + 4) (2 * (n + 2) + 1))
+    (x : Image 1 (n + 2))
+    (hnorth : ∀ q : Fin (2 * (n + 2) + 1),
+      z ⟨0, by omega⟩ q =
+        generalRidgeStripeVariableNorthLinearMap w T x q +
+          generalRidgeStripeNorthOffset w T c t theta q) :
+    (∑ p, ∑ q, generalRidgeStripeAffineReadoutWeight w T a p q * z p q) +
+        generalRidgeStripeAffineReadoutConstant w T c t theta a alpha =
+      (∑ j, a j * x 0 j) + alpha := by
+  rw [generalRidgeStripeAffineReadoutWeight, linearReadoutWeights_apply]
+  have hprojection :
+      generalRidgeStripeNorthProjection n z =
+        generalRidgeStripeVariableNorthLinearMap w T x +
+          generalRidgeStripeNorthOffset w T c t theta := by
+    funext q
+    exact hnorth q
+  change generalRidgeAffineInputLinearMap a
+      (generalRidgeStripeVariableNorthLeftInverse w T
+        (generalRidgeStripeNorthProjection n z)) +
+      (alpha - generalRidgeAffineInputLinearMap a
+        (generalRidgeStripeVariableNorthLeftInverse w T
+          (generalRidgeStripeNorthOffset w T c t theta))) = _
+  rw [hprojection, map_add,
+    generalRidgeStripeVariableNorthLeftInverse_apply w T hT, map_add]
+  change
+    ((∑ j, a j * x 0 j) +
+        generalRidgeAffineInputLinearMap a
+          (generalRidgeStripeVariableNorthLeftInverse w T
+            (generalRidgeStripeNorthOffset w T c t theta))) +
+      (alpha - generalRidgeAffineInputLinearMap a
+        (generalRidgeStripeVariableNorthLeftInverse w T
+          (generalRidgeStripeNorthOffset w T c t theta))) = _
+  ring
+
+/-- The northern row formula extracted from the protected-coordinate law of
+the completed genuine ridge network. -/
+theorem generalRidgeStripeNetwork_row_zero_eq_code_add_offset {n : ℕ}
+    (w : Fin (n + 2) → ℝ) (T c t theta : ℝ)
+    (x : Image 1 (n + 2))
+    (hbehavior : ∀ (p : Fin (n + 4))
+      (q : Fin (2 * (n + 2) + 1)), (p : ℕ) ≤ 1 →
+      (generalRidgeStripeNetwork w T c t theta).eval x p q =
+        if (p, q) = generalRidgeStripeTarget n then
+          relu (∑ j, w j * x 0 j + theta)
+        else
+          twoCarrierPreactivation
+            (generalRidgeStripeVariableSignal w T x)
+            (generalRidgeStripeSeedAddressImage w T)
+            (generalRidgeStripeFinalLocalAddressImage w T)
+            (generalRidgeStripeTarget n) theta c t p q)
+    (q : Fin (2 * (n + 2) + 1)) :
+    (generalRidgeStripeNetwork w T c t theta).eval x ⟨0, by omega⟩ q =
+      generalRidgeStripeVariableNorthLinearMap w T x q +
+        generalRidgeStripeNorthOffset w T c t theta q := by
+  let p0 : Fin (n + 4) := ⟨0, by omega⟩
+  have hne : (p0, q) ≠ generalRidgeStripeTarget n := by
+    intro heq
+    have hrow := congrArg (fun z ↦ (z.1 : ℕ)) heq
+    simp [p0, generalRidgeStripeTarget] at hrow
+  have h := hbehavior p0 q (by simp [p0])
+  rw [if_neg hne] at h
+  change (generalRidgeStripeNetwork w T c t theta).eval x p0 q = _
+  rw [h]
+  simp [generalRidgeStripeVariableNorthLinearMap,
+    generalRidgeStripeVariableNorthRow,
+    generalRidgeStripeNorthOffset, twoCarrierPreactivation, p0]
+  ring
+
 /-- Compact exact-ridge construction strengthened with injectivity of the
 complete genuine network state whenever the supplied feature family is
 injective. -/
@@ -201,5 +320,53 @@ theorem exists_injective_generalRidgeStripeNetwork_on_compact
     generalRidgeStripeVariableSignal w T (F y) p0 q
   simp only [twoCarrierPreactivation] at heqrow
   linarith
+
+/-- End-to-end compact interface exposing both nonlinear and affine
+information.  The same genuine network computes the prescribed ReLU ridge at
+its target, admits an ordinary finite affine readout for any independently
+chosen input affine functional, and preserves injectivity of the input
+feature family. -/
+theorem exists_generalRidgeStripeNetwork_with_affine_readout_on_compact
+    {X : Type*} [TopologicalSpace X] {K : Set X} (hK : IsCompact K)
+    {n : ℕ} (F : X → Image 1 (n + 2))
+    (hF : ContinuousFeatureOn K F) (hFinjective : Set.InjOn F K)
+    (w : Fin (n + 2) → ℝ) (theta : ℝ)
+    (a : Fin (n + 2) → ℝ) (alpha : ℝ) :
+    ∃ (T c t : ℝ)
+      (weight : Image (n + 4) (2 * (n + 2) + 1))
+      (constant : ℝ),
+      1 ≤ T ∧ 0 < c ∧ 0 < t ∧
+      (generalRidgeStripeNetwork w T c t theta).net.depth = n + 3 ∧
+      (∀ x ∈ K,
+        (generalRidgeStripeNetwork w T c t theta).eval (F x)
+            (generalRidgeStripeTarget n).1
+            (generalRidgeStripeTarget n).2 =
+          relu (∑ j, w j * F x 0 j + theta) ∧
+        (∑ p, ∑ q,
+            weight p q *
+              (generalRidgeStripeNetwork w T c t theta).eval (F x) p q) +
+            constant =
+          (∑ j, a j * F x 0 j) + alpha) ∧
+      Set.InjOn
+        (fun x ↦ (generalRidgeStripeNetwork w T c t theta).eval (F x)) K := by
+  obtain ⟨T, c, t, hT, hc, ht, hdepth, hbehavior, hinjective⟩ :=
+    exists_injective_generalRidgeStripeNetwork_on_compact
+      hK F hF hFinjective w theta
+  let weight := generalRidgeStripeAffineReadoutWeight w T a
+  let constant :=
+    generalRidgeStripeAffineReadoutConstant w T c t theta a alpha
+  refine ⟨T, c, t, weight, constant, hT, hc, ht, hdepth, ?_, hinjective⟩
+  intro x hx
+  constructor
+  · have htarget := hbehavior x hx
+      (generalRidgeStripeTarget n).1
+      (generalRidgeStripeTarget n).2
+      (by simp [generalRidgeStripeTarget])
+    simpa using htarget
+  · apply generalRidgeStripeAffineReadout_spec w T c t theta
+      (ne_of_gt (zero_lt_one.trans_le hT)) a alpha
+    intro q
+    exact generalRidgeStripeNetwork_row_zero_eq_code_add_offset
+      w T c t theta (F x) (hbehavior x hx) q
 
 end OneChannelCNNUniversality
