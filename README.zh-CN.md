@@ -992,6 +992,12 @@ $m,2m,\ldots,rm$ 列同时精确计算这 $r$ 个线性形式。因此，无碰�
 非目标坐标处至少高出一个单位，那么一个正尺度和一个广播标量偏置就能在全部目标上同时
 施加 ReLU，而所有受保护非目标坐标精确保持线性。真实最终卷积层的分解定理把这一抽象
 判据直接连接到共享偏置网络层。目前剩余的是为上述等距打包目标显式构造满足判据的载体。
+[`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean)
+消除了该构造中最主要的尺寸错配。现在带符号条带的因子深度与种子宽度彼此独立：对任意
+因子深度 $d=n+2$ 和种子宽度 $m+1$，Lean 都构造了有限误差界及显式向上闭阈值
+$T_0=2(B+1)$。超过该阈值后，每个真实 proper prefix 在北侧两行和全部实际输出列上都
+至少为一。因此，并行打包不再需要仅为保持前缀 ReLU 线性而把宽度 $m$ 的输入填充到
+深度 $rm$。
 通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
 同时保留最后线性组合所需的状态。
 
@@ -1144,6 +1150,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | 任意标量 ridge 倍数加任意仿射跳连项的精确有限读出，并保持真实隐藏状态的单射性 |
 | [`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean) | 无碰撞系数打包，以及用一个深度 $rm$ 的双线性链在分离的第二行目标上计算 $r$ 个独立的宽度 $m$ 线性形式 |
 | [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | 用共同基线载体在有限目标集上同时执行紧集 ReLU 选择，并给出真实最终层的精确分解定理 |
+| [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | 输入宽度与因子深度独立的条带前缀载体，以及使北侧两行对任意种子宽度统一保持线性的显式阈值 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

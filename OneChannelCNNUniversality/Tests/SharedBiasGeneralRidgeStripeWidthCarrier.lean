@@ -1,0 +1,19 @@
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeWidthCarrier
+
+/-! # Regression tests for independent-width signed-stripe carriers -/
+
+namespace OneChannelCNNUniversality
+
+#check rowPolynomial_constantTwoStripe_width
+#check generalRidgeStripeProperPrefix_carrier_row_zero_width
+#check generalRidgeStripeProperPrefix_carrier_row_one_width
+#check generalRidgeStripeWidthPrefixErrorBound
+#check generalRidgeStripeWidthCarrierThreshold
+#check generalRidgeStripeProperPrefix_carrier_unitLower_width
+#check generalRidgeStripeTwistedProperFactors_unitLower_width_of_large
+#check exists_generalRidgeStripeTwistedProperFactors_unitLower_width_threshold
+
+#print axioms generalRidgeStripeProperPrefix_carrier_unitLower_width
+#print axioms generalRidgeStripeTwistedProperFactors_unitLower_width_of_large
+
+end OneChannelCNNUniversality

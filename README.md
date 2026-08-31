@@ -1237,6 +1237,14 @@ linear.  A final-layer convolutional decomposition theorem connects this
 abstract criterion directly to a genuine shared-bias layer.  What remains is
 the explicit carrier realizing this criterion for the equally spaced packed
 ridge targets.
+[`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean)
+removes the main size mismatch in that construction.  The signed-stripe
+factor depth and seed width are now independent: for arbitrary factor depth
+$d=n+2$ and seed width $m+1$, Lean constructs the finite error bound and the
+explicit upward-closed threshold $T_0=2(B+1)$.  Above it, every genuine
+proper prefix is at least one on both northern rows and every actual output
+column.  Thus parallel packing no longer needs to pad a width-$m$ input to
+the depth-$rm$ factor length merely to keep the prefix ReLUs linear.
 Compiling finitely many such ridges into one shared-bias network, while
 retaining the state needed for their final linear combination, remains the
 next step toward the shared-bias universal-approximation theorem.
@@ -1414,6 +1422,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | Exact finite readout of an arbitrary scalar ridge multiple plus an arbitrary affine skip term, with the genuine hidden state still injective |
 | [`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean) | Collision-free coefficient packing and one depth-$rm$ bilinear chain computing $r$ independent width-$m$ linear forms at separated row-one targets |
 | [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | Compact simultaneous ReLU selection on a finite target set from one common-baseline carrier, including the exact genuine final-layer decomposition theorem |
+| [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | Independent-width signed-stripe prefix carrier, with one explicit threshold keeping both northern rows uniformly linear for arbitrary seed width |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
