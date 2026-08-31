@@ -614,6 +614,31 @@ $$
 连续单射输入族选出一个统一载波。因此，任意相邻仿射 ridge 可以在不丢失完整输入状态
 的情况下加入网络；但若要反复加入彼此独立的 ridge，仍需构造符合因果方向的操作数布局。
 
+[`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean)
+把上述恢复结论加强到仿射读出层面。三角备份的线性部分具有一个选定的线性左逆，因而
+每个原输入坐标都能从同一个两层网络的完整输出中，由有限仿射读出精确恢复。当
+$(\alpha,\beta,\gamma)=(1,-1,0)$ 时，同一个固定网络的两组不同读出分别给出
+
+$$
+\min(a,b)=a-\mathrm{ReLU}(a-b),\qquad
+\max(a,b)=b+\mathrm{ReLU}(a-b).
+$$
+
+对紧的单射输入族，完整特征表示仍保持单射。这里得到的是终端仿射读出：所选左逆并非
+因果卷积层，因此该结果还不能把嵌套的最小值／最大值表达式编译到隐藏网络内部。
+
+[`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean)
+给出了本工程中第一个精确的非相邻任意仿射门。对有界的 $1\times3$ 输入和任意
+$r_0,r_1,r_2,\gamma\in\mathbb R$，一个真实的两层网络会在输出坐标 $(1,2)$ 精确计算
+
+$$
+\mathrm{ReLU}(r_0x_0+r_1x_1+r_2x_2+\gamma).
+$$
+
+构造把第二个空间方向用作临时存储。北侧三个输出坐标形成对角尺度严格为正的显式三角
+仿射编码，并有一个显式解码器精确恢复 $(x_0,x_1,x_2)$，所以完整输出保持单射。这是
+一个精确的三寄存器扩展定理，但还不是任意维仿射 ReLU 扩展，也不是可迭代的万能编译器。
+
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 给出了覆盖任意最终仿射读出的定量限制。深度为 $L$ 的扩张型 $2\times2$ 网络，其感受野
 半径至多为 $L$。把符号 $\sigma,\tau\in\{-1,1\}$ 分别放在
@@ -629,20 +654,34 @@ $$
 这是长程非线性交互的深度下界，而不是对无界深度网络的非万能定理。证明只使用有限感受野
 和最终读出的线性性，并不依赖偏置共享，因此不能把该下界错误归因于共享标量偏置这一限制。
 
+[`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean)
+把这一限制推广到任意固定核形状和真正的二维间隔。对于整个逐坐标单位立方体上的目标
+
+$$
+F(x)=x_{0,0}x_{A,B},
+$$
+
+即使允许隐藏层使用任意逐位置偏置图像，网络也不可能以小于 $1$ 的一致误差逼近它，
+除非同时满足
+
+$$
+A\le d(k_{\mathrm{rows}}-1),\qquad
+B\le d(k_{\mathrm{cols}}-1).
+$$
+
+因此共享偏置子类当然也满足同一必要条件。这是锐利的固定深度局部性下界；允许深度
+增长时，它并不是非万能性结论。
+
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
-不万能。
-任意目标现在已经能在“保护其东南象限”的条件下端到端地被选择，这消除了原先只能选择
-西北角以及只在证明层面假设载波的限制。任意有限后继选择日程也已经能够递归编译。剩余
-任意有限递归现在已经在“重复选择西北寄存器”的范围内闭合；而因果性表明，把东侧或
-南侧寄存器送回西北工作位置并不是可行的下一步。后续需要建立受保护的备份／前沿不变量，
-在计算位置向东南移动时串联算术操作，给出明确的深度／面积界，最后把这个更强的共享偏置
-编译器接到稠密性论证上。单个前沿加法层与受保护的二维网格门本身仍不构成万能逼近定理。
-任意深度非线性组合、任意高度输入恢复，以及任意有限的带符号北侧局部混合日程现在都
-已经得到验证。这已经是一个可迭代的因果局部 CNN 编译器，但每个阶段仍然空间共享，并且
-只读取当前寄存器及其西侧相邻寄存器。它尚不能实现逐位置不同的仿射组合、任意寄存器的
-全局访问，或把更深行送到北侧边界；已知的全图解码方向还与网络因果方向相反。现在最关键
-的剩余任务，是把局部日程接入因果移动前沿／地址机制，最后编译任意有限仿射格表达式。
+不万能。新的三寄存器构造说明，共享卷积核和单一通道并不会排除所有非局部带符号仿射
+ReLU：闲置的空间方向可以充当临时代数存储。相邻格定理则给出精确的终端最小值／最大值
+读出，而二维各向异性下界确定了长程交互不可避免的深度代价。
+
+当前决定性的缺口是任意维扩展步骤：给定一个可恢复的有限特征图 $F$ 和任意仿射泛函
+$\ell$，追加一个真实共享偏置块，在保持 $F$ 可恢复的同时，把
+$\mathrm{ReLU}(\ell(F))$ 暴露为新的内部可恢复特征。这样的定理才能支持反复编译格
+表达式；现有 $1\times3$ 构造证明了第一个非相邻有限情形，但还不足以支撑一般归纳。
 
 ## 证明架构
 
@@ -694,7 +733,10 @@ $$
 | [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | 相邻北侧寄存器的任意带符号混合、加权水平变换的单射性、三层受保护 ReLU 门，以及紧集参数选择 |
 | [`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean) | 任意有限带符号局部门日程的精确编译、前缀依赖、深度 $3L$、逐阶段紧致载波与完整状态单射性 |
 | [`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean) | 两层任意相邻仿射 ridge、精确东南移位三角备份、从南到北恢复、紧集载波选择与完整状态单射性 |
+| [`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean) | 相邻 ridge 备份的线性左逆、仿射读出的精确坐标恢复，以及同一个两层网络的终端相邻最小值／最大值读出 |
+| [`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean) | 对 $1\times3$ 全部三坐标的两层任意仿射 ReLU、显式三角仿射恢复、紧集参数选择与完整状态单射性 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
+| [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
 
 编译器使用精确恒等式

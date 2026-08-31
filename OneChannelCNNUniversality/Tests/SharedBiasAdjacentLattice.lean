@@ -1,0 +1,27 @@
+import OneChannelCNNUniversality.SharedBiasAdjacentLattice
+
+/-!
+# Regression tests for affine recovery and adjacent lattice readouts
+-/
+
+namespace OneChannelCNNUniversality
+
+#check adjacentRidgeBackupLinearMap
+#check adjacentRidgeBackupLinearMap_apply
+#check adjacentRidgeBackupLinearMap_injective
+#check adjacentRidgeBackupLeftInverse
+#check adjacentRidgeBackupLeftInverse_apply
+#check adjacentRidgeBackupProjection
+#check adjacentRidgeRecoveryLinearMap
+#check adjacentRidgeCoordinateReadoutWeight
+#check adjacentRidgeCoordinateReadoutConstant
+#check protectedAdjacentRidgeNetwork_realize_coordinate
+#check protectedAdjacentMinReadoutWeight
+#check protectedAdjacentMinReadoutConstant
+#check protectedAdjacentMaxReadoutWeight
+#check protectedAdjacentMaxReadoutConstant
+#check protectedAdjacentRidgeNetwork_realize_adjacent_min
+#check protectedAdjacentRidgeNetwork_realize_adjacent_max
+#check exists_protectedAdjacentLatticeReadouts_on_compact
+
+end OneChannelCNNUniversality

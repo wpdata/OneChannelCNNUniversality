@@ -757,6 +757,39 @@ arbitrary adjacent affine ridge can be added without losing the complete
 input state, although iterating independently chosen ridges still requires a
 causal operand layout.
 
+[`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean)
+strengthens that recovery statement at the affine-readout level.  The linear
+part of the triangular backup has a chosen linear left inverse, so every
+original input coordinate is exactly recoverable by a finite affine readout of
+the same depth-two output.  For $(\alpha,\beta,\gamma)=(1,-1,0)$, two different
+readouts of one fixed network give
+
+$$
+\min(a,b)=a-\mathrm{ReLU}(a-b),\qquad
+\max(a,b)=b+\mathrm{ReLU}(a-b).
+$$
+
+The complete representation remains injective on compact injective input
+families.  These are terminal affine readouts: the chosen left inverse is not
+a causal convolutional layer, and the result does not yet compile nested
+minimum/maximum expressions inside the hidden network.
+
+[`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean)
+gives the first exact nonadjacent arbitrary-affine gate in this development.
+For a bounded $1\times3$ input and arbitrary
+$r_0,r_1,r_2,\gamma\in\mathbb R$, one genuine depth-two network computes
+
+$$
+\mathrm{ReLU}(r_0x_0+r_1x_1+r_2x_2+\gamma)
+$$
+
+at output coordinate $(1,2)$.  The construction uses the second spatial
+direction as temporary storage.  Three northern output coordinates form an
+explicit triangular affine code with positive diagonal scale, and an explicit
+decoder recovers $(x_0,x_1,x_2)$ exactly; hence the complete output remains
+injective.  This is an exact three-register extension theorem, not yet an
+arbitrary-dimension affine-ReLU extension or an iterable universal compiler.
+
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 gives a quantitative limitation that includes the arbitrary final affine
 readout.  A depth-$L$ expansive $2\times2$ network has receptive radius at
@@ -777,31 +810,45 @@ finite receptive fields and linearity of the final readout; it does not rely
 on bias sharing and therefore must not be attributed specifically to the
 shared-scalar-bias restriction.
 
+[`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean)
+generalizes this limitation to arbitrary fixed kernel shape and genuine
+two-dimensional separation.  For the target
+
+$$
+F(x)=x_{0,0}x_{A,B}
+$$
+
+on the full coordinatewise unit cube, even a network with arbitrary
+position-dependent hidden bias images cannot achieve uniform error below
+$1$ unless
+
+$$
+A\le d(k_{\mathrm{rows}}-1),\qquad
+B\le d(k_{\mathrm{cols}}-1).
+$$
+
+The same conclusion therefore holds for the shared-bias subclass.  This is a
+sharp fixed-depth locality bound; it is not a non-universality result when
+depth is allowed to grow.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
-approximation theorem. The repository's existing full universal-approximation
-theorem still permits arbitrary position-dependent bias images. It remains
-open in this development whether the shared-scalar-bias subclass is universal
-or non-universal. Arbitrary
-targets can now be selected end to end under southeast-quadrant protection,
-which removes the earlier northwest-only and proof-level-carrier restrictions.
-The finite recursion is now closed for repeated northwest-register
-selections. Causality shows that routing eastern or southern registers back
-to the northwest work site is not a viable next step. What remains is to
-maintain a protected backup/frontier invariant, chain arithmetic while the
-work site moves southeast, derive explicit depth/area bounds, and connect that
-richer compiler to a density argument for the shared-scalar-bias subclass.
-The single frontier-addition layer and protected grid gates displayed above
-are not by themselves a universal-approximation theorem.  Arbitrary-depth
-nonlinear composition, arbitrary-height input recovery, and arbitrary finite
-schedules of signed local northern-row mixing gates are now verified.  This
-is an iterable causal local CNN compiler, but every stage is still spatially
-shared and only reads the current and western neighboring registers.  It does
-not yet implement position-specific affine combinations, global access to an
-arbitrary register, or transport from deeper rows to the northern boundary;
-the known full-image decoder also runs against the network's causal direction.
-The remaining decisive task is to combine the local schedule with a causal
-moving-frontier/address mechanism and then compile arbitrary finite affine
-lattice expressions.
+approximation theorem.  The repository's existing full universal-
+approximation theorem still permits arbitrary position-dependent bias images,
+and it remains open in this development whether the shared-scalar-bias
+subclass is universal or non-universal.  The new three-register construction
+shows that shared kernels and one feature channel do not prevent every
+nonlocal signed affine ReLU: the unused spatial direction can act as temporary
+algebraic storage.  The adjacent lattice theorem also supplies exact terminal
+minimum/maximum readouts, while the anisotropic lower bound identifies the
+unavoidable depth cost of long-range interactions.
+
+The decisive missing theorem is now an arbitrary-dimension extension step:
+given a recoverable finite feature image $F$ and an arbitrary affine
+functional $\ell$, append a genuine shared-bias block that keeps $F$
+recoverable and exposes $\mathrm{ReLU}(\ell(F))$ as an internal recoverable
+feature.  Such a theorem would make repeated lattice compilation possible;
+the present $1\times3$ construction proves its first nonadjacent finite case
+but does not justify the general induction.
 
 ## Proof architecture
 
@@ -853,7 +900,10 @@ lattice expressions.
 | [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | Arbitrary signed mixing of adjacent northern registers, injectivity of the weighted horizontal transform, a depth-three protected ReLU gate, and compact parameter selection |
 | [`SharedBiasLocalGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasLocalGateSchedule.lean) | Exact compilation of arbitrary finite signed local-gate schedules, prefix dependence, depth $3L$, stagewise compact carriers, and injective complete state |
 | [`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean) | A depth-two arbitrary adjacent affine ridge, exact southeast-shifted triangular backup, south-to-north recovery, compact carrier selection, and injective complete state |
+| [`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean) | Linear left inversion of the adjacent-ridge backup, exact coordinate recovery by affine readouts, and terminal adjacent minimum/maximum readouts from one depth-two network |
+| [`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean) | A depth-two arbitrary affine ReLU of all three coordinates of a $1\times3$ input, explicit triangular affine recovery, compact parameter selection, and injective complete state |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
+| [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

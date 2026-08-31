@@ -1,0 +1,24 @@
+import OneChannelCNNUniversality.SharedBiasThreePointRidge
+
+/-!
+# Regression tests for a protected arbitrary ridge on three coordinates
+-/
+
+namespace OneChannelCNNUniversality
+
+#check threePointRidgeScale
+#check threePointRidgeCarrier
+#check threePointRidgeFirstKernel
+#check threePointRidgeSecondKernel
+#check threePointRidgeSecondBias
+#check protectedThreePointRidgeNetwork
+#check protectedThreePointRidgeNetwork_depth
+#check protectedThreePointRidgeNetwork_ridge
+#check protectedThreePointRidgeNetwork_north_zero
+#check protectedThreePointRidgeNetwork_north_one
+#check protectedThreePointRidgeNetwork_north_two
+#check protectedThreePointRidgeNetwork_affineRecovery
+#check protectedThreePointRidgeNetwork_injectiveOn
+#check exists_protectedThreePointRidgeNetwork_on_compact
+
+end OneChannelCNNUniversality
