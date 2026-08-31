@@ -1336,12 +1336,12 @@ A(2)=A(4)=-35s,
 $$
 
 Consequently $s\ge1/17$ gives the selector's normalized unit gap.  This is
-a substantive constructive result: the sign-changing real-rooted stripe can
-be transported through genuine ReLU linear branches using only one scalar
-bias per layer.  The remaining work is to combine this compensated address
-with the variable packed-ridge signal and the two-dimensional protected
-northern code; the finite-ridge shared-bias universality theorem is not yet
-claimed.
+a substantive constructive result: it supplies exact one-scalar-per-layer
+compensation data whose carrier component has a positive linear-branch
+margin.  The remaining work is to prove the compact genuine-network bridge
+after adding the variable packed-ridge signal, and then combine it with the
+two-dimensional protected northern code; the finite-ridge shared-bias
+universality theorem is not yet claimed.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
