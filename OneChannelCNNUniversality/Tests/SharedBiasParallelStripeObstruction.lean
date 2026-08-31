@@ -10,7 +10,13 @@ namespace OneChannelCNNUniversality
 #check parallelStripeTwoTargetSeedAddress_two
 #check parallelStripeTwoTargetSeedAddress_four
 #check parallelStripeTwoTargetSeedAddress_ne
+#check coeff_mul_generalRidgeBoxcar_two_at_two
+#check coeff_mul_generalRidgeBoxcar_two_at_three
+#check coeff_mul_generalRidgeBoxcar_two_at_four
+#check twoTargetBoxcar_middle_ge_of_equal_targets
+#check not_twoTargetNegativeBoxcar_unitGap
 
 #print axioms parallelStripeTwoTargetSeedAddress_ne
+#print axioms not_twoTargetNegativeBoxcar_unitGap
 
 end OneChannelCNNUniversality

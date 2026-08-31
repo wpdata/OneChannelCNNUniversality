@@ -1280,9 +1280,21 @@ $$
 
 and hence, for zero packed weights and every $T\ne0$, the two target
 addresses are $-109T$ and $-46T$.  They cannot meet the selector's common-
-baseline hypothesis.  This refutes only the direct standard-stripe parallel
-carrier, not finite-ridge universality; the next construction must redesign
-the horizontal carrier or use a sequential protected schedule.
+baseline hypothesis.  The obstruction is stronger than this numerical
+instance.  For any monic degree-four horizontal polynomial $Q$ with
+$[X]Q\ge1$, equality of the target windows
+$[X^2](QC_2)=[X^4](QC_2)$ forces
+
+$$
+[X^2](QC_2)\le [X^3](QC_2).
+$$
+
+After multiplication by a negative positive-scale stripe, the intervening
+non-target can therefore never lie one unit above the common target
+baseline.  This rules out the full positive-prefix carrier pattern in the
+minimal two-target geometry, not finite-ridge universality; the next
+construction must use a qualitatively different horizontal carrier or a
+sequential protected schedule.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1461,7 +1473,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | Genuine arbitrary-input-width signed-stripe proper network of exact depth $n+2$, with compact-uniform seed threshold and exact northern-two-row formal behavior |
 | [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | Arbitrary-width final-factor address: a common row-one interior baseline and a gap of at least two at every northern site and both horizontal endpoints |
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | Exact arbitrary-width full-chain seed-address decomposition into the scalable nodal boxcar carrier and the fixed packed-weight perturbation |
-| [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | Machine-checked minimal two-target counterexample showing that the standard single-target nodal stripe does not give a common parallel target baseline |
+| [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | Machine-checked minimal two-target counterexample and a generic monic positive-linear-coefficient theorem ruling out a protected common baseline for the positive-prefix stripe pattern |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

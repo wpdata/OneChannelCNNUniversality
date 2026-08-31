@@ -119,4 +119,68 @@ theorem parallelStripeTwoTargetSeedAddress_ne (T : ℝ) (hT : T ≠ 0) :
   apply hT
   linarith
 
+/-- Convolution with the width-two boxcar reads coefficients zero through
+two at output column two. -/
+theorem coeff_mul_generalRidgeBoxcar_two_at_two (Q : ℝ[X]) :
+    (Q * generalRidgeBoxcar 2).coeff 2 =
+      Q.coeff 0 + Q.coeff 1 + Q.coeff 2 := by
+  rw [coeff_mul]
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  norm_num [generalRidgeBoxcar_coeff, Finset.sum_range_succ]
+
+/-- At the middle non-target column, the same boxcar reads coefficients one
+through three. -/
+theorem coeff_mul_generalRidgeBoxcar_two_at_three (Q : ℝ[X]) :
+    (Q * generalRidgeBoxcar 2).coeff 3 =
+      Q.coeff 1 + Q.coeff 2 + Q.coeff 3 := by
+  rw [coeff_mul]
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  norm_num [generalRidgeBoxcar_coeff, Finset.sum_range_succ]
+
+/-- At the second target column, the width-two boxcar reads coefficients two
+through four. -/
+theorem coeff_mul_generalRidgeBoxcar_two_at_four (Q : ℝ[X]) :
+    (Q * generalRidgeBoxcar 2).coeff 4 =
+      Q.coeff 2 + Q.coeff 3 + Q.coeff 4 := by
+  rw [coeff_mul]
+  rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+  norm_num [generalRidgeBoxcar_coeff, Finset.sum_range_succ]
+
+/-- A monic degree-four carrier whose linear coefficient is at least one
+cannot have equal boxcar values at targets two and four while making the
+intermediate column smaller.  Equality of the target windows gives
+`Q₃-Q₀=Q₁-1 ≥ 0`. -/
+theorem twoTargetBoxcar_middle_ge_of_equal_targets (Q : ℝ[X])
+    (hmonic : Q.coeff 4 = 1) (hlinear : 1 ≤ Q.coeff 1)
+    (htargets : (Q * generalRidgeBoxcar 2).coeff 2 =
+      (Q * generalRidgeBoxcar 2).coeff 4) :
+    (Q * generalRidgeBoxcar 2).coeff 2 ≤
+      (Q * generalRidgeBoxcar 2).coeff 3 := by
+  rw [coeff_mul_generalRidgeBoxcar_two_at_two] at htargets ⊢
+  rw [coeff_mul_generalRidgeBoxcar_two_at_four, hmonic] at htargets
+  rw [coeff_mul_generalRidgeBoxcar_two_at_three]
+  linarith
+
+/-- Consequently, after the negative positive-scale stripe twist, the
+middle non-target cannot lie one unit above a common target baseline.  This
+rules out the entire monic positive-linear-coefficient carrier pattern in
+the minimal two-target geometry, not merely the particular nodal roots
+`1,2,3,4`. -/
+theorem not_twoTargetNegativeBoxcar_unitGap (Q : ℝ[X]) (T : ℝ)
+    (hT : 0 < T) (hmonic : Q.coeff 4 = 1)
+    (hlinear : 1 ≤ Q.coeff 1)
+    (htargets : (Q * generalRidgeBoxcar 2).coeff 2 =
+      (Q * generalRidgeBoxcar 2).coeff 4) :
+    ¬ 1 ≤
+      (-T * (Q * generalRidgeBoxcar 2).coeff 3) -
+        (-T * (Q * generalRidgeBoxcar 2).coeff 2) := by
+  intro hgap
+  have hmiddle := twoTargetBoxcar_middle_ge_of_equal_targets
+    Q hmonic hlinear htargets
+  have hscaled :
+      -T * (Q * generalRidgeBoxcar 2).coeff 3 ≤
+        -T * (Q * generalRidgeBoxcar 2).coeff 2 := by
+    exact mul_le_mul_of_nonpos_left hmiddle (by linarith)
+  linarith
+
 end OneChannelCNNUniversality

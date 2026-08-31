@@ -1025,8 +1025,17 @@ $$
 $$
 
 所以当打包权重全为零且 $T\ne0$ 时，两个目标地址分别是 $-109T$ 与 $-46T$，不可能满足
-同时选择器的共同基线条件。这个结论只否定“直接复用标准单目标条带”的并行载体，并不
-否定有限多 ridge 万能逼近；下一条路线必须重新设计水平载体，或采用顺序受保护调度。
+同时选择器的共同基线条件。障碍实际上比这个数值实例更强：对任意首一四次水平多项式
+$Q$，若 $[X]Q\ge1$ 且两个目标窗口相等，即
+$[X^2](QC_2)=[X^4](QC_2)$，那么 Lean 证明
+
+$$
+[X^2](QC_2)\le [X^3](QC_2).
+$$
+
+乘上负的正尺度条带后，中间非目标不可能比共同目标基线高出一个单位。因此，这排除了
+最小双目标几何中整个“正前缀载体”模式，而不只是一组结点；它仍不否定有限多 ridge
+万能逼近。下一条路线必须使用性质不同的水平载体，或采用顺序受保护调度。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1181,7 +1190,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | 输入宽度任意、深度恰为 $n+2$ 的真实带符号条带 proper 网络，以及紧集上一致的种子阈值和北侧两行精确形式行为 |
 | [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | 任意宽度最终因子地址：第二行内部具有共同基线，全部北行坐标和两个水平端点至少高出该基线 $2$ |
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | 任意宽度完整链种子地址的精确分解：可缩放结点 boxcar 载体加固定打包权重扰动 |
-| [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | 机器检查的最小双目标反例：标准单目标结点条带无法为并行目标提供共同基线 |
+| [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | 机器检查的最小双目标反例，以及排除正前缀条带模式受保护共同基线的通用首一正线性系数定理 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
