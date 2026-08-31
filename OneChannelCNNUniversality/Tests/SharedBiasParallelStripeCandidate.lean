@@ -1,0 +1,22 @@
+import OneChannelCNNUniversality.SharedBiasParallelStripeCandidate
+
+/-! # Regression tests for a sign-changing two-target stripe candidate -/
+
+namespace OneChannelCNNUniversality
+
+#check parallelStripeTwoTargetCandidatePolynomial
+#check parallelStripeTwoTargetCandidate_root_one
+#check parallelStripeTwoTargetCandidate_root_two
+#check parallelStripeTwoTargetCandidate_root_three
+#check parallelStripeTwoTargetCandidate_root_neg_quarter
+#check parallelStripeTwoTargetCandidate_target_two
+#check parallelStripeTwoTargetCandidate_middle
+#check parallelStripeTwoTargetCandidate_target_four
+#check parallelStripeTwoTargetCandidate_common_targets
+#check parallelStripeTwoTargetCandidate_middle_gap
+#check parallelStripeTwoTargetCandidatePrefixTwo_negative
+
+#print axioms parallelStripeTwoTargetCandidate_middle_gap
+#print axioms parallelStripeTwoTargetCandidatePrefixTwo_negative
+
+end OneChannelCNNUniversality

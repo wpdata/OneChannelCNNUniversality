@@ -1295,6 +1295,27 @@ baseline.  This rules out the full positive-prefix carrier pattern in the
 minimal two-target geometry, not finite-ridge universality; the next
 construction must use a qualitatively different horizontal carrier or a
 sequential protected schedule.
+[`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean)
+shows that the desired two-target address itself is algebraically possible
+once positive prefixes are abandoned.  The real-rooted monic polynomial
+
+$$
+Q(X)=(X-1)(X-2)(X-3)\left(X+\frac14\right)
+$$
+
+satisfies
+
+$$
+[X^2](QC_2)=[X^4](QC_2)=\frac{19}{4},
+\qquad [X^3](QC_2)=\frac12,
+$$
+
+giving the exact target-to-middle gap $17/4$.  Lean also verifies the
+precise cost: in the displayed factor order, the prefix
+$(X+1/4)(X-1)C_2$ has constant coefficient $-1/4$.  Thus multi-target
+separation and the old all-prefix-positive linearization mechanism are in
+direct conflict.  The remaining constructive problem is now sharply
+localized to linearizing sign-changing prefixes.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1474,6 +1495,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | Arbitrary-width final-factor address: a common row-one interior baseline and a gap of at least two at every northern site and both horizontal endpoints |
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | Exact arbitrary-width full-chain seed-address decomposition into the scalable nodal boxcar carrier and the fixed packed-weight perturbation |
 | [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | Machine-checked minimal two-target counterexample and a generic monic positive-linear-coefficient theorem ruling out a protected common baseline for the positive-prefix stripe pattern |
+| [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | A real-rooted sign-changing carrier with exact common two-target baseline and gap $17/4$, together with the exact negative-prefix obstruction to the old linearization method |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
