@@ -491,7 +491,9 @@ theorem generalRidgeFactorList_bivariateProduct {d : ℕ}
   simp only [Function.comp_apply]
   exact generalRidgeKernelFactor_polynomial w η i
 
-private theorem generalRidgeFactorList_horizontalProduct {d : ℕ}
+/-- The horizontal product of the general-ridge factor list is the fixed
+monic nodal polynomial, independently of the lower-factor allocation. -/
+theorem generalRidgeFactorList_horizontalProduct {d : ℕ}
     (w : Fin (d + 1) → ℝ) (η : Fin d → ℝ) :
     horizontalProduct (generalRidgeFactorList w η) =
       generalRidgeNodalProduct d := by

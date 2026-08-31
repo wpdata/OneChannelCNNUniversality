@@ -941,6 +941,74 @@ on $K$, then $N\circ F$ remains injective there.  Thus the arbitrary-width
 single-ridge network lift, including the shared carriers and the final ReLU
 recovery argument, is now machine-checked.
 
+[`SharedBiasGeneralRidgeLState.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLState.lean)
+shows that the whole expanded rectangle is not needed as a logical state.
+The first $m$ northern coordinates already form an injective triangular code.
+Together with the ridge at $(1,m-1)$, they occupy the southeast-monotone chain
+
+$$
+(0,0),(0,1),\ldots,(0,m-1),(1,m-1).
+$$
+
+The extracted $1\times(m+1)$ state is coordinatewise continuous and remains
+injective whenever the input feature map is injective, while its last entry is
+the requested ridge exactly.  This coordinate restriction is a mathematical
+readout of the existing feature image, not an extra convolutional layer and
+not yet an object that can be appended as a new CNN block.
+
+[`SharedBiasGeneralRidgeReadout.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeReadout.lean)
+turns the northern recovery and one ridge into an exact terminal lattice
+operation.  Given arbitrary input affine functions
+
+$$
+A(x)=\sum_j a_jx_j+\alpha,
+\qquad
+B(x)=\sum_j b_jx_j+\beta,
+$$
+
+one depth-$(m-1)$ genuine shared-bias network computes
+$\mathrm{ReLU}(A-B)$ at its protected target.  Two ordinary finite affine
+readouts of that same output recover $A$ or $B$ from the northern code and
+combine it with the target, exactly producing $\min(A,B)$ and $\max(A,B)$ on
+the compact input family.  The noncomputably chosen, generally nonlocal linear
+left inverse belongs only to the terminal readout; it is not a convolutional
+hidden layer, so this theorem does not yet compile nested lattice expressions.
+
+[`SharedBiasGeneralRidgeCompositionObstruction.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCompositionObstruction.lean)
+pinpoints why black-box appending fails for the present construction.  On a
+multirow state $Z$, the pure general-ridge factor chain satisfies the exact
+identity
+
+$$
+\mathrm{Row}_1(\mathrm{out})
+=G_d(X)\,\mathrm{Row}_1(Z)+R_w(X)\,\mathrm{Row}_0(Z).
+$$
+
+Because the monic factor $G_d$ is nonzero, fixing the northern row does not
+remove dependence on the old second row.  Moreover, the current terminal
+carrier address is exactly flat at every interior site of row one, including
+the target and its predecessor, so it cannot supply the unit gap needed to
+protect that whole row while selecting one new target.  These theorems rule
+out naive reuse of this separated block; they do not rule out a different
+multi-ridge construction or universal approximation by the architecture.
+
+[`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
+shows that the linear depth of this construction is unavoidable for a
+representative long-range ridge.  For
+
+$$
+f_L(x)=\mathrm{ReLU}(x_0+x_{L+1}),
+$$
+
+every depth-at-most-$L$ expansive $2\times2$ shared-bias network, even with an
+arbitrary final affine readout, has maximum error at least $1/2$ on the four
+endpoint sign inputs.  Therefore error strictly below $1/2$ forces depth at least
+$L+1$.  Conversely, for every $L\ge1$, the arbitrary-width ridge compiler
+produces a genuine shared-bias network of exact depth $L+1$ whose
+single-coordinate affine readout equals $f_L$ on those four inputs.  Hence the
+upper and lower depth bounds match exactly for this family; spatial expansion
+remains a separate efficiency question.
+
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 gives a quantitative limitation that includes the arbitrary final affine
 readout.  A depth-$L$ expansive $2\times2$ network has receptive radius at
@@ -997,14 +1065,19 @@ position-dependent bias images, and universality of the shared-scalar-bias
 subclass remains open.
 
 The decisive remaining gap is **composition**, not construction of one
-ridge.  After one block, the recoverable representation has shape
-$m\times(2m-1)$, whereas the arbitrary-width ridge theorem starts from a
-one-row state.  A future compiler must normalize or route that two-dimensional
-state, retain several independently chosen ridge features through later
-shared-bias ReLUs, and then implement the finite lattice combinations used by
-the density argument.  Until that finite multi-ridge compiler is proved, the
-present result must not be described as a shared-bias universal-approximation
-theorem.
+ridge.  The new $L$-state shows that the complete $m\times(2m-1)$ rectangle
+need not be normalized: an input-length northern prefix plus the ridge is
+already sufficient.  However, that $L$-state is still embedded in the physical
+rectangle, whereas the arbitrary-width ridge theorem starts from a one-row
+state; off-chain sites may still depend on the input, coordinate restriction
+is not a layer that `SharedBiasNetworkTo.append` can execute, and the verified
+row-one contamination identity prevents black-box reuse of the current
+factor chain.  A future compiler must operate directly on this embedded state,
+replace the flat terminal address by a richer carrier, retain several
+independently chosen ridge features through later shared-bias ReLUs, and then
+implement the finite lattice combinations used by the density argument.
+Until that finite multi-ridge compiler is proved, the present result must not
+be described as a shared-bias universal-approximation theorem.
 
 ## Proof architecture
 
@@ -1067,6 +1140,10 @@ theorem.
 | [`SharedBiasTerminalSelection.lean`](OneChannelCNNUniversality/SharedBiasTerminalSelection.lean) | Compact terminal compiler selecting one nonlinear target while preserving protected coordinates as pure signal plus a fixed offset |
 | [`SharedBiasGeneralRidgeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeRecovery.lean) | Injectivity of the complete northern nodal-polynomial code, including preservation under an arbitrary fixed offset |
 | [`SharedBiasGeneralRidgeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeNetwork.lean) | A genuine depth-$d$ arbitrary-width affine-ReLU ridge network, exact target evaluation, protected northern recovery, and injectivity on compact injective feature families |
+| [`SharedBiasGeneralRidgeLState.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLState.lean) | Injectivity of the input-length northern prefix and a continuous injective southeast-monotone $L$-state ending at the exact ridge coordinate |
+| [`SharedBiasGeneralRidgeReadout.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeReadout.lean) | Linear recovery from the northern code and exact terminal min/max readouts for any two input affine functions using one shared-bias network |
+| [`SharedBiasGeneralRidgeCompositionObstruction.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCompositionObstruction.lean) | The exact old-row contamination identity and flat terminal-address obstruction to naive black-box composition of the present ridge block |
+| [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |

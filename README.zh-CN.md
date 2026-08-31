@@ -767,6 +767,59 @@ $$
 仍然单射。也就是说，任意宽度的单个 ridge 网络提升——包括共享载波和最终 ReLU 后的
 恢复论证——现已全部通过机器检查。
 
+[`SharedBiasGeneralRidgeLState.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLState.lean)
+证明：作为逻辑状态，并不需要保留整个扩张矩形。北侧最前面的 $m$ 个坐标已经构成单射的
+三角编码；再加上位于 $(1,m-1)$ 的 ridge，它们落在东南单调链
+
+$$
+(0,0),(0,1),\ldots,(0,m-1),(1,m-1)
+$$
+
+上。提取得到的 $1\times(m+1)$ 状态逐坐标连续；若输入特征映射单射，它也保持单射，且最后
+一个坐标精确等于所需 ridge。不过，这种坐标限制只是对已有特征图的数学读取，并不是额外的
+卷积层，也还不是能够直接作为新 CNN 模块追加的网络对象。
+
+[`SharedBiasGeneralRidgeReadout.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeReadout.lean)
+把北侧恢复与一个 ridge 组合成精确的终端格运算。给定任意两个输入仿射函数
+
+$$
+A(x)=\sum_j a_jx_j+\alpha,
+\qquad
+B(x)=\sum_j b_jx_j+\beta,
+$$
+
+一个深度为 $m-1$ 的真实共享偏置网络在受保护目标点计算
+$\mathrm{ReLU}(A-B)$。对同一个输出使用两组普通有限仿射读出，分别从北侧编码恢复 $A$ 或
+$B$，再与目标组合，就能在给定紧输入族上精确得到 $\min(A,B)$ 与 $\max(A,B)$。这里非构造性
+选取且通常非局部的线性左逆只属于最终读出，并不是卷积隐藏层，所以该定理还不能编译嵌套格表达式。
+
+[`SharedBiasGeneralRidgeCompositionObstruction.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCompositionObstruction.lean)
+精确指出当前构造为什么不能作为黑盒直接串联。对多行状态 $Z$，纯 general-ridge 因子链满足
+
+$$
+\mathrm{Row}_1(\mathrm{out})
+=G_d(X)\,\mathrm{Row}_1(Z)+R_w(X)\,\mathrm{Row}_0(Z).
+$$
+
+由于首一因子 $G_d$ 非零，即使固定北侧行，输出仍不会消除对旧第二行的依赖。此外，当前
+终端载波地址在第二行所有内部位置上完全相同，目标点与其前驱也不例外，所以它无法提供“保护
+整条第二行但只选择一个新目标”所需的单位间隙。这些定理排除了对当前分离块的朴素复用，
+并没有排除另一种多 ridge 构造，也没有否定该网络架构的万能逼近性。
+
+[`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
+进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
+令
+
+$$
+f_L(x)=\mathrm{ReLU}(x_0+x_{L+1}).
+$$
+
+任意深度不超过 $L$ 的扩张型 $2\times2$ 共享偏置网络，即使允许任意最终仿射读出，在四个
+端点符号输入上的最大误差也至少为 $1/2$。因此误差严格小于 $1/2$ 必然要求深度至少为 $L+1$。
+反过来，对每个 $L\ge1$，任意宽度 ridge 编译器都给出一个深度恰为 $L+1$ 的真实共享偏置
+网络，其单坐标仿射读出在这四个输入上精确等于 $f_L$。所以对这族目标，上下深度界完全匹配；
+空间扩张是否最优仍是另一个效率问题。
+
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 给出了覆盖任意最终仿射读出的定量限制。深度为 $L$ 的扩张型 $2\times2$ 网络，其感受野
 半径至多为 $L$。把符号 $\sigma,\tau\in\{-1,1\}$ 分别放在
@@ -808,11 +861,13 @@ $$
 固定分辨率图像架构或任意二维输入状态的结论。仓库中已有的完整万能逼近定理仍使用任意
 逐位置偏置图像，而共享标量偏置子类是否万能仍然是开放问题。
 
-当前决定性的缺口已经变成**组合**，而不是构造单个 ridge。一个块执行后，可恢复表示的
-形状是 $m\times(2m-1)$，但任意宽度 ridge 定理的输入仍是单行状态。后续编译器必须规范化
-或路由这个二维状态，让多个彼此独立选取的 ridge 特征穿过后续共享偏置 ReLU 后仍可保留，
-再实现稠密性论证所需的有限格组合。在这个有限多 ridge 编译器被证明以前，当前结果不能被
-称为共享偏置万能逼近定理。
+当前决定性的缺口已经变成**组合**，而不是构造单个 ridge。新的 $L$ 状态说明无需规范化整个
+$m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。但这个 $L$ 状态仍嵌在真实
+矩形中，而任意宽度 ridge 定理的输入仍是单行状态；链外坐标可能继续依赖输入，坐标限制也不是
+`SharedBiasNetworkTo.append` 能执行的一层网络，并且已经验证的第二行污染恒等式阻止把当前
+因子链当作黑盒复用。后续编译器必须直接处理这个嵌入状态，用更丰富的载波替代平坦终端地址，让多个
+彼此独立选取的 ridge 特征穿过后续共享偏置 ReLU 后仍可保留，再实现稠密性论证所需的有限格
+组合。在这个有限多 ridge 编译器被证明以前，当前结果不能被称为共享偏置万能逼近定理。
 
 ## 证明架构
 
@@ -875,6 +930,10 @@ $$
 | [`SharedBiasTerminalSelection.lean`](OneChannelCNNUniversality/SharedBiasTerminalSelection.lean) | 选择单个非线性目标、同时把受保护坐标保持为纯信号加固定偏移的紧集终端编译器 |
 | [`SharedBiasGeneralRidgeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeRecovery.lean) | 完整北侧节点多项式编码的单射性，以及任意固定偏移下的保持 |
 | [`SharedBiasGeneralRidgeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeNetwork.lean) | 真实的深度 $d$ 任意宽度仿射 ReLU ridge 网络、目标精确求值、北侧受保护恢复，以及紧单射特征族上的单射性 |
+| [`SharedBiasGeneralRidgeLState.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLState.lean) | 输入长度北侧前缀的单射性，以及终止于精确 ridge 坐标的连续、单射、东南单调 $L$ 状态 |
+| [`SharedBiasGeneralRidgeReadout.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeReadout.lean) | 从北侧编码进行线性恢复，并用同一个共享偏置网络对任意两个输入仿射函数实现精确终端最小值／最大值读出 |
+| [`SharedBiasGeneralRidgeCompositionObstruction.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCompositionObstruction.lean) | 当前 ridge 块无法朴素黑盒组合的精确旧行污染恒等式与平坦终端地址障碍 |
+| [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
