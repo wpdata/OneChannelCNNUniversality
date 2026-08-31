@@ -1,0 +1,16 @@
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeWidthSeedAddress
+
+/-! # Regression tests for arbitrary-width stripe seed addresses -/
+
+namespace OneChannelCNNUniversality
+
+#check generalRidgeStripeWidthSeedAddressRowZero
+#check generalRidgeStripeWidthSeedAddressRowOne
+#check generalRidgeStripeWidthSeedPerturbation
+#check generalRidgeStripeWidthSeedAddressRowZero_eq
+#check generalRidgeStripeWidthSeedAddressRowOne_eq
+
+#print axioms generalRidgeStripeWidthSeedAddressRowZero_eq
+#print axioms generalRidgeStripeWidthSeedAddressRowOne_eq
+
+end OneChannelCNNUniversality

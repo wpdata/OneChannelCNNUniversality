@@ -1,0 +1,16 @@
+import OneChannelCNNUniversality.SharedBiasParallelStripeObstruction
+
+/-! # Regression tests for the standard parallel-stripe baseline obstruction -/
+
+namespace OneChannelCNNUniversality
+
+#check parallelStripeTwoTargetZeroWeights
+#check generalRidgeNodalProduct_four_boxcar_two_coeff_two
+#check generalRidgeNodalProduct_four_boxcar_two_coeff_four
+#check parallelStripeTwoTargetSeedAddress_two
+#check parallelStripeTwoTargetSeedAddress_four
+#check parallelStripeTwoTargetSeedAddress_ne
+
+#print axioms parallelStripeTwoTargetSeedAddress_ne
+
+end OneChannelCNNUniversality

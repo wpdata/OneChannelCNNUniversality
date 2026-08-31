@@ -1008,6 +1008,25 @@ $w:\mathrm{Fin}(n+2)\to\mathbb R$ 决定的 proper 因子块，它构造了深�
 又验证了最终共享载体的局部几何部分：当 $T\ge1$ 时，第二行所有内部坐标具有同一个
 基线，而全部北行坐标以及第二行的两个端点至少高出该基线 $2$。现在尚需构造全局水平
 地址，把打包的内部目标与受保护的内部非目标分开，然后完成终端仿射求和。
+[`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean)
+给出了任意宽度完整链地址的精确公式
+
+$$
+A_1(q)=-T[X^q](G_{n+2}C_m)+[X^q](P_wC_m).
+$$
+
+该公式也暴露了直接复用单目标结点载体的真实障碍。在最小的双目标、宽度二实例中，
+[`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean)
+机器验证了
+
+$$
+[X^2](G_4C_2)=109,
+\qquad [X^4](G_4C_2)=46.
+$$
+
+所以当打包权重全为零且 $T\ne0$ 时，两个目标地址分别是 $-109T$ 与 $-46T$，不可能满足
+同时选择器的共同基线条件。这个结论只否定“直接复用标准单目标条带”的并行载体，并不
+否定有限多 ridge 万能逼近；下一条路线必须重新设计水平载体，或采用顺序受保护调度。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1161,6 +1180,8 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | 输入宽度与因子深度独立的条带前缀载体，以及使北侧两行对任意种子宽度统一保持线性的显式阈值 |
 | [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | 输入宽度任意、深度恰为 $n+2$ 的真实带符号条带 proper 网络，以及紧集上一致的种子阈值和北侧两行精确形式行为 |
 | [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | 任意宽度最终因子地址：第二行内部具有共同基线，全部北行坐标和两个水平端点至少高出该基线 $2$ |
+| [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | 任意宽度完整链种子地址的精确分解：可缩放结点 boxcar 载体加固定打包权重扰动 |
+| [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | 机器检查的最小双目标反例：标准单目标结点条带无法为并行目标提供共同基线 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

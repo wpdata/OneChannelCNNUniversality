@@ -1261,6 +1261,28 @@ site and both row-one endpoints lie at least two above it when $T\ge1$.
 What remains is the global horizontal address that separates the packed
 interior targets from the protected interior non-targets, followed by the
 terminal affine sum.
+[`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean)
+derives the exact arbitrary-width complete-chain address
+
+$$
+A_1(q)=-T[X^q](G_{n+2}C_m)+[X^q](P_wC_m).
+$$
+
+This formula also exposes a genuine obstruction to directly reusing the
+single-target nodal carrier.  In the minimal two-target width-two instance,
+[`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean)
+machine-checks
+
+$$
+[X^2](G_4C_2)=109,
+\qquad [X^4](G_4C_2)=46,
+$$
+
+and hence, for zero packed weights and every $T\ne0$, the two target
+addresses are $-109T$ and $-46T$.  They cannot meet the selector's common-
+baseline hypothesis.  This refutes only the direct standard-stripe parallel
+carrier, not finite-ridge universality; the next construction must redesign
+the horizontal carrier or use a sequential protected schedule.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1438,6 +1460,8 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | Independent-width signed-stripe prefix carrier, with one explicit threshold keeping both northern rows uniformly linear for arbitrary seed width |
 | [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | Genuine arbitrary-input-width signed-stripe proper network of exact depth $n+2$, with compact-uniform seed threshold and exact northern-two-row formal behavior |
 | [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | Arbitrary-width final-factor address: a common row-one interior baseline and a gap of at least two at every northern site and both horizontal endpoints |
+| [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | Exact arbitrary-width full-chain seed-address decomposition into the scalable nodal boxcar carrier and the fixed packed-weight perturbation |
+| [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | Machine-checked minimal two-target counterexample showing that the standard single-target nodal stripe does not give a common parallel target baseline |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
