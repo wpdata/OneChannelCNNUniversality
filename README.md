@@ -790,6 +790,32 @@ decoder recovers $(x_0,x_1,x_2)$ exactly; hence the complete output remains
 injective.  This is an exact three-register extension theorem, not yet an
 arbitrary-dimension affine-ReLU extension or an iterable universal compiler.
 
+[`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean)
+verifies the next nonadjacent case.  For every bounded `Image 1 4` input and
+arbitrary $r_0,r_1,r_2,r_3,\gamma\in\mathbb R$, a genuine depth-three
+expansive $2\times2$ one-channel network with one shared scalar bias per layer
+computes
+
+$$
+\mathrm{ReLU}(r_0x_0+r_1x_1+r_2x_2+r_3x_3+\gamma)
+$$
+
+exactly at output coordinate $(1,3)$.  Its four northern outputs have variable
+part given by the triangular filter
+
+$$
+P(z)=(1+z)(1+2z)(1+3z)=1+6z+11z^2+6z^3.
+$$
+
+The carrier terms are known constants, so an explicit affine decoder recovers
+all four input coordinates.  Consequently the complete network remains
+injective on every compact injective feature family.  This second
+nonadjacent base case validates the finite polynomial mechanism beyond three
+registers, but it is not yet a theorem for arbitrary $n$, general
+two-dimensional feature images, an iterable lattice compiler, or shared-bias
+universal approximation.  A Lagrange-based algebraic prototype for arbitrary
+$n$ is under study and is not claimed here as a proved repository result.
+
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 gives a quantitative limitation that includes the arbitrary final affine
 readout.  A depth-$L$ expansive $2\times2$ network has receptive radius at
@@ -835,20 +861,20 @@ This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem.  The repository's existing full universal-
 approximation theorem still permits arbitrary position-dependent bias images,
 and it remains open in this development whether the shared-scalar-bias
-subclass is universal or non-universal.  The new three-register construction
-shows that shared kernels and one feature channel do not prevent every
-nonlocal signed affine ReLU: the unused spatial direction can act as temporary
-algebraic storage.  The adjacent lattice theorem also supplies exact terminal
-minimum/maximum readouts, while the anisotropic lower bound identifies the
-unavoidable depth cost of long-range interactions.
+subclass is universal or non-universal.  The verified three- and four-register
+constructions show that shared kernels and one feature channel do not prevent
+these nonlocal signed affine ReLUs: the unused spatial direction can act as
+temporary algebraic storage.  The adjacent lattice theorem also supplies exact
+terminal minimum/maximum readouts, while the anisotropic lower bound identifies
+the unavoidable depth cost of long-range interactions.
 
 The decisive missing theorem is now an arbitrary-dimension extension step:
 given a recoverable finite feature image $F$ and an arbitrary affine
 functional $\ell$, append a genuine shared-bias block that keeps $F$
 recoverable and exposes $\mathrm{ReLU}(\ell(F))$ as an internal recoverable
 feature.  Such a theorem would make repeated lattice compilation possible;
-the present $1\times3$ construction proves its first nonadjacent finite case
-but does not justify the general induction.
+the present $1\times3$ and $1\times4$ constructions prove two nonadjacent
+finite base cases but do not justify the general induction.
 
 ## Proof architecture
 
@@ -902,6 +928,7 @@ but does not justify the general induction.
 | [`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean) | A depth-two arbitrary adjacent affine ridge, exact southeast-shifted triangular backup, south-to-north recovery, compact carrier selection, and injective complete state |
 | [`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean) | Linear left inversion of the adjacent-ridge backup, exact coordinate recovery by affine readouts, and terminal adjacent minimum/maximum readouts from one depth-two network |
 | [`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean) | A depth-two arbitrary affine ReLU of all three coordinates of a $1\times3$ input, explicit triangular affine recovery, compact parameter selection, and injective complete state |
+| [`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean) | A depth-three arbitrary affine ReLU of all four coordinates of a bounded $1\times4$ input, the triangular northern filter $1+6z+11z^2+6z^3$, explicit affine recovery, compact parameter selection, and injective complete state |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |

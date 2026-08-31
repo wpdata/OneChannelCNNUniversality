@@ -1,0 +1,29 @@
+import OneChannelCNNUniversality.SharedBiasFourPointRidge
+
+/-!
+# Regression tests for a protected arbitrary ridge on four coordinates
+-/
+
+namespace OneChannelCNNUniversality
+
+#check fourPointRidgeBetaOne
+#check fourPointRidgeBetaTwo
+#check fourPointRidgeBetaThree
+#check fourPointRidgeLeadingCorrection
+#check fourPointRidgeSeparation
+#check fourPointRidgeFirstKernel
+#check fourPointRidgeSecondKernel
+#check fourPointRidgeThirdKernel
+#check protectedFourPointRidgeNetwork
+#check protectedFourPointRidgeNetwork_depth
+#check protectedFourPointRidgeNetwork_ridge
+#check protectedFourPointRidgeNetwork_north_zero
+#check protectedFourPointRidgeNetwork_north_one
+#check protectedFourPointRidgeNetwork_north_two
+#check protectedFourPointRidgeNetwork_north_three
+#check fourPointRidgeAffineRecovery
+#check protectedFourPointRidgeNetwork_affineRecovery
+#check protectedFourPointRidgeNetwork_injectiveOn
+#check exists_protectedFourPointRidgeNetwork_on_compact
+
+end OneChannelCNNUniversality

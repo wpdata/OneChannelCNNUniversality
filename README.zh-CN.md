@@ -639,6 +639,27 @@ $$
 仿射编码，并有一个显式解码器精确恢复 $(x_0,x_1,x_2)$，所以完整输出保持单射。这是
 一个精确的三寄存器扩展定理，但还不是任意维仿射 ReLU 扩展，也不是可迭代的万能编译器。
 
+[`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean)
+验证了下一个非相邻情形。对于任意有界的 `Image 1 4` 输入以及任意
+$r_0,r_1,r_2,r_3,\gamma\in\mathbb R$，一个真实的三层扩张型 $2\times2$ 单通道网络
+（每层只有一个共享标量偏置）会在输出坐标 $(1,3)$ 精确计算
+
+$$
+\mathrm{ReLU}(r_0x_0+r_1x_1+r_2x_2+r_3x_3+\gamma).
+$$
+
+其北侧四个输出的变量部分由三角滤波器
+
+$$
+P(z)=(1+z)(1+2z)(1+3z)=1+6z+11z^2+6z^3
+$$
+
+给出。载波项是已知常数，因此一个显式仿射解码器可以精确恢复全部四个输入坐标；由此，
+完整网络在任意紧的单射特征族上保持单射。这是第二个非相邻基例，并验证了有限多项式机制
+确实能越过三寄存器情形；但它还不是任意 $n$、一般二维特征图、可迭代格编译器或共享偏置
+万能逼近定理。基于 Lagrange 插值的任意 $n$ 代数原型仍在研究中，仓库没有把它声明成
+已经证明的定理。
+
 [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean)
 给出了覆盖任意最终仿射读出的定量限制。深度为 $L$ 的扩张型 $2\times2$ 网络，其感受野
 半径至多为 $L$。把符号 $\sigma,\tau\in\{-1,1\}$ 分别放在
@@ -674,14 +695,15 @@ $$
 
 这些是实验性的形式化证明基础，**不是**共享偏置万能逼近定理。仓库中原有的完整万能
 逼近定理仍然允许任意逐位置偏置数组；本工程目前尚未判定共享标量偏置子类究竟万能还是
-不万能。新的三寄存器构造说明，共享卷积核和单一通道并不会排除所有非局部带符号仿射
-ReLU：闲置的空间方向可以充当临时代数存储。相邻格定理则给出精确的终端最小值／最大值
-读出，而二维各向异性下界确定了长程交互不可避免的深度代价。
+不万能。已经验证的三寄存器和四寄存器构造说明，共享卷积核和单一通道并不会排除这些
+非局部带符号仿射 ReLU：闲置的空间方向可以充当临时代数存储。相邻格定理则给出精确的
+终端最小值／最大值读出，而二维各向异性下界确定了长程交互不可避免的深度代价。
 
 当前决定性的缺口是任意维扩展步骤：给定一个可恢复的有限特征图 $F$ 和任意仿射泛函
 $\ell$，追加一个真实共享偏置块，在保持 $F$ 可恢复的同时，把
 $\mathrm{ReLU}(\ell(F))$ 暴露为新的内部可恢复特征。这样的定理才能支持反复编译格
-表达式；现有 $1\times3$ 构造证明了第一个非相邻有限情形，但还不足以支撑一般归纳。
+表达式；现有 $1\times3$ 和 $1\times4$ 构造证明了两个非相邻有限基例，但还不足以支撑
+一般归纳。
 
 ## 证明架构
 
@@ -735,6 +757,7 @@ $\mathrm{ReLU}(\ell(F))$ 暴露为新的内部可恢复特征。这样的定理�
 | [`SharedBiasAdjacentRidge.lean`](OneChannelCNNUniversality/SharedBiasAdjacentRidge.lean) | 两层任意相邻仿射 ridge、精确东南移位三角备份、从南到北恢复、紧集载波选择与完整状态单射性 |
 | [`SharedBiasAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasAdjacentLattice.lean) | 相邻 ridge 备份的线性左逆、仿射读出的精确坐标恢复，以及同一个两层网络的终端相邻最小值／最大值读出 |
 | [`SharedBiasThreePointRidge.lean`](OneChannelCNNUniversality/SharedBiasThreePointRidge.lean) | 对 $1\times3$ 全部三坐标的两层任意仿射 ReLU、显式三角仿射恢复、紧集参数选择与完整状态单射性 |
+| [`SharedBiasFourPointRidge.lean`](OneChannelCNNUniversality/SharedBiasFourPointRidge.lean) | 对有界 $1\times4$ 全部四坐标的三层任意仿射 ReLU、北侧三角滤波器 $1+6z+11z^2+6z^3$、显式仿射恢复、紧集参数选择与完整状态单射性 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | 模块测试、回归测试、顶层测试与公理审计 |
