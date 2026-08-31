@@ -1,0 +1,21 @@
+import OneChannelCNNUniversality.SharedBiasParallelRidgeAlgebra
+
+/-! # Regression tests for collision-free parallel ridge packing -/
+
+namespace OneChannelCNNUniversality
+
+#check parallelRidgePackedCoefficient
+#check parallelRidgePackedCoefficient_window
+#check parallelRidgePackedWeights
+#check parallelRidgePackedTargetPolynomial_coeff
+#check parallelRidgeAllocation
+#check parallelRidgeAllocation_sum
+#check parallelRidgeFactorList
+#check parallelRidgeFactorList_verticalOne
+#check parallelRidgeFullConv_target
+
+#print axioms parallelRidgePackedCoefficient_window
+#print axioms parallelRidgeFactorList_verticalOne
+#print axioms parallelRidgeFullConv_target
+
+end OneChannelCNNUniversality

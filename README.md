@@ -1212,6 +1212,22 @@ $$
 by one finite affine readout of the same genuine depth-$n+3$ network, while
 retaining state injectivity.  This is the complete one-hidden-unit ReLU class
 with an affine skip term, not yet a finite hidden-unit sum.
+[`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean)
+opens a concrete route to such finite sums without naively composing
+multirow ridge outputs.  For any $r$ independent weight vectors of input
+width $m$, it packs their reversed coefficients into the disjoint polynomial
+windows
+
+$$
+sm+1,\ldots,(s+1)m,\qquad 0\le s<r.
+$$
+
+Lean proves that one depth-$rm$ bilinear factor chain simultaneously computes
+the corresponding $r$ linear forms at row-one columns
+$m,2m,\ldots,rm$.  This completes the collision-free algebraic
+parallelization.  A compact shared-bias carrier that applies ReLU at all of
+these targets while protecting the recoverable northern code is still needed
+before this becomes a genuine finite-ridge CNN theorem.
 Compiling finitely many such ridges into one shared-bias network, while
 retaining the state needed for their final linear combination, remains the
 next step toward the shared-bias universal-approximation theorem.
@@ -1387,6 +1403,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | Injectivity and a linear left inverse for the northern stripe code, exact affine recovery by finite readout weights, and injectivity of the complete genuine ridge state |
 | [`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean) | Exact terminal affine readouts for the minimum and maximum of two arbitrary input affine functions, with the genuine ridge state still injective |
 | [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | Exact finite readout of an arbitrary scalar ridge multiple plus an arbitrary affine skip term, with the genuine hidden state still injective |
+| [`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean) | Collision-free coefficient packing and one depth-$rm$ bilinear chain computing $r$ independent width-$m$ linear forms at separated row-one targets |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
