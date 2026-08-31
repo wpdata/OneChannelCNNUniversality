@@ -1317,6 +1317,32 @@ separation and the old all-prefix-positive linearization mechanism are in
 direct conflict.  The remaining constructive problem is now sharply
 localized to linearizing sign-changing prefixes.
 
+[`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean)
+closes that minimal prefix-linearization problem.  For any scale $s\ge0$,
+use the ordered factors
+
+$$
+X+\frac14,\qquad 1-X,\qquad X-2,\qquad X-3,
+$$
+
+start from the seed $4sC_2$, and add the shared scalar biases $0$, $5s$,
+and $13s$ after the first three factors.  Lean proves that every coefficient
+of every proper state is at least $s$, while the complete address satisfies
+
+$$
+A(2)=A(4)=-35s,
+\qquad A(3)=-18s,
+\qquad A(3)-A(2)=17s.
+$$
+
+Consequently $s\ge1/17$ gives the selector's normalized unit gap.  This is
+a substantive constructive result: the sign-changing real-rooted stripe can
+be transported through genuine ReLU linear branches using only one scalar
+bias per layer.  The remaining work is to combine this compensated address
+with the variable packed-ridge signal and the two-dimensional protected
+northern code; the finite-ridge shared-bias universality theorem is not yet
+claimed.
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
 representative long-range ridge.  For
@@ -1496,6 +1522,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | Exact arbitrary-width full-chain seed-address decomposition into the scalable nodal boxcar carrier and the fixed packed-weight perturbation |
 | [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | Machine-checked minimal two-target counterexample and a generic monic positive-linear-coefficient theorem ruling out a protected common baseline for the positive-prefix stripe pattern |
 | [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | A real-rooted sign-changing carrier with exact common two-target baseline and gap $17/4$, together with the exact negative-prefix obstruction to the old linearization method |
+| [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | Exact layerwise scalar-bias compensation for the sign-changing two-target carrier: uniform proper-prefix margin and final common baseline with gap $17s$ |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

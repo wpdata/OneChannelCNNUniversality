@@ -1054,6 +1054,27 @@ $$
 前缀 $(X+1/4)(X-1)C_2$ 的常数系数为 $-1/4$。这说明多目标分离与旧的“所有前缀
 均为正”线性化机制直接冲突；剩余构造问题现在被精确压缩为如何线性化符号变化的前缀。
 
+[`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean)
+解决了这个最小前缀线性化问题。对任意尺度 $s\ge0$，依次使用因子
+
+$$
+X+\frac14,\qquad 1-X,\qquad X-2,\qquad X-3,
+$$
+
+从种子 $4sC_2$ 出发，并在前三个因子后分别加入共享标量偏置 $0$、$5s$、$13s$。
+Lean 证明每个 proper 中间状态的全部系数都至少为 $s$，而完整地址满足
+
+$$
+A(2)=A(4)=-35s,
+\qquad A(3)=-18s,
+\qquad A(3)-A(2)=17s.
+$$
+
+因此 $s\ge1/17$ 时就得到同时选择器要求的单位间隔。这是一个实质性的正面构造：只用
+每层一个共享标量偏置，就能让实根、符号变化的条带在真实 ReLU 线性分支中传递。剩余工作
+是把该补偿地址与可变的打包 ridge 信号及二维北侧受保护编码组合起来；目前仍不宣称已经
+证明共享偏置有限 ridge 万能性。
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
 令
@@ -1209,6 +1230,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | 任意宽度完整链种子地址的精确分解：可缩放结点 boxcar 载体加固定打包权重扰动 |
 | [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | 机器检查的最小双目标反例，以及排除正前缀条带模式受保护共同基线的通用首一正线性系数定理 |
 | [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | 实根符号变化载体：精确共同双目标基线与 $17/4$ 间隔，以及旧线性化方法所遇到的精确负前缀障碍 |
+| [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | 符号变化双目标载体的逐层标量偏置精确补偿：proper 前缀统一正裕量，以及最终共同基线和 $17s$ 间隔 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

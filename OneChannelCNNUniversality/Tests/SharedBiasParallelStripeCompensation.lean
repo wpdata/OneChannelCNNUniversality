@@ -1,0 +1,27 @@
+import OneChannelCNNUniversality.SharedBiasParallelStripeCompensation
+
+/-! # Regression tests for the compensated two-target stripe -/
+
+open scoped Polynomial
+
+namespace OneChannelCNNUniversality
+
+#check parallelStripeCompensatedStageOne
+#check parallelStripeCompensatedStageTwo
+#check parallelStripeCompensatedStageThree
+#check parallelStripeCompensatedFinal
+#check parallelStripeCompensatedStageOne_ge
+#check parallelStripeCompensatedStageTwo_ge
+#check parallelStripeCompensatedStageThree_ge
+#check parallelStripeCompensatedFinal_target_two
+#check parallelStripeCompensatedFinal_middle
+#check parallelStripeCompensatedFinal_target_four
+#check parallelStripeCompensatedFinal_common_targets
+#check parallelStripeCompensatedFinal_middle_gap
+#check parallelStripeCompensatedFinal_middle_unit_gap
+
+#print axioms parallelStripeCompensatedStageThree_ge
+#print axioms parallelStripeCompensatedFinal_middle_gap
+#print axioms parallelStripeCompensatedFinal_middle_unit_gap
+
+end OneChannelCNNUniversality
