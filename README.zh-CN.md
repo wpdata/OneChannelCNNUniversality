@@ -987,6 +987,11 @@ Lean 已证明：一个深度为 $rm$ 的双线性因子链，会在第二行的
 $m,2m,\ldots,rm$ 列同时精确计算这 $r$ 个线性形式。因此，无碰撞的代数并行化已经
 完成。要把它提升为真实的有限多 ridge CNN 定理，仍需构造紧集上一致的共享偏置载体，
 在所有目标坐标施加 ReLU，同时保护可恢复的北侧编码。
+[`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean)
+现已完成其中的紧集选择器部分：如果一个载体在所有目标处具有共同基线，并在每个受保护
+非目标坐标处至少高出一个单位，那么一个正尺度和一个广播标量偏置就能在全部目标上同时
+施加 ReLU，而所有受保护非目标坐标精确保持线性。真实最终卷积层的分解定理把这一抽象
+判据直接连接到共享偏置网络层。目前剩余的是为上述等距打包目标显式构造满足判据的载体。
 通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
 同时保留最后线性组合所需的状态。
 
@@ -1138,6 +1143,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean) | 任意两个输入仿射函数的精确终端最小值／最大值读出，并保持真实 ridge 完整状态的单射性 |
 | [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | 任意标量 ridge 倍数加任意仿射跳连项的精确有限读出，并保持真实隐藏状态的单射性 |
 | [`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean) | 无碰撞系数打包，以及用一个深度 $rm$ 的双线性链在分离的第二行目标上计算 $r$ 个独立的宽度 $m$ 线性形式 |
+| [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | 用共同基线载体在有限目标集上同时执行紧集 ReLU 选择，并给出真实最终层的精确分解定理 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

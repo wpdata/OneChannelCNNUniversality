@@ -1228,6 +1228,15 @@ $m,2m,\ldots,rm$.  This completes the collision-free algebraic
 parallelization.  A compact shared-bias carrier that applies ReLU at all of
 these targets while protecting the recoverable northern code is still needed
 before this becomes a genuine finite-ridge CNN theorem.
+[`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean)
+now proves the compact selector half of that obligation.  If one carrier has
+a common baseline on every target and a unit gap at every protected
+non-target, one positive scale and one broadcast scalar bias apply ReLU at
+all targets simultaneously while every protected non-target remains exactly
+linear.  A final-layer convolutional decomposition theorem connects this
+abstract criterion directly to a genuine shared-bias layer.  What remains is
+the explicit carrier realizing this criterion for the equally spaced packed
+ridge targets.
 Compiling finitely many such ridges into one shared-bias network, while
 retaining the state needed for their final linear combination, remains the
 next step toward the shared-bias universal-approximation theorem.
@@ -1404,6 +1413,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean) | Exact terminal affine readouts for the minimum and maximum of two arbitrary input affine functions, with the genuine ridge state still injective |
 | [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | Exact finite readout of an arbitrary scalar ridge multiple plus an arbitrary affine skip term, with the genuine hidden state still injective |
 | [`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean) | Collision-free coefficient packing and one depth-$rm$ bilinear chain computing $r$ independent width-$m$ linear forms at separated row-one targets |
+| [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | Compact simultaneous ReLU selection on a finite target set from one common-baseline carrier, including the exact genuine final-layer decomposition theorem |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
