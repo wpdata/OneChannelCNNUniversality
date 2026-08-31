@@ -948,7 +948,11 @@ N_{w,\theta}(x)_{1,n+2}
 $$
 
 机器检查的定理比单一目标等式更强：它识别了北侧两行每个坐标的输出，并证明所有非目标
-受保护坐标都保持在末层 ReLU 的线性分支。因此，“任意宽度单 ridge”子问题现已完成。
+受保护坐标都保持在末层 ReLU 的线性分支。
+[`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean)
+进一步证明：当 $T\ne0$ 时，完整北侧行是原输入的单射线性编码；它还构造了精确恢复
+输入的线性左逆，并证明整个真实 ridge 网络在紧单射特征族上仍保持单射。因此，
+“任意宽度单 ridge”子问题现已完成。
 通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
 同时保留最后线性组合所需的状态。
 
@@ -1096,6 +1100,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean) | 真实 seed 加 proper-factor 网络：一个紧集阈值同时保证前缀线性化及其与形式状态的北侧两行一致性 |
 | [`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean) | 带符号条带因子对 seed 地址、局部地址和任意线性 ridge 信号的精确实现 |
 | [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | 已完成的深度 $n+3$ 真实单通道共享偏置 $2\times2$ 网络：在紧输入族上精确计算任意仿射 ReLU ridge |
+| [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | 北侧条带编码的单射性和线性左逆，以及整个真实 ridge 状态在紧单射特征族上的单射性 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

@@ -1182,7 +1182,12 @@ $$
 The machine-checked theorem is stronger than target equality: it identifies
 the output at every coordinate in the northern two rows and proves that all
 non-target protected coordinates remain in the linear branch of the final
-ReLU.  Thus the arbitrary-width single-ridge subproblem is now complete.
+ReLU.  [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean)
+further proves that the complete northern row is an injective linear encoding
+of the original input whenever $T\ne0$, constructs a linear left inverse that
+recovers the input exactly, and upgrades the genuine compact ridge network to
+an injective state transform on compact injective feature families.  Thus the
+arbitrary-width single-ridge subproblem is now complete.
 Compiling finitely many such ridges into one shared-bias network, while
 retaining the state needed for their final linear combination, remains the
 next step toward the shared-bias universal-approximation theorem.
@@ -1259,7 +1264,7 @@ existing full universal-approximation theorem still permits arbitrary
 position-dependent bias images, and universality of the shared-scalar-bias
 subclass remains open.
 
-The decisive remaining gap is **composition**, not construction of one
+The decisive remaining gap is **composition**, not construction or recovery of one
 ridge.  The new $L$-state shows that the complete $m\times(2m-1)$ rectangle
 need not be normalized: an input-length northern prefix plus the ridge is
 already sufficient.  However, that $L$-state is still embedded in the physical
@@ -1355,6 +1360,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean) | A genuine seed-plus-proper-factor network with one compact threshold and exact northern-two-row agreement with its formal state |
 | [`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean) | Exact realization of the seed address, local address, and arbitrary linear ridge signal by the signed stripe factors |
 | [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | The completed depth-$n+3$ genuine one-channel shared-bias $2\times2$ network computing an arbitrary affine ReLU ridge exactly on compact input families |
+| [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | Injectivity and a linear left inverse for the northern stripe code, plus injectivity of the complete genuine ridge state on compact injective feature families |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
