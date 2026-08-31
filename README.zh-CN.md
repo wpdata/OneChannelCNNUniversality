@@ -1072,8 +1072,23 @@ $$
 
 因此 $s\ge1/17$ 时就得到同时选择器要求的单位间隔。这是一个实质性的正面构造：它给出
 每层一个共享标量偏置的精确补偿数据，并证明载体分量具有严格的线性分支裕量。剩余工作是
-加入可变的打包 ridge 信号后证明紧集上的真实网络桥接，再与二维北侧受保护编码组合起来；
-目前仍不宣称已经证明共享偏置有限 ridge 万能性。
+用同时承载可变打包 ridge 信号的因子来特化下述紧集真实网络桥接，再与二维北侧受保护编码
+组合起来；目前仍不宣称已经证明共享偏置有限 ridge 万能性。
+
+[`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean)
+现在以通用形式证明了这条路线所需的紧集真实网络桥接。一个补偿因子步骤由一个双线性
+$2\times2$ 核和一个标量载体偏置系数组成。若形式载体在整个因子链的北侧两行每个预激活
+坐标都至少为一，则紧集性给出统一阈值 $s_0$。对所有 $s\ge s_0$，第 $i$ 层使用共享偏置
+$sc_i$ 的真实 ReLU 网络在北侧两行满足精确逐坐标恒等式
+
+$$
+\mathrm{Net}_s(V(x)+sC)=
+\mathrm{ConvChain}(V(x))+s\,\mathrm{CompCarrier}(C).
+$$
+
+该定理适用于任意有限异质因子列表和任意紧的逐坐标连续信号族。下一项特化工作已经变成
+完全有限的问题：证明显式的 $(0,5,13)$ 双目标载体在同一组因子同时承载打包 ridge 信号时，
+确实满足这个北侧两行单位下界假设。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1230,6 +1245,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | 任意宽度完整链种子地址的精确分解：可缩放结点 boxcar 载体加固定打包权重扰动 |
 | [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | 机器检查的最小双目标反例，以及排除正前缀条带模式受保护共同基线的通用首一正线性系数定理 |
 | [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | 实根符号变化载体：精确共同双目标基线与 $17/4$ 间隔，以及旧线性化方法所遇到的精确负前缀障碍 |
+| [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | 具有预设逐层标量偏置补偿的异质因子链通用紧集真实网络定理，以及北侧两行精确“信号加载体”语义 |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | 符号变化双目标载体的逐层标量偏置精确补偿：proper 前缀统一正裕量，以及最终共同基线和 $17s$ 间隔 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |

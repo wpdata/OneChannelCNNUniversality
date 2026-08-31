@@ -1338,10 +1338,30 @@ $$
 Consequently $s\ge1/17$ gives the selector's normalized unit gap.  This is
 a substantive constructive result: it supplies exact one-scalar-per-layer
 compensation data whose carrier component has a positive linear-branch
-margin.  The remaining work is to prove the compact genuine-network bridge
-after adding the variable packed-ridge signal, and then combine it with the
-two-dimensional protected northern code; the finite-ridge shared-bias
-universality theorem is not yet claimed.
+margin.  The remaining work is to instantiate the compact genuine-network
+bridge below with factors that also carry the variable packed-ridge signal,
+and then combine it with the two-dimensional protected northern code; the
+finite-ridge shared-bias universality theorem is not yet claimed.
+
+[`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean)
+now proves the compact genuine-network bridge needed by this strategy in a
+general form.  A compensated factor step consists of one bilinear
+$2\times2$ kernel and one scalar carrier-bias coefficient.  If its formal
+carrier preactivation is at least one at every coordinate of the northern
+two rows throughout the chain, then compactness produces a common threshold
+$s_0$.  For every $s\ge s_0$, the actual shared-bias ReLU network, using
+layer bias $s c_i$ at step $i$, satisfies the exact coordinate identity
+
+$$
+\mathrm{Net}_s(V(x)+sC)=
+\mathrm{ConvChain}(V(x))+s\,\mathrm{CompCarrier}(C)
+$$
+
+on both northern rows.  The theorem handles arbitrary finite heterogeneous
+factor lists and arbitrary compact coordinatewise-continuous signal
+families.  The next specialization obligation is entirely finite: prove
+that the explicit $(0,5,13)$ two-target carrier meets this two-row unit-lower
+hypothesis when the same factors also carry the packed ridge signal.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1522,6 +1542,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeWidthSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthSeedAddress.lean) | Exact arbitrary-width full-chain seed-address decomposition into the scalable nodal boxcar carrier and the fixed packed-weight perturbation |
 | [`SharedBiasParallelStripeObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeObstruction.lean) | Machine-checked minimal two-target counterexample and a generic monic positive-linear-coefficient theorem ruling out a protected common baseline for the positive-prefix stripe pattern |
 | [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | A real-rooted sign-changing carrier with exact common two-target baseline and gap $17/4$, together with the exact negative-prefix obstruction to the old linearization method |
+| [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | General compact genuine-network theorem for heterogeneous factor chains with prescribed layerwise scalar-bias compensation and exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | Exact layerwise scalar-bias compensation for the sign-changing two-target carrier: uniform proper-prefix margin and final common baseline with gap $17s$ |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |

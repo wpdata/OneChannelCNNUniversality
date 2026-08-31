@@ -1,0 +1,17 @@
+import OneChannelCNNUniversality.SharedBiasCompensatedCarrier
+
+/-! # Regression tests for layerwise compensated compact carriers -/
+
+namespace OneChannelCNNUniversality
+
+#check CompensatedBilinearStep
+#check compensatedVariableChain
+#check compensatedCarrierChain
+#check compensatedBilinearNetwork
+#check compensatedBilinearNetwork_depth
+#check NorthTwoCompensatedUnitLowerAlong
+#check exists_compensatedNorthTwoNetwork_scale_on_compact
+
+#print axioms exists_compensatedNorthTwoNetwork_scale_on_compact
+
+end OneChannelCNNUniversality
