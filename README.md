@@ -1200,6 +1200,18 @@ $$
 
 The resulting state is still injective.  Thus the arbitrary-width
 single-ridge subproblem and its first binary lattice interface are complete.
+[`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean)
+packages the general exact readout consequence: for arbitrary real data it
+realizes
+
+$$
+\lambda\,\mathrm{ReLU}\!\left(\sum_j w_jx_j+\theta\right)
+  +\sum_j a_jx_j+\alpha
+$$
+
+by one finite affine readout of the same genuine depth-$n+3$ network, while
+retaining state injectivity.  This is the complete one-hidden-unit ReLU class
+with an affine skip term, not yet a finite hidden-unit sum.
 Compiling finitely many such ridges into one shared-bias network, while
 retaining the state needed for their final linear combination, remains the
 next step toward the shared-bias universal-approximation theorem.
@@ -1374,6 +1386,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | The completed depth-$n+3$ genuine one-channel shared-bias $2\times2$ network computing an arbitrary affine ReLU ridge exactly on compact input families |
 | [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | Injectivity and a linear left inverse for the northern stripe code, exact affine recovery by finite readout weights, and injectivity of the complete genuine ridge state |
 | [`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean) | Exact terminal affine readouts for the minimum and maximum of two arbitrary input affine functions, with the genuine ridge state still injective |
+| [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | Exact finite readout of an arbitrary scalar ridge multiple plus an arbitrary affine skip term, with the genuine hidden state still injective |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

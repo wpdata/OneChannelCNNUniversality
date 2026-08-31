@@ -1,0 +1,13 @@
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeAffineCombination
+
+/-! # Regression tests for affine-plus-ridge readouts -/
+
+namespace OneChannelCNNUniversality
+
+#check generalRidgeStripeAffineRidgeLinearMap
+#check generalRidgeStripeAffineRidgeReadoutWeight
+#check exists_generalRidgeStripeAffineRidgeReadout_on_compact
+
+#print axioms exists_generalRidgeStripeAffineRidgeReadout_on_compact
+
+end OneChannelCNNUniversality

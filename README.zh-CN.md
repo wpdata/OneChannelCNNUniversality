@@ -964,6 +964,17 @@ $$
 
 所得完整状态仍保持单射。因此，“任意宽度单 ridge”子问题及其第一个二元格运算接口
 现已完成。
+[`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean)
+给出一般的精确读出推论：对任意实参数，同一个真实深度 $n+3$ 网络的一个有限仿射读出
+可实现
+
+$$
+\lambda\,\mathrm{ReLU}\!\left(\sum_j w_jx_j+\theta\right)
+  +\sum_j a_jx_j+\alpha,
+$$
+
+并保持状态单射。这完整覆盖了“一个隐藏 ReLU 单元加仿射跳连项”的函数类，但尚不是
+有限多个隐藏单元之和。
 通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
 同时保留最后线性组合所需的状态。
 
@@ -1113,6 +1124,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | 已完成的深度 $n+3$ 真实单通道共享偏置 $2\times2$ 网络：在紧输入族上精确计算任意仿射 ReLU ridge |
 | [`SharedBiasGeneralRidgeStripeRecovery.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRecovery.lean) | 北侧条带编码的单射性与线性左逆、有限读出权重的精确仿射恢复，以及整个真实 ridge 状态的单射性 |
 | [`SharedBiasGeneralRidgeStripeMinMax.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeMinMax.lean) | 任意两个输入仿射函数的精确终端最小值／最大值读出，并保持真实 ridge 完整状态的单射性 |
+| [`SharedBiasGeneralRidgeStripeAffineCombination.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAffineCombination.lean) | 任意标量 ridge 倍数加任意仿射跳连项的精确有限读出，并保持真实隐藏状态的单射性 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
