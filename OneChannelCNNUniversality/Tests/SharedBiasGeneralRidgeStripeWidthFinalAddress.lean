@@ -1,0 +1,16 @@
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeWidthFinalAddress
+
+/-! # Regression tests for arbitrary-width final stripe addresses -/
+
+namespace OneChannelCNNUniversality
+
+#check generalRidgeStripeWidthFinalLocalAddress
+#check generalRidgeStripeWidthFinalLocalAddress_row_zero_gap
+#check generalRidgeStripeWidthFinalLocalAddress_row_one_left_gap
+#check generalRidgeStripeWidthFinalLocalAddress_row_one_right_gap
+#check generalRidgeStripeWidthFinalLocalAddress_row_one_interior
+
+#print axioms generalRidgeStripeWidthFinalLocalAddress_row_zero_gap
+#print axioms generalRidgeStripeWidthFinalLocalAddress_row_one_interior
+
+end OneChannelCNNUniversality

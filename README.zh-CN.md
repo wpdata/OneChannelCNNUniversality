@@ -1003,8 +1003,11 @@ $T_0=2(B+1)$。超过该阈值后，每个真实 proper prefix 在北侧两行�
 $w:\mathrm{Fin}(n+2)\to\mathbb R$ 决定的 proper 因子块，它构造了深度恰为 $n+2$、
 输出尺寸为 $(n+3)\times(m+n+2)$ 的共享偏置 ReLU 网络。对任意紧输入族，存在一个
 统一种子阈值，使网络北侧两行与形式 proper 卷积状态精确一致。因此，有限多 ridge
-定理现在剩下的关键不再是前缀线性化，而是构造一个最终共享载体地址：它要同时选中这些
-分离目标，并保留终端仿射求和所需的坐标。
+定理现在剩下的关键不再是前缀线性化。
+[`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean)
+又验证了最终共享载体的局部几何部分：当 $T\ge1$ 时，第二行所有内部坐标具有同一个
+基线，而全部北行坐标以及第二行的两个端点至少高出该基线 $2$。现在尚需构造全局水平
+地址，把打包的内部目标与受保护的内部非目标分开，然后完成终端仿射求和。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1157,6 +1160,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | 用共同基线载体在有限目标集上同时执行紧集 ReLU 选择，并给出真实最终层的精确分解定理 |
 | [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | 输入宽度与因子深度独立的条带前缀载体，以及使北侧两行对任意种子宽度统一保持线性的显式阈值 |
 | [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | 输入宽度任意、深度恰为 $n+2$ 的真实带符号条带 proper 网络，以及紧集上一致的种子阈值和北侧两行精确形式行为 |
+| [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | 任意宽度最终因子地址：第二行内部具有共同基线，全部北行坐标和两个水平端点至少高出该基线 $2$ |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

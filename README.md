@@ -1253,9 +1253,14 @@ network of exact depth $n+2$ and output size
 $(n+3)\times(m+n+2)$.  On every compact input family, one uniform seed
 threshold makes its northern two rows agree exactly with the formal proper
 convolution state.  The remaining finite-ridge step is no longer prefix
-linearization; it is the construction of one final shared carrier address
-that simultaneously selects the separated packed targets while preserving
-the coordinates needed by the terminal affine sum.
+linearization.  The local geometric part of its final shared carrier is also
+now verified in
+[`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean):
+all row-one interior sites have one common baseline, while every northern
+site and both row-one endpoints lie at least two above it when $T\ge1$.
+What remains is the global horizontal address that separates the packed
+interior targets from the protected interior non-targets, followed by the
+terminal affine sum.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1432,6 +1437,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | Compact simultaneous ReLU selection on a finite target set from one common-baseline carrier, including the exact genuine final-layer decomposition theorem |
 | [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | Independent-width signed-stripe prefix carrier, with one explicit threshold keeping both northern rows uniformly linear for arbitrary seed width |
 | [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | Genuine arbitrary-input-width signed-stripe proper network of exact depth $n+2$, with compact-uniform seed threshold and exact northern-two-row formal behavior |
+| [`SharedBiasGeneralRidgeStripeWidthFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthFinalAddress.lean) | Arbitrary-width final-factor address: a common row-one interior baseline and a gap of at least two at every northern site and both horizontal endpoints |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
