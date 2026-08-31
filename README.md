@@ -992,6 +992,201 @@ protect that whole row while selecting one new target.  These theorems rule
 out naive reuse of this separated block; they do not rule out a different
 multi-ridge construction or universal approximation by the architecture.
 
+[`SharedBiasGeneralRidgeIdealAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeIdealAddress.lean)
+identifies an exact algebraic repair for the flat row address.  With
+
+$$
+G_d(X)=\prod_{i=1}^{d}(X+i),
+\qquad C_d(X)=1+X+\cdots+X^d,
+$$
+
+every coefficient of $G_d$ from degree $0$ through $d$ is at least one.
+The coefficient of $G_dC_d$ at degree $d$ contains their full sum, while
+every other degree omits at least one term.  Lean therefore proves that
+degree $d$ is the unique maximum with gap at least one; after negation it is
+the unique minimum with the same gap.  This supplies the precise spatial
+shape required by a full-row selector.  It is deliberately stated as an
+algebraic address theorem: generating the finite boxcar stripe inside a
+genuine shared-bias CNN, while retaining the variable signal, is the next
+network-level obligation.
+
+[`SharedBiasGeneralRidgeAddressPlateau.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeAddressPlateau.lean)
+analyzes an abstract polynomial carrier model for linearly propagated bias
+boosts.  In that model, if the input width is $m$, the total depth is $L$,
+and the $k$-th bias direction is a degree-bounded polynomial multiplied by
+its prescribed boxcar, then every bias direction—and therefore every real
+linear combination of them—is constant throughout
+
+$$
+L-1\le q\le m.
+$$
+
+A target that sees all $m$ inputs must satisfy $m-1\le q\le L$.  Lean proves
+that whenever $m-1\le L\le m$, such a target always has a distinct competitor
+with exactly the same address.  At $L=m+1$ the former common plateau first
+shrinks to the singleton $\{m\}$.  This is a sharp statement only inside that
+polynomial linear-carrier model.  A network-to-polynomial representation
+theorem is not asserted here, so this is not a depth lower bound for arbitrary
+shared-bias networks with genuinely nonlinear intermediate masks.
+
+[`SharedBiasGeneralRidgeLowWindow.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLowWindow.lean)
+supplies the finite triangular inverse needed by a sequential multi-ridge
+design.  If $H(0)\ne0$, then for every polynomial $R$ and degree budget $d$
+it constructs a polynomial $U$ with $\deg U\le d$ such that
+
+$$
+[X^j](UH)=[X^j]R,
+\qquad 0\le j\le d.
+$$
+
+The construction truncates the formal power series $RH^{-1}$; it does not
+claim that $H$ has a polynomial inverse.  In a later ridge stage this permits
+the low-order target window to cancel all known affine transport from earlier
+stages.  The remaining multi-ridge difficulty is therefore the genuine
+shared-bias carrier that protects the northern row and the required suffix of
+row one during each selected ReLU, not the finite coefficient matching.
+
+[`SharedBiasGeneralRidgeStripeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAlgebra.lean)
+implements the signed factor schedule for the first proposed two-row repair.
+After appending a zero target weight, it preserves the desired vertical
+degree-one polynomial while changing the complete horizontal product to
+
+$$
+-T\prod_{i=1}^{d}(X+i).
+$$
+
+For $T\ge1$, all four taps of the final twisted factor are at most $-1$.
+This is the exact sign pattern needed by the proposed terminal stripe gate;
+the later carrier modules use this sign pattern in the terminal gate.
+
+[`SharedBiasGeneralRidgeStripePrefix.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripePrefix.lean)
+shows that every proper prefix of this twisted schedule retains the positive
+horizontal product
+
+$$
+G_k(X)=\prod_{i=1}^{k}(X+i).
+$$
+
+Every coefficient of $G_kC_m$ on its complete support
+$0\le q\le k+m$ is at least one, including both boundary ramps; on the
+full-window interval it is exactly $(k+1)!$.  These are algebraic prefix
+bounds; the following carrier theorem controls the lower-row perturbation.
+
+[`SharedBiasGeneralRidgeStripeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeCarrier.lean)
+closes the proper-prefix positivity problem.  It proves the exact two-row
+carrier formulas
+
+$$
+\mathrm{row}_0=2G_kC_m,
+\qquad
+\mathrm{row}_1=2G_kC_m-2T^{-1}R_kC_m,
+$$
+
+places one finite absolute bound over every prefix and every genuine output
+column, and chooses the explicit upward-closed threshold $T_0=2(B+1)$.
+For every $T\ge T_0$, the constant-two stripe is therefore a certified
+`NorthTwoUnitLowerAlong` carrier for all proper layers, including the
+shortest case and both boundary ramps.
+
+[`SharedBiasGeneralRidgeStripeFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeFinalAddress.lean)
+computes the genuine final-kernel response to a unit constant boost at the
+preceding layer.  Every northern coordinate and both row-one endpoints lie
+at least two above the target, while every row-one interior coordinate has
+exactly the target address.  Thus this direction supplies the required
+vertical and boundary separation but formally confirms that it cannot create
+horizontal uniqueness by itself.
+
+[`SharedBiasNorthTwoLinearization.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoLinearization.lean)
+proves the complementary genuine-network invariant.  For expansive
+$2\times2$ convolutions, the northern two output rows depend only on the
+northern two input rows.  Hence a real zero-bias ReLU network agrees there
+with its formal convolution chain whenever only those two rows have
+nonnegative preactivations at every stage; arbitrary nonlinear behavior
+farther south cannot propagate back north.  This substantially weakens the
+old full-image linearity obligation, but it does not by itself establish the
+missing prefix nonnegativity bounds.
+
+[`SharedBiasNorthTwoCarrier.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoCarrier.lean)
+closes the compactness step behind those bounds.  It proves that any fixed
+carrier contributing at least one at every northern-two-row prefix
+preactivation can be scaled once so that an arbitrary continuous compact
+signal family satisfies `NorthTwoLinearAlong`.  It also proves an
+upward-closed identity-seed theorem: for every sufficiently large shared
+bias $c$, the genuine first ReLU layer is exactly the identity convolution
+plus the constant image $c$.  The remaining stripe-specific task is now
+supplied by the certified unit-lower carrier above.
+
+[`SharedBiasSeededNorthTwoNetwork.lean`](OneChannelCNNUniversality/SharedBiasSeededNorthTwoNetwork.lean)
+packages these two ingredients into one upward-closed compact threshold.
+Above it, a genuine identity seed layer is exactly affine and every proper
+factor preactivation is nonnegative on the northern two rows.  Consequently
+the actual seed-plus-zero-bias network agrees there with its full formal
+convolution chain.  Rows farther south are deliberately unrestricted.
+
+[`SharedBiasBiasedLast.lean`](OneChannelCNNUniversality/SharedBiasBiasedLast.lean)
+allows the last layer of any nonempty heterogeneous factor block to carry a
+nonnegative shared bias while all earlier layers keep bias zero.  Under the
+same northern-two-row linearity certificate, its actual output is exactly
+the formal chain plus that constant on the protected two rows.  This is the
+genuine-network source of the local carrier used by the final stripe factor.
+
+[`SharedBiasGeneralRidgeStripeSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeSeedAddress.lean)
+proves that the complete signed stripe chain turns the identity-seed boxcar
+into a scalable address whose row-one center is the unique minimum.  More
+precisely, it splits the address as
+
+$$
+A_0(q)=-T I_m(q),
+\qquad
+A_1(q)=-T I_m(q)+B(q),
+$$
+
+constructs an explicit upward-closed threshold for $T$, and proves a unit
+gap between the row-one target and every other row-one column.  It also
+bounds every northern coordinate relative to the target and identifies the
+fixed target perturbation as $B(m)=\sum_j w_j$.  These remain exact algebraic
+full-chain statements until the prefix linearity bridge is attached.
+
+[`SharedBiasTwoCarrierSelection.lean`](OneChannelCNNUniversality/SharedBiasTwoCarrierSelection.lean)
+formalizes the compact terminal mask used to combine complementary address
+directions.  One carrier may handle horizontal uniqueness while a second
+handles northern and boundary separation; a finite deficit in the first
+direction is allowed on the second class.  Compactness supplies uniform
+positive scales so that the target applies exactly one prescribed ReLU and
+every other protected coordinate stays on its linear branch.
+The strengthened interface permits an arbitrary prescribed lower bound on
+the seed scale, so the same scale can satisfy all preceding linearization
+thresholds.
+
+[`SharedBiasGeneralRidgeStripeAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAddress.lean)
+combines the two address directions on the final rectangle.  Lean proves
+the exact dichotomy required by the selector: every non-target row-one site
+has a unit seed-address gap and a nonnegative local gap, whereas every
+northern site has a two-unit local gap and a seed deficit bounded by the
+finite target perturbation.
+
+[`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean),
+[`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean),
+and [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean)
+close the final typed network-realization bridge.  For an input of width
+$n+2$, the construction is a genuine depth-$n+3$, one-channel expansive
+$2\times2$ shared-bias ReLU network.  On every compact continuous input
+family, positive parameters can be chosen uniformly so that the protected
+coordinate $(1,n+2)$ satisfies the exact identity
+
+$$
+N_{w,\theta}(x)_{1,n+2}
+=\mathrm{ReLU}\!\left(\sum_{j=0}^{n+1}w_jx_j+\theta\right).
+$$
+
+The machine-checked theorem is stronger than target equality: it identifies
+the output at every coordinate in the northern two rows and proves that all
+non-target protected coordinates remain in the linear branch of the final
+ReLU.  Thus the arbitrary-width single-ridge subproblem is now complete.
+Compiling finitely many such ridges into one shared-bias network, while
+retaining the state needed for their final linear combination, remains the
+next step toward the shared-bias universal-approximation theorem.
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
 representative long-range ridge.  For
@@ -1143,6 +1338,23 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasGeneralRidgeLState.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLState.lean) | Injectivity of the input-length northern prefix and a continuous injective southeast-monotone $L$-state ending at the exact ridge coordinate |
 | [`SharedBiasGeneralRidgeReadout.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeReadout.lean) | Linear recovery from the northern code and exact terminal min/max readouts for any two input affine functions using one shared-bias network |
 | [`SharedBiasGeneralRidgeCompositionObstruction.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCompositionObstruction.lean) | The exact old-row contamination identity and flat terminal-address obstruction to naive black-box composition of the present ridge block |
+| [`SharedBiasGeneralRidgeIdealAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeIdealAddress.lean) | Nonnegative nodal-product coefficients and the boxcar product's unique central maximum, or unique unit-gap minimum after negation |
+| [`SharedBiasGeneralRidgeAddressPlateau.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeAddressPlateau.lean) | The exact common plateau in the degree-bounded polynomial linear-carrier model, its unavoidable tied competitor through depth $m$, and its collapse at depth $m+1$ |
+| [`SharedBiasGeneralRidgeLowWindow.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLowWindow.lean) | Truncated formal-power-series inversion giving exact finite low-order coefficient matching whenever the transport polynomial has nonzero constant term |
+| [`SharedBiasGeneralRidgeStripeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAlgebra.lean) | A signed reciprocal factor twist preserving the target vertical polynomial, producing horizontal carrier $-T G_d$, and forcing all four final taps to be at most $-1$ |
+| [`SharedBiasGeneralRidgeStripePrefix.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripePrefix.lean) | Exact positive nodal products for all proper twisted prefixes and a unit lower bound for every coefficient of their boxcar products on the complete support |
+| [`SharedBiasGeneralRidgeStripeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeCarrier.lean) | Exact two-row prefix-carrier formulas and an explicit upward-closed scale threshold certifying unit-lower preactivations at every proper layer |
+| [`SharedBiasGeneralRidgeStripeFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeFinalAddress.lean) | Exact final-kernel local address: two-unit northern and endpoint gaps together with a proved row-one interior plateau |
+| [`SharedBiasNorthTwoLinearization.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoLinearization.lean) | Northern-two-row causality and equality of a genuine zero-bias ReLU network with its formal convolution chain under row-local nonnegativity |
+| [`SharedBiasNorthTwoCarrier.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoCarrier.lean) | Compact domination by any unit-lower northern-two-row carrier and an upward-closed exact identity-seed threshold for signed compact inputs |
+| [`SharedBiasSeededNorthTwoNetwork.lean`](OneChannelCNNUniversality/SharedBiasSeededNorthTwoNetwork.lean) | One common compact seed threshold giving an exact genuine seed layer, proper-prefix northern linearity, and agreement with the formal chain |
+| [`SharedBiasBiasedLast.lean`](OneChannelCNNUniversality/SharedBiasBiasedLast.lean) | A genuine heterogeneous network biased only at its last layer, equal on the northern two rows to the formal chain plus that constant |
+| [`SharedBiasGeneralRidgeStripeSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeSeedAddress.lean) | Full-chain identity-seed address decomposition, an explicit monotone scale threshold for a unique row-one center, and a northern deficit bound |
+| [`SharedBiasGeneralRidgeStripeAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAddress.lean) | The complementary two-class gap theorem combining horizontal seed uniqueness with northern and boundary local separation |
+| [`SharedBiasTwoCarrierSelection.lean`](OneChannelCNNUniversality/SharedBiasTwoCarrierSelection.lean) | Compact exact ReLU selection from two complementary carrier gaps, allowing a bounded deficit in one address direction |
+| [`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean) | A genuine seed-plus-proper-factor network with one compact threshold and exact northern-two-row agreement with its formal state |
+| [`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean) | Exact realization of the seed address, local address, and arbitrary linear ridge signal by the signed stripe factors |
+| [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | The completed depth-$n+3$ genuine one-channel shared-bias $2\times2$ network computing an arbitrary affine ReLU ridge exactly on compact input families |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

@@ -806,6 +806,152 @@ $$
 整条第二行但只选择一个新目标”所需的单位间隙。这些定理排除了对当前分离块的朴素复用，
 并没有排除另一种多 ridge 构造，也没有否定该网络架构的万能逼近性。
 
+[`SharedBiasGeneralRidgeIdealAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeIdealAddress.lean)
+给出了修复第二行平坦地址的精确代数候选。令
+
+$$
+G_d(X)=\prod_{i=1}^{d}(X+i),
+\qquad C_d(X)=1+X+\cdots+X^d.
+$$
+
+$G_d$ 从 $0$ 次到 $d$ 次的每个系数都至少为一。乘积 $G_dC_d$ 的 $d$ 次系数包含这些
+系数的完整总和，而其他任何次数都至少漏掉其中一项。因此 Lean 已证明：$d$ 次位置是
+具有至少单位间隙的唯一最高点；整体取负以后，它就是具有同样间隙的唯一最低点。这正是
+保护完整第二行所需的空间形状。这里有意只陈述代数地址定理：下一项网络级任务仍是证明
+真实共享偏置 CNN 能在保留可变信号的同时，从网络内部生成这条有限箱形载波。
+
+[`SharedBiasGeneralRidgeAddressPlateau.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeAddressPlateau.lean)
+分析了线性传播偏置 boost 的一个抽象多项式载波模型。若输入宽度为 $m$、总深度为 $L$，
+并假设第 $k$ 个偏置方向具有“次数受限多项式乘指定箱形多项式”的形式，那么每个偏置方向
+乃至它们的任意实线性组合，都在区间
+
+$$
+L-1\le q\le m
+$$
+
+上恒定。一个能够看到全部 $m$ 个输入的目标必须满足 $m-1\le q\le L$。Lean 已证明：
+只要 $m-1\le L\le m$，这样的目标必有另一个不同位置与它地址完全相同；到 $L=m+1$
+时，原共同平台才首次缩成单点 $\{m\}$。这是该多项式线性载波模型内部的锐利结论；本模块
+尚未声称存在从任意真实网络到该多项式表示的定理，因此它不是对含真正非线性中间掩码的
+任意共享偏置网络所作的深度下界。
+
+[`SharedBiasGeneralRidgeLowWindow.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLowWindow.lean)
+给出了顺序多 ridge 构造所需的有限三角逆元。若 $H(0)\ne0$，那么对任意多项式 $R$
+和次数预算 $d$，它会构造满足 $\deg U\le d$ 的多项式 $U$，并精确证明
+
+$$
+[X^j](UH)=[X^j]R,
+\qquad 0\le j\le d.
+$$
+
+构造方法是截断形式幂级数 $RH^{-1}$，并没有声称 $H$ 存在多项式逆元。它允许后续 ridge
+阶段在所需低阶窗口中精确抵消此前各阶段的已知仿射传输。因此，多 ridge 路线剩余的核心
+难点已经集中到真实共享偏置载波：每次选择 ReLU 时，必须同时保护完整北侧行和第二行的
+指定后缀；有限系数匹配本身已经由 Lean 闭合。
+
+[`SharedBiasGeneralRidgeStripeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAlgebra.lean)
+实现了第一种两行修复方案所需的带符号因子日程。给目标权重追加一个零坐标后，该日程保持
+所需的纵向一次多项式不变，同时把完整横向乘积变为
+
+$$
+-T\prod_{i=1}^{d}(X+i).
+$$
+
+当 $T\ge1$ 时，最后一个扭转因子的四个卷积 tap 全都不大于 $-1$。这正是候选终端条带门
+所需的符号结构；后续载波模块会在终端门中使用这一符号结构。
+
+[`SharedBiasGeneralRidgeStripePrefix.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripePrefix.lean)
+证明了该扭转日程的每个 proper prefix 都保留正横向乘积
+
+$$
+G_k(X)=\prod_{i=1}^{k}(X+i).
+$$
+
+$G_kC_m$ 在完整支撑 $0\le q\le k+m$ 上的每个系数都至少为一，包括两侧斜坡；在完整窗口
+区间上，它精确等于 $(k+1)!$。这些是前缀代数界；下一项载波定理控制第二行的纵向扰动。
+
+[`SharedBiasGeneralRidgeStripeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeCarrier.lean)
+闭合了 proper prefix 的正性问题。它证明两行载波的精确公式
+
+$$
+\mathrm{row}_0=2G_kC_m,
+\qquad
+\mathrm{row}_1=2G_kC_m-2T^{-1}R_kC_m,
+$$
+
+对所有前缀及所有真实输出列建立一个有限绝对值界，并取显式向上封闭阈值
+$T_0=2(B+1)$。因此每个 $T\ge T_0$ 都使常数二条带成为所有 proper 层上的
+`NorthTwoUnitLowerAlong` 载波，包括最短情形和两侧边界斜坡。
+
+[`SharedBiasGeneralRidgeStripeFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeFinalAddress.lean)
+计算了真实末卷积核对前一层单位常数 boost 的响应。每个北侧坐标和第二行两个端点都比目标
+至少高二，而第二行每个内部坐标都与目标地址严格相同。因此这个方向提供所需的纵向和边界
+分离，同时也形式化确认了它单独无法产生横向唯一性。
+
+[`SharedBiasNorthTwoLinearization.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoLinearization.lean)
+证明了与之互补的真实网络不变量。对扩张型 $2\times2$ 卷积，北侧两条输出行只依赖北侧
+两条输入行。因此，只要每一阶段仅在这两行上的预激活非负，真实零偏置 ReLU 网络就在这两行
+与形式卷积链一致；更南侧即使发生任意非线性，也不能反向污染北侧。这显著弱化了旧的全图
+线性条件，但它本身还没有给出缺失的前缀非负界。
+
+[`SharedBiasNorthTwoCarrier.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoCarrier.lean)
+闭合了这些界背后的紧致性步骤。它证明：只要一个固定载波在每个前缀的北侧两行预激活上
+至少贡献一，就能一次性放大它，使任意连续紧输入族满足 `NorthTwoLinearAlong`。它还证明了
+一个向上封闭的 identity-seed 定理：当共享偏置 $c$ 充分大时，真实第一层 ReLU 对所有更大的
+$c$ 都精确等于 identity 卷积加常数图 $c$。上面的显式载波已经提供了所需单位下界证书。
+
+[`SharedBiasSeededNorthTwoNetwork.lean`](OneChannelCNNUniversality/SharedBiasSeededNorthTwoNetwork.lean)
+把这两个组成部分封装为同一个向上封闭紧集阈值。超过该阈值后，真实 identity seed 层精确
+处于仿射支路，且每个 proper factor 的北侧两行预激活都非负。因此真实 seed 加零偏置网络
+在这两行上与完整形式卷积链一致；更南侧的行仍有意不作限制。
+
+[`SharedBiasBiasedLast.lean`](OneChannelCNNUniversality/SharedBiasBiasedLast.lean)
+允许任意非空异构因子块只在最后一层使用一个非负共享偏置，其余层偏置为零。在同一个北侧
+两行线性证书下，真实输出在受保护两行上精确等于形式卷积链加该常数。这给出了末条带因子
+所用局部载波的真实网络来源。
+
+[`SharedBiasGeneralRidgeStripeSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeSeedAddress.lean)
+证明完整的带符号条带链会把 identity-seed 箱形信号变成可缩放地址，并使第二行中心成为
+唯一最低点。更精确地，它给出分解
+
+$$
+A_0(q)=-T I_m(q),
+\qquad
+A_1(q)=-T I_m(q)+B(q),
+$$
+
+构造 $T$ 的显式向上封闭阈值，并证明第二行目标与其他每一列之间都有单位间隙。它还给出
+所有北侧坐标相对目标的下界，并把固定目标扰动识别为 $B(m)=\sum_j w_j$。在接上前缀线性
+桥之前，这些仍是完整链上的精确代数结论。
+
+[`SharedBiasTwoCarrierSelection.lean`](OneChannelCNNUniversality/SharedBiasTwoCarrierSelection.lean)
+形式化了组合两个互补地址方向的紧集末端掩码。一个载波可负责横向唯一性，另一个负责北侧
+与边界分离；在第二类位置上允许第一个方向存在有限亏损。紧致性给出统一的正缩放，使目标点
+精确施加一次指定的 ReLU，而其他每个受保护坐标都保持在线性支路。
+强化接口允许预先指定种子尺度的任意下界，因此同一尺度可以同时满足此前所有线性化阈值。
+
+[`SharedBiasGeneralRidgeStripeAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAddress.lean)
+在最终矩形上组合了两个地址方向。Lean 已证明选择器所需的精确二分：每个非目标第二行位置
+都有单位 seed 地址间隙和非负局部间隙；每个北侧位置都有二单位局部间隙，而 seed 地址亏损
+由有限目标扰动统一控制。
+
+[`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean)、
+[`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean)
+与 [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean)
+已闭合最后的定型网络实现桥。对宽度为 $n+2$ 的输入，构造得到一个真实的、深度为
+$n+3$ 的单通道扩张型 $2\times2$ 共享标量偏置 ReLU 网络。对任意连续紧输入族，
+可以统一选取正参数，使受保护坐标 $(1,n+2)$ 满足精确恒等式
+
+$$
+N_{w,\theta}(x)_{1,n+2}
+=\mathrm{ReLU}\!\left(\sum_{j=0}^{n+1}w_jx_j+\theta\right).
+$$
+
+机器检查的定理比单一目标等式更强：它识别了北侧两行每个坐标的输出，并证明所有非目标
+受保护坐标都保持在末层 ReLU 的线性分支。因此，“任意宽度单 ridge”子问题现已完成。
+通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
+同时保留最后线性组合所需的状态。
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
 令
@@ -933,6 +1079,23 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasGeneralRidgeLState.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLState.lean) | 输入长度北侧前缀的单射性，以及终止于精确 ridge 坐标的连续、单射、东南单调 $L$ 状态 |
 | [`SharedBiasGeneralRidgeReadout.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeReadout.lean) | 从北侧编码进行线性恢复，并用同一个共享偏置网络对任意两个输入仿射函数实现精确终端最小值／最大值读出 |
 | [`SharedBiasGeneralRidgeCompositionObstruction.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeCompositionObstruction.lean) | 当前 ridge 块无法朴素黑盒组合的精确旧行污染恒等式与平坦终端地址障碍 |
+| [`SharedBiasGeneralRidgeIdealAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeIdealAddress.lean) | 节点乘积系数非负性、箱形乘积的唯一中心峰，以及取负后的单位间隙唯一最低点 |
+| [`SharedBiasGeneralRidgeAddressPlateau.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeAddressPlateau.lean) | 次数受限多项式线性载波模型中的精确共同平台、深度不超过 $m$ 时不可避免的同址竞争点，以及深度 $m+1$ 时的平台坍缩 |
+| [`SharedBiasGeneralRidgeLowWindow.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeLowWindow.lean) | 传输多项式常数项非零时，由截断形式幂级数逆元实现的精确有限低阶系数匹配 |
+| [`SharedBiasGeneralRidgeStripeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAlgebra.lean) | 保持目标纵向多项式、生成横向载波 $-T G_d$ 并使末因子四个 tap 都不大于 $-1$ 的带符号倒数扭转 |
+| [`SharedBiasGeneralRidgeStripePrefix.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripePrefix.lean) | 所有 proper twisted prefix 的精确正节点乘积，以及其箱形乘积在完整支撑上的逐系数单位下界 |
+| [`SharedBiasGeneralRidgeStripeCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeCarrier.lean) | 两行前缀载波的精确公式，以及逐层认证单位下界预激活的显式向上封闭尺度阈值 |
+| [`SharedBiasGeneralRidgeStripeFinalAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeFinalAddress.lean) | 末卷积核局部地址的精确公式：北侧和端点的二单位间隙，以及已证明的第二行内部平台 |
+| [`SharedBiasNorthTwoLinearization.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoLinearization.lean) | 北侧两行因果性，以及在局部非负条件下真实零偏置 ReLU 网络与形式卷积链在北侧两行的一致性 |
+| [`SharedBiasNorthTwoCarrier.lean`](OneChannelCNNUniversality/SharedBiasNorthTwoCarrier.lean) | 单位下界北两行载波的紧集统一支配，以及适用于有符号紧输入族的向上封闭精确 identity-seed 阈值 |
+| [`SharedBiasSeededNorthTwoNetwork.lean`](OneChannelCNNUniversality/SharedBiasSeededNorthTwoNetwork.lean) | 同一个紧集 seed 阈值给出真实 seed 层精确性、proper prefix 北侧线性化及其与形式卷积链的一致性 |
+| [`SharedBiasBiasedLast.lean`](OneChannelCNNUniversality/SharedBiasBiasedLast.lean) | 仅末层带偏置的真实异构网络，在北侧两行上等于形式卷积链加该常数 |
+| [`SharedBiasGeneralRidgeStripeSeedAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeSeedAddress.lean) | 完整链 identity-seed 地址分解、中心唯一最低点的显式单调尺度阈值，以及北侧亏损下界 |
+| [`SharedBiasGeneralRidgeStripeAddress.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeAddress.lean) | 把横向 seed 唯一性与北侧／边界局部分离组合起来的互补二类间隙定理 |
+| [`SharedBiasTwoCarrierSelection.lean`](OneChannelCNNUniversality/SharedBiasTwoCarrierSelection.lean) | 从两个互补载波间隙得到紧集精确 ReLU 选择，并允许一个地址方向存在有界亏损 |
+| [`SharedBiasGeneralRidgeStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeProperNetwork.lean) | 真实 seed 加 proper-factor 网络：一个紧集阈值同时保证前缀线性化及其与形式状态的北侧两行一致性 |
+| [`SharedBiasGeneralRidgeStripeRealization.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeRealization.lean) | 带符号条带因子对 seed 地址、局部地址和任意线性 ridge 信号的精确实现 |
+| [`SharedBiasGeneralRidgeStripeNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeNetwork.lean) | 已完成的深度 $n+3$ 真实单通道共享偏置 $2\times2$ 网络：在紧输入族上精确计算任意仿射 ReLU ridge |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
