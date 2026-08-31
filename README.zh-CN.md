@@ -998,8 +998,13 @@ $m,2m,\ldots,rm$ 列同时精确计算这 $r$ 个线性形式。因此，无碰�
 $T_0=2(B+1)$。超过该阈值后，每个真实 proper prefix 在北侧两行和全部实际输出列上都
 至少为一。因此，并行打包不再需要仅为保持前缀 ReLU 线性而把宽度 $m$ 的输入填充到
 深度 $rm$。
-通向共享偏置万能逼近定理的下一步，是把有限多个这样的 ridge 编译到同一个网络中，
-同时保留最后线性组合所需的状态。
+[`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean)
+进一步把这个独立宽度载体提升到了真实网络层面。对任意输入宽度 $m$ 以及由
+$w:\mathrm{Fin}(n+2)\to\mathbb R$ 决定的 proper 因子块，它构造了深度恰为 $n+2$、
+输出尺寸为 $(n+3)\times(m+n+2)$ 的共享偏置 ReLU 网络。对任意紧输入族，存在一个
+统一种子阈值，使网络北侧两行与形式 proper 卷积状态精确一致。因此，有限多 ridge
+定理现在剩下的关键不再是前缀线性化，而是构造一个最终共享载体地址：它要同时选中这些
+分离目标，并保留终端仿射求和所需的坐标。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1151,6 +1156,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasParallelRidgeAlgebra.lean`](OneChannelCNNUniversality/SharedBiasParallelRidgeAlgebra.lean) | 无碰撞系数打包，以及用一个深度 $rm$ 的双线性链在分离的第二行目标上计算 $r$ 个独立的宽度 $m$ 线性形式 |
 | [`SharedBiasMultiTargetSelection.lean`](OneChannelCNNUniversality/SharedBiasMultiTargetSelection.lean) | 用共同基线载体在有限目标集上同时执行紧集 ReLU 选择，并给出真实最终层的精确分解定理 |
 | [`SharedBiasGeneralRidgeStripeWidthCarrier.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthCarrier.lean) | 输入宽度与因子深度独立的条带前缀载体，以及使北侧两行对任意种子宽度统一保持线性的显式阈值 |
+| [`SharedBiasGeneralRidgeStripeWidthProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeStripeWidthProperNetwork.lean) | 输入宽度任意、深度恰为 $n+2$ 的真实带符号条带 proper 网络，以及紧集上一致的种子阈值和北侧两行精确形式行为 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

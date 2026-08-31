@@ -1,0 +1,17 @@
+import OneChannelCNNUniversality.SharedBiasGeneralRidgeStripeWidthProperNetwork
+
+/-! # Regression tests for independent-width genuine stripe networks -/
+
+namespace OneChannelCNNUniversality
+
+#check generalRidgeStripeWidthProperNetwork
+#check generalRidgeStripeWidthProperNetwork_depth
+#check generalRidgeStripeWidthProperFormalState
+#check generalRidgeStripeWidthProperNetwork_northTwoAgree_formalState
+#check exists_generalRidgeStripeWidthProperNetwork_threshold_on_compact
+#check exists_generalRidgeStripeWidthProperNetwork_on_compact
+
+#print axioms generalRidgeStripeWidthProperNetwork_northTwoAgree_formalState
+#print axioms exists_generalRidgeStripeWidthProperNetwork_on_compact
+
+end OneChannelCNNUniversality
