@@ -686,6 +686,32 @@ It is still a coordinatewise scalar schedule: the same gate is applied to
 every northern-row coordinate, and it does not yet mix different registers
 or expose deeper input rows.
 
+[`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean)
+removes the first of those two restrictions for one adjacent pair in a row
+containing at least two registers.  For every
+signed weight $\lambda\in\mathbb R$, a compactly linearized shared-bias layer
+forms
+
+$$
+y_{i,j}=x_{i,j}+\lambda x_{i,j-1}+b.
+$$
+
+This transform is injective for every real $\lambda$: the first column is
+unchanged and each later column is recovered recursively from its western
+predecessor.  Appending one protected grid gate gives a genuine depth-three
+network whose target northern register satisfies
+
+$$
+z_{0,1}=\mathrm{ReLU}\!\left(
+  a(x_{0,1}+\lambda x_{0,0})+c\right),
+$$
+
+while the complete representation remains injective.  Compactness chooses
+both required uniform carriers for any continuous injective finite-image
+family.  In particular, negative $\lambda$ is allowed, so this primitive
+supports differences as well as sums; it is the first verified nonlinear
+gate here that mixes two distinct input registers.
+
 This is experimental proof infrastructure, **not** a shared-bias universal-
 approximation theorem. The repository's existing full universal-approximation
 theorem still permits arbitrary position-dependent bias images. It remains
@@ -701,14 +727,14 @@ work site moves southeast, derive explicit depth/area bounds, and connect that
 richer compiler to a density argument for the shared-scalar-bias subclass.
 The single frontier-addition layer and protected grid gates displayed above
 are not by themselves a universal-approximation theorem.  Arbitrary-depth
-nonlinear composition and arbitrary-height input recovery are now verified,
-but the composition is coordinatewise on the northern boundary.  It neither
-mixes distinct registers nor brings deeper rows to that boundary, and the
-known full-image decoder runs against the network's causal direction.  The
-remaining decisive task is to construct a causal moving-frontier transition
-that exposes successive registers and their affine combinations to these
-nonlinear gates while preserving earlier values or usable forward decoders,
-and then compile arbitrary finite affine lattice expressions.
+nonlinear composition, arbitrary-height input recovery, and one arbitrary
+signed affine mixture of adjacent northern registers are now verified.  What
+is not yet verified is an iterable compiler that moves across arbitrarily
+many registers or brings deeper rows to the northern boundary; the known
+full-image decoder also runs against the network's causal direction.  The
+remaining decisive task is to compose the new mixing gate with a causal
+moving-frontier invariant, preserve reusable work registers through repeated
+mixing, and then compile arbitrary finite affine lattice expressions.
 
 ## Proof architecture
 
@@ -757,6 +783,7 @@ and then compile arbitrary finite affine lattice expressions.
 | [`SharedBiasGridGate.lean`](OneChannelCNNUniversality/SharedBiasGridGate.lean) | A depth-two northern-row signed ReLU gate on arbitrary-height images, an exact south-triangular full-image decoder, injectivity, and compact uniform parameter selection |
 | [`SharedBiasGridGateComposition.lean`](OneChannelCNNUniversality/SharedBiasGridGateComposition.lean) | A genuine depth-four composition of two protected grid gates, the exact nested ReLU formula, stagewise compact bounds, and injectivity |
 | [`SharedBiasGridGateSchedule.lean`](OneChannelCNNUniversality/SharedBiasGridGateSchedule.lean) | Compilation of every finite signed affine ReLU schedule to an exact-depth shared-bias CNN with pointwise northern-row semantics and injective complete state |
+| [`SharedBiasAffineMixGate.lean`](OneChannelCNNUniversality/SharedBiasAffineMixGate.lean) | Arbitrary signed mixing of adjacent northern registers, injectivity of the weighted horizontal transform, a depth-three protected ReLU gate, and compact parameter selection |
 | [`Tests/`](OneChannelCNNUniversality/Tests) | Module, regression, top-level, and axiom-audit checks |
 
 The compiler uses the exact identities

@@ -34,3 +34,4 @@ import OneChannelCNNUniversality.SharedBiasRowGate
 import OneChannelCNNUniversality.SharedBiasGridGate
 import OneChannelCNNUniversality.SharedBiasGridGateComposition
 import OneChannelCNNUniversality.SharedBiasGridGateSchedule
+import OneChannelCNNUniversality.SharedBiasAffineMixGate
