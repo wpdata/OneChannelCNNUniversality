@@ -33,7 +33,7 @@ noncomputable def parallelStripePackedPolynomial
   C (w 0 1) * X + C (w 0 0) * X ^ 2 +
     C (w 1 1) * X ^ 3 + C (w 1 0) * X ^ 4
 
-private noncomputable def parallelStripePackedFactorZero
+noncomputable def parallelStripePackedFactorZero
     (ε : ℝ) (w : Fin 2 → Fin 2 → ℝ) : BilinearKernelFactor where
   a0 := 1 / 4
   a1 := 1
@@ -41,14 +41,14 @@ private noncomputable def parallelStripePackedFactorZero
     ((-16 * w 0 1 + 4 * w 0 0 - w 1 1 - 146 * w 1 0) / 585)
   b1 := ε * (-w 1 0)
 
-private noncomputable def parallelStripePackedFactorOne
+noncomputable def parallelStripePackedFactorOne
     (ε : ℝ) (w : Fin 2 → Fin 2 → ℝ) : BilinearKernelFactor where
   a0 := 1
   a1 := -1
   b0 := ε * (2 * (w 0 1 + w 0 0 + w 1 1 + w 1 0) / 5)
   b1 := 0
 
-private noncomputable def parallelStripePackedFactorTwo
+noncomputable def parallelStripePackedFactorTwo
     (ε : ℝ) (w : Fin 2 → Fin 2 → ℝ) : BilinearKernelFactor where
   a0 := -2
   a1 := 1
@@ -56,7 +56,7 @@ private noncomputable def parallelStripePackedFactorTwo
     ((8 * w 0 1 + 16 * w 0 0 + 32 * w 1 1 + 64 * w 1 0) / 9)
   b1 := 0
 
-private noncomputable def parallelStripePackedFactorThree
+noncomputable def parallelStripePackedFactorThree
     (ε : ℝ) (w : Fin 2 → Fin 2 → ℝ) : BilinearKernelFactor where
   a0 := -3
   a1 := 1

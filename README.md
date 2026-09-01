@@ -1384,9 +1384,31 @@ $$
 The parameter $\varepsilon$ remains free, which is the degree of freedom
 needed to control the perturbation of the compensated carrier. This is an
 exact two-ridge bilinear factorization, not yet the full shared-bias ReLU
-network theorem: the next obligation is to choose the remaining factorization
-freedom so that the weight-dependent carrier still has one common target
-baseline and a protected unit gap, and then instantiate the compact bridge.
+network theorem: the next obligation is to identify and correct the induced
+weight-dependent carrier shift while retaining a protected unit gap, and then
+instantiate the compact bridge.
+
+[`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean)
+resolves that carrier interaction. For the explicit vertical taps, the raw
+doubled carrier targets differ by a fixed linear functional of the packed
+weights. A single explicit correction at the southwest site of the second
+input row,
+
+$$
+\frac{16}{17}\varepsilon
+  (w_{0,1}-w_{1,1}-w_{1,0}),
+$$
+
+cancels the discrepancy exactly. Lean proves this first as a generating-
+polynomial identity and then transports it to the actual finite convolution
+images. It also proves that, for every pair of weight vectors, there exists
+a strictly positive $\varepsilon$ for which all coordinates in both northern
+rows of all three proper layers are at least one, the two final carrier
+targets have exactly one common baseline, and the protected middle site
+remains more than one above that baseline. Thus the complete finite carrier
+hypothesis of the compact genuine-network bridge is now discharged. The
+remaining step is the terminal shared-bias ReLU selection, including the
+affine ridge offsets, followed by composition with the protected 2D code.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1570,6 +1592,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | General compact genuine-network theorem for heterogeneous factor chains with prescribed layerwise scalar-bias compensation and exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | Exact layerwise scalar-bias compensation for the sign-changing two-target carrier: uniform proper-prefix margin and final common baseline with gap $17s$ |
 | [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | Explicit rational vertical taps realizing two arbitrary width-two linear forms at the compensated stripe's two target sites, with exact coefficientwise and convolution identities |
+| [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | Exact one-site correction restoring the two-target carrier baseline, plus existence of a positive packed scale satisfying every proper northern-two-row unit-lower condition and a strict final selector gap |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
