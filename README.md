@@ -1410,6 +1410,22 @@ hypothesis of the compact genuine-network bridge is now discharged. The
 remaining step is the terminal shared-bias ReLU selection, including the
 affine ridge offsets, followed by composition with the protected 2D code.
 
+[`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean)
+now instantiates the compact bridge. For every compact coordinatewise-
+continuous family of two-row, width-three signals and every pair of width-two
+weights, Lean produces a positive packing scale $\varepsilon$ and a common
+network threshold $s_0$. For every $s\ge s_0$, the genuine three-layer
+shared-bias ReLU network agrees exactly on both northern rows with
+
+$$
+\mathrm{VariableChain}(V(x))+
+s\,\mathrm{CorrectedCarrier}.
+$$
+
+The same $\varepsilon$ has the strict final selector gap proved above. This
+closes the proper-network realization; only the terminal selective ReLU and
+its affine-offset bookkeeping remain before obtaining the two-ridge block.
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
 representative long-range ridge.  For
@@ -1593,6 +1609,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | Exact layerwise scalar-bias compensation for the sign-changing two-target carrier: uniform proper-prefix margin and final common baseline with gap $17s$ |
 | [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | Explicit rational vertical taps realizing two arbitrary width-two linear forms at the compensated stripe's two target sites, with exact coefficientwise and convolution identities |
 | [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | Exact one-site correction restoring the two-target carrier baseline, plus existence of a positive packed scale satisfying every proper northern-two-row unit-lower condition and a strict final selector gap |
+| [`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean) | Compact-uniform genuine three-layer shared-bias ReLU realization of the corrected two-target proper chain, with exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

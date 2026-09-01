@@ -1,0 +1,8 @@
+import OneChannelCNNUniversality.SharedBiasParallelStripeProperNetwork
+
+namespace OneChannelCNNUniversality
+
+#check exists_parallelStripeCorrectedProperNetwork_on_compact
+#print axioms exists_parallelStripeCorrectedProperNetwork_on_compact
+
+end OneChannelCNNUniversality
