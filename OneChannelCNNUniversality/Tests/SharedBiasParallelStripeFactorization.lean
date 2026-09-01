@@ -1,0 +1,18 @@
+import OneChannelCNNUniversality.SharedBiasParallelStripeFactorization
+
+/-! # Regression tests for compensated parallel-ridge factorization -/
+
+namespace OneChannelCNNUniversality
+
+#check parallelStripePackedPolynomial
+#check parallelStripePackedFactorList
+#check parallelStripePackedFactorList_length
+#check parallelStripePackedFactorList_verticalOne_coeff
+#check parallelStripePackedFullConv_target_zero
+#check parallelStripePackedFullConv_target_one
+
+#print axioms parallelStripePackedFactorList_verticalOne_coeff
+#print axioms parallelStripePackedFullConv_target_zero
+#print axioms parallelStripePackedFullConv_target_one
+
+end OneChannelCNNUniversality

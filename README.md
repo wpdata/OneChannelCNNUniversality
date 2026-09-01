@@ -1363,6 +1363,31 @@ families.  The next specialization obligation is entirely finite: prove
 that the explicit $(0,5,13)$ two-target carrier meets this two-row unit-lower
 hypothesis when the same factors also carry the packed ridge signal.
 
+[`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean)
+completes the variable-signal algebra for that specialization. Given two
+arbitrary width-two weight vectors, it packs them into
+
+$$
+P(X)=w_{0,1}X+w_{0,0}X^2+w_{1,1}X^3+w_{1,0}X^4
+$$
+
+and supplies explicit rational vertical taps for the same four horizontal
+factors. Lean proves coefficientwise through degree four that the
+vertical-degree-one product is exactly $\varepsilon P$. Hence the formal
+convolution chain reads, at its two target sites, precisely
+
+$$
+\varepsilon(w_{0,0}x_0+w_{0,1}x_1),\qquad
+\varepsilon(w_{1,0}x_0+w_{1,1}x_1).
+$$
+
+The parameter $\varepsilon$ remains free, which is the degree of freedom
+needed to control the perturbation of the compensated carrier. This is an
+exact two-ridge bilinear factorization, not yet the full shared-bias ReLU
+network theorem: the next obligation is to choose the remaining factorization
+freedom so that the weight-dependent carrier still has one common target
+baseline and a protected unit gap, and then instantiate the compact bridge.
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
 representative long-range ridge.  For
@@ -1544,6 +1569,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | A real-rooted sign-changing carrier with exact common two-target baseline and gap $17/4$, together with the exact negative-prefix obstruction to the old linearization method |
 | [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | General compact genuine-network theorem for heterogeneous factor chains with prescribed layerwise scalar-bias compensation and exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | Exact layerwise scalar-bias compensation for the sign-changing two-target carrier: uniform proper-prefix margin and final common baseline with gap $17s$ |
+| [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | Explicit rational vertical taps realizing two arbitrary width-two linear forms at the compensated stripe's two target sites, with exact coefficientwise and convolution identities |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

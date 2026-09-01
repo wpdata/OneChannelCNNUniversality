@@ -1090,6 +1090,25 @@ $$
 完全有限的问题：证明显式的 $(0,5,13)$ 双目标载体在同一组因子同时承载打包 ridge 信号时，
 确实满足这个北侧两行单位下界假设。
 
+[`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean)
+完成了这项特化中的可变信号代数。对两个任意的宽度二权向量，将它们无碰撞地打包为
+
+$$
+P(X)=w_{0,1}X+w_{0,0}X^2+w_{1,1}X^3+w_{1,0}X^4,
+$$
+
+并为同一组四个水平因子给出显式有理数竖直抽头。Lean 逐系数证明到四次为止，乘积的
+竖直一次部分恰好等于 $\varepsilon P$。因此形式卷积链在两个目标位置精确读出
+
+$$
+\varepsilon(w_{0,0}x_0+w_{0,1}x_1),\qquad
+\varepsilon(w_{1,0}x_0+w_{1,1}x_1).
+$$
+
+参数 $\varepsilon$ 仍可自由选择，这正是控制补偿载体扰动所需的自由度。这已经是一条精确的
+双 ridge 双线性分解，但还不是完整的共享偏置 ReLU 网络定理：下一项义务是利用剩余分解
+自由度，使依赖权重的载体仍在两个目标处具有共同基线和受保护的单位间隔，再实例化紧集桥接。
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
 令
@@ -1247,6 +1266,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasParallelStripeCandidate.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCandidate.lean) | 实根符号变化载体：精确共同双目标基线与 $17/4$ 间隔，以及旧线性化方法所遇到的精确负前缀障碍 |
 | [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | 具有预设逐层标量偏置补偿的异质因子链通用紧集真实网络定理，以及北侧两行精确“信号加载体”语义 |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | 符号变化双目标载体的逐层标量偏置精确补偿：proper 前缀统一正裕量，以及最终共同基线和 $17s$ 间隔 |
+| [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | 显式有理数竖直抽头：在补偿条带的两个目标位置实现任意两个宽度二线性形式，并给出精确逐系数与卷积恒等式 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
