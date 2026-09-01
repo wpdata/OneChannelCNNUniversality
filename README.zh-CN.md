@@ -1134,8 +1134,41 @@ $$
 s\,\mathrm{CorrectedCarrier}.
 $$
 
-同一个 $\varepsilon$ 还具有上面证明的严格最终选择间隔。这已经闭合 proper 网络实现；在得到
-双 ridge 模块之前，只剩最终选择 ReLU 及其仿射偏移记账。
+同一个 $\varepsilon$ 还具有上面证明的严格最终选择间隔。
+
+[`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean)
+解决了最终共享偏置无法直接提供两个独立偏移的问题。第二输入行只使用常数项和二次项
+
+$$
+h_0=\frac{-38a-6b}{367},\qquad
+h_2=\frac{4a-38b}{367},
+$$
+
+使水平乘积在第 $2$、$4$ 列分别贡献 $a$、$b$。取
+$a=\varepsilon\theta_0$、$b=\varepsilon\theta_1$，完整四因子可变链就在两个目标处得到
+
+$$
+\varepsilon(w_{0,0}x_0+w_{0,1}x_1+\theta_0),\qquad
+\varepsilon(w_{1,0}x_0+w_{1,1}x_1+\theta_1).
+$$
+
+Lean 已验证这两个恒等式以及该固定仿射输入填充映射的连续性。
+
+[`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean)
+进一步闭合了紧集上的双 ridge 模块。它把同时选择定理加强为向上封闭的尺度阈值，与前三个
+proper ReLU 层的阈值取最大值，再接上第四次卷积和一个共享最终偏置，得到真实的深度四、
+单通道网络。对任意两个宽度二仿射 ridge 和任意紧输入集，当网络作用于显式加载了载体的
+仿射嵌入状态时，两个目标坐标精确等于
+
+$$
+\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),\qquad
+\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1),
+$$
+
+其中 $\varepsilon>0$，公共因子可由后续仿射读出消去。这是一个实质性的并行化结论：两个
+具有独立偏移的非线性单元能够共存于同一个固定深度、单通道、共享偏置卷积块中。当前构造
+仍假设输入状态已显式加载依赖网络参数的载体，其中包括第二行常数填充；如何从原始输入在
+网络内部生成整个状态，以及如何组合任意有限多个这样的模块，仍是后续任务。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1192,7 +1225,8 @@ $$
 固定分辨率图像架构或任意二维输入状态的结论。仓库中已有的完整万能逼近定理仍使用任意
 逐位置偏置图像，而共享标量偏置子类是否万能仍然是开放问题。
 
-当前决定性的缺口已经变成**组合**，而不是构造单个 ridge。新的 $L$ 状态说明无需规范化整个
+当前决定性的缺口已经变成**任意有限组合**，而不是构造单个 ridge，也不是现在已经验证的
+宽度二 ridge 对。新的 $L$ 状态说明无需规范化整个
 $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。但这个 $L$ 状态仍嵌在真实
 矩形中，而任意宽度 ridge 定理的输入仍是单行状态；链外坐标可能继续依赖输入，坐标限制也不是
 `SharedBiasNetworkTo.append` 能执行的一层网络，并且已经验证的第二行污染恒等式阻止把当前
@@ -1297,6 +1331,8 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | 显式有理数竖直抽头：在补偿条带的两个目标位置实现任意两个宽度二线性形式，并给出精确逐系数与卷积恒等式 |
 | [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | 精确单点修正恢复双目标载体共同基线，并证明存在正打包尺度同时满足所有 proper 北侧两行单位下界与严格最终选择间隔 |
 | [`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean) | 紧集上一致的真实三层共享偏置 ReLU 修正双目标 proper 链，并给出北侧两行精确“信号加载体”语义 |
+| [`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean) | 用第二输入行的两个显式系数编码两个独立仿射偏移，并证明完整四因子卷积的精确双目标恒等式 |
+| [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | 真实紧集深度四共享偏置模块，在显式加载载体的输入状态上，同时精确计算两个具有独立偏移的宽度二 ReLU ridge |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |
@@ -1376,7 +1412,8 @@ rg -n --glob '*.lean' \
 ## 范围与状态
 
 本仓库发布 Lean 源码及其可由机器复核的结果。Lean 内核验证说明：逐位置偏置万能逼近
-定理和约束更强的共享偏置任意宽度单 ridge 定理及其边界／载波引理，都可由给定定义与
-报告中的基础推出；但这并不会把尚未解决的共享偏置万能性问题变成定理。机器验证本身也
+定理、约束更强的共享偏置任意宽度单 ridge 定理、宽度二仿射输入的载体加载紧集深度四双 ridge
+模块及其边界／载波引理，都可由给定定义与报告中的基础推出；但这并不会把尚未解决的
+共享偏置万能性问题变成定理。机器验证本身也
 不等同于外部同行评审，不构成历史
 优先权判断。

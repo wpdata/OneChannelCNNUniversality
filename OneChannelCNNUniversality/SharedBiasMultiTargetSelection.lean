@@ -63,6 +63,48 @@ theorem exists_multiTargetSelectiveActivation_on
     rw [multiTargetPreactivation]
     linarith
 
+/-- Upward-closed version of simultaneous compact selection.  One positive
+threshold works for every larger carrier scale, allowing the selector scale
+to be synchronized with thresholds imposed by earlier proper ReLU layers. -/
+theorem exists_multiTargetSelectiveActivation_threshold_on
+    {X : Type*} [TopologicalSpace X] {K : Set X} (hK : IsCompact K)
+    {rows cols : ℕ} (signal : X → Image rows cols)
+    (hSignal : ContinuousFeatureOn K signal)
+    (carrier : Image rows cols) (base : ℝ)
+    (targets protect : Fin rows → Fin cols → Prop)
+    [targetsDecidable : ∀ p q, Decidable (targets p q)]
+    (theta : ℝ)
+    (htarget : ∀ p q, targets p q → carrier p q = base)
+    (hgap : ∀ p q, protect p q → ¬ targets p q →
+      1 ≤ carrier p q - base) :
+    ∃ scale₀ : ℝ, 0 < scale₀ ∧ ∀ scale : ℝ, scale₀ ≤ scale →
+      ∀ x ∈ K, ∀ p q, protect p q →
+        relu (multiTargetPreactivation
+          (signal x) carrier base theta scale p q) =
+          if targets p q then relu (signal x p q + theta)
+          else multiTargetPreactivation
+            (signal x) carrier base theta scale p q := by
+  classical
+  obtain ⟨scale₀, hscale₀, hbound⟩ :=
+    exists_uniform_feature_margin hK signal hSignal theta
+  refine ⟨scale₀, hscale₀, ?_⟩
+  intro scale hscale x hx p q hpq
+  have hscalePos : 0 < scale := hscale₀.trans_le hscale
+  by_cases hpt : targets p q
+  · rw [if_pos hpt]
+    rw [multiTargetPreactivation, htarget p q hpt]
+    congr 1
+    ring
+  · rw [if_neg hpt]
+    apply relu_of_nonneg
+    have hsignal : -scale₀ < signal x p q + theta :=
+      neg_lt_of_abs_lt (hbound x hx p q)
+    have hcarrier : scale ≤ scale * (carrier p q - base) := by
+      simpa only [mul_one] using
+        mul_le_mul_of_nonneg_left (hgap p q hpq hpt) hscalePos.le
+    rw [multiTargetPreactivation]
+    linarith
+
 /-- Exact final-layer form of simultaneous selection.  If the convolutional
 preactivation decomposes as a variable signal plus a scaled carrier, the one
 broadcast bias `theta - scale*base` produces the multi-target mask on all

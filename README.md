@@ -1422,9 +1422,50 @@ $$
 s\,\mathrm{CorrectedCarrier}.
 $$
 
-The same $\varepsilon$ has the strict final selector gap proved above. This
-closes the proper-network realization; only the terminal selective ReLU and
-its affine-offset bookkeeping remain before obtaining the two-ridge block.
+The same $\varepsilon$ has the strict final selector gap proved above.
+
+[`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean)
+solves the independent-offset problem left by the common final bias.  The
+southern input row uses only its constant and quadratic coefficients,
+
+$$
+h_0=\frac{-38a-6b}{367},\qquad
+h_2=\frac{4a-38b}{367},
+$$
+
+so the horizontal product contributes $a$ and $b$ at columns $2$ and $4$.
+Taking $a=\varepsilon\theta_0$ and $b=\varepsilon\theta_1$ makes the full
+four-factor variable chain equal
+
+$$
+\varepsilon(w_{0,0}x_0+w_{0,1}x_1+\theta_0),\qquad
+\varepsilon(w_{1,0}x_0+w_{1,1}x_1+\theta_1)
+$$
+
+at the two targets.  Lean verifies both identities and continuity of this
+fixed affine input-padding map.
+
+[`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean)
+then closes the compact two-ridge block.  It strengthens simultaneous
+selection to an upward-closed scale threshold, synchronizes that threshold
+with the three proper-layer thresholds, appends the fourth convolution and
+one shared final bias, and returns a genuine depth-four one-channel network.
+For arbitrary two width-two affine ridges and every compact input set, when
+evaluated on the explicit carrier-loaded affine embedding, its two target
+coordinates are exactly
+
+$$
+\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),\qquad
+\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1),
+$$
+
+with $\varepsilon>0$.  The common factor is harmless to a later affine
+readout.  This is a substantive parallelization result: two independently
+shifted nonlinear units coexist in one fixed-depth, one-channel,
+shared-bias convolutional block.  It still assumes an explicit
+parameter-dependent carrier-loaded input state, including constant padding
+in the second row.  Generating that state inside a network from a raw input
+and composing arbitrarily many such blocks remain separate tasks.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1498,8 +1539,9 @@ existing full universal-approximation theorem still permits arbitrary
 position-dependent bias images, and universality of the shared-scalar-bias
 subclass remains open.
 
-The decisive remaining gap is **composition**, not construction or recovery of one
-ridge.  The new $L$-state shows that the complete $m\times(2m-1)$ rectangle
+The decisive remaining gap is **arbitrary finite composition**, not the
+construction of one ridge or the now-verified width-two pair.  The new
+$L$-state shows that the complete $m\times(2m-1)$ rectangle
 need not be normalized: an input-length northern prefix plus the ridge is
 already sufficient.  However, that $L$-state is still embedded in the physical
 rectangle, whereas the arbitrary-width ridge theorem starts from a one-row
@@ -1610,6 +1652,8 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | Explicit rational vertical taps realizing two arbitrary width-two linear forms at the compensated stripe's two target sites, with exact coefficientwise and convolution identities |
 | [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | Exact one-site correction restoring the two-target carrier baseline, plus existence of a positive packed scale satisfying every proper northern-two-row unit-lower condition and a strict final selector gap |
 | [`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean) | Compact-uniform genuine three-layer shared-bias ReLU realization of the corrected two-target proper chain, with exact northern-two-row signal-plus-carrier semantics |
+| [`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean) | Explicit two-coefficient southern-row encoding of two independent affine offsets, with exact target identities for the complete four-factor convolution |
+| [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | Genuine compact depth-four shared-bias block which, on an explicit carrier-loaded input state, simultaneously computes two independently shifted width-two ReLU ridges at distinct target sites |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
@@ -1694,7 +1738,8 @@ forbidden-source scan, and the axiom report above.
 This repository publishes the Lean source and its machine-checkable results.
 Lean kernel verification establishes that the position-dependent-bias
 universal-approximation theorem and the narrower shared-bias arbitrary-width
-single-ridge theorem with its supporting boundary/carrier lemmas
+single-ridge theorem, together with the carrier-loaded compact depth-four
+two-ridge block for width-two affine inputs and its supporting lemmas,
 follow from the stated definitions and reported foundations.  It does not
 turn the unresolved shared-bias universality question into a theorem, and it
 does not by itself establish external peer review or historical priority.

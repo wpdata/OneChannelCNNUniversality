@@ -6,9 +6,11 @@ namespace OneChannelCNNUniversality
 
 #check multiTargetPreactivation
 #check exists_multiTargetSelectiveActivation_on
+#check exists_multiTargetSelectiveActivation_threshold_on
 #check sharedLayer_multiTarget_of_decomposition
 
 #print axioms exists_multiTargetSelectiveActivation_on
+#print axioms exists_multiTargetSelectiveActivation_threshold_on
 #print axioms sharedLayer_multiTarget_of_decomposition
 
 end OneChannelCNNUniversality

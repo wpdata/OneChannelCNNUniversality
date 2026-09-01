@@ -1,0 +1,13 @@
+import OneChannelCNNUniversality.SharedBiasParallelStripeAffineNetwork
+
+namespace OneChannelCNNUniversality
+
+#check parallelStripePackedTargets
+#check parallelStripePackedProtect
+#check parallelStripePackedAffineNetwork
+#check parallelStripePackedAffineNetwork_depth
+#check exists_parallelStripePackedAffineNetwork_on_compact
+
+#print axioms exists_parallelStripePackedAffineNetwork_on_compact
+
+end OneChannelCNNUniversality
