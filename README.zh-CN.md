@@ -105,7 +105,19 @@ N(x)_{1,2}=\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),
 N(x)_{1,4}=\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1).
 $$
 
-该网络直接从原始输入出发，在内部生成扩展载波，不使用裁剪或逐位置偏置，并同时保留两个独立平移的非线性特征。任意有限多 ridge 的保留及格组合仍未完成；因此这还不是共享标量偏置子类的万能逼近定理。
+该网络直接从原始输入出发，在内部生成扩展载波，不使用裁剪或逐位置偏置，并同时保留两个独立平移的非线性特征。
+
+[`SharedBiasHiddenAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasHiddenAdjacentLattice.lean)
+进一步给出了严格共享标量偏置模型中的首个非终端格运算回写定理。对任意紧的、连续且单射的单行特征族，Lean 构造真实的深度三网络，使每一对相邻特征都在网络输出图像的内部坐标中满足
+
+$$
+\max(F_{0,j-1},F_{0,j})+\Delta
+\quad\text{或}\quad
+\min(F_{0,j-1},F_{0,j})+\Delta,
+\qquad \Delta>0,
+$$
+
+同时完整输出表示仍保持单射。已知正偏移使最后一个 ReLU 在所有空间位置都处于线性支路；后续仿射预激活或终端仿射读出可以精确扣除它。这个结论强于早先的终端仿射读出，但还不是封闭的迭代编译器：仍需把任意 ridge 输出对齐到这一相邻东南接口，并在任意有限格运算日程中持续保存。因此，共享标量偏置子类的万能逼近性仍是开放问题。
 
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 对零延拓全卷积产生的边界效应进行了机器验证：零卷积核加正共享偏置会产生常数矩形；
@@ -1385,6 +1397,7 @@ $$
 | [`SharedBiasExpandedWorkspace.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspace.lean) | 对网络内部生成的 `3 × 4` 工作区进行精确局部解码，并给出任意仿射 ReLU ridge 的端到端深度三 `1 × 2 → 4 × 5` 共享偏置网络 |
 | [`SharedBiasAffineCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasAffineCompensatedCarrier.lean) | 把共享仿射偏置分为固定信号项与可缩放载波项的通用紧集线性化定理 |
 | [`SharedBiasExpandedWorkspaceParallel.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspaceParallel.lean) | 端到端深度六 `1 × 2 → 7 × 8` 共享偏置 CNN：内部生成载波，并同时计算两个独立平移的仿射 ReLU ridge |
+| [`SharedBiasHiddenAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasHiddenAdjacentLattice.lean) | 真实深度三隐藏态相邻最小／最大节点：带已知正载波偏移，并保持完整紧特征表示的单射性 |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
@@ -1532,9 +1545,7 @@ rg -n --glob '*.lean' \
 ## 范围与状态
 
 本仓库发布 Lean 源码及其可由机器复核的结果。Lean 内核验证说明：逐位置偏置万能逼近
-定理、约束更强的共享偏置任意宽度单 ridge 定理、宽度二仿射输入的载体加载紧集深度四双 ridge
-模块及其边界／载波引理，以及当前带符号输入接口不可原样内部生成的精确障碍，都可由给定
-定义与报告中的基础推出；但这并不会把尚未解决的
-共享偏置万能性问题变成定理。机器验证本身也
-不等同于外部同行评审，不构成历史
-优先权判断。
+定理、约束更强的共享偏置任意宽度单 ridge 定理、由网络内部生成的宽度二紧集深度六双
+ridge 模块，以及保持完整状态单射的深度三隐藏态相邻最小／最大节点，都可由给定定义与
+报告中的基础推出；但这并不会把尚未解决的共享偏置万能性问题变成定理。机器验证本身也
+不等同于外部同行评审，不构成历史优先权判断。

@@ -135,9 +135,29 @@ $$
 
 The network starts from the raw input, generates the expanded carrier
 internally, uses no crop or position-dependent bias, and preserves both
-independently shifted nonlinear features simultaneously.  Arbitrary finite
-multi-ridge preservation and lattice composition remain open; this theorem is
-not yet universal approximation for the shared-scalar-bias subclass.
+independently shifted nonlinear features simultaneously.
+
+[`SharedBiasHiddenAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasHiddenAdjacentLattice.lean)
+adds the first nonterminal lattice write-back theorem for the strict
+shared-scalar-bias model.  On any compact continuous injective one-row feature
+family, Lean constructs genuine depth-three networks whose internal output
+coordinates equal
+
+$$
+\max(F_{0,j-1},F_{0,j})+\Delta
+\quad\text{or}\quad
+\min(F_{0,j-1},F_{0,j})+\Delta,
+\qquad \Delta>0,
+$$
+
+simultaneously for every adjacent pair.  The whole output representation
+remains injective.  The known positive shift keeps the final ReLU globally in
+its linear branch and can be subtracted in a later affine preactivation or
+terminal affine readout.  This
+is stronger than the earlier terminal affine readout, but it is not yet a
+closed iterative compiler: arbitrary ridge outputs must still be aligned with
+this adjacent southeast interface and preserved through an unbounded finite
+lattice schedule.  Shared-scalar-bias universality therefore remains open.
 
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 machine-checks exact boundary effects of zero-extended full convolution.  A
@@ -1751,6 +1771,7 @@ theorem.
 | [`SharedBiasExpandedWorkspace.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspace.lean) | Exact local decoding of the network-generated `3 × 4` workspace and an end-to-end depth-three `1 × 2 → 4 × 5` shared-bias network for an arbitrary affine ReLU ridge |
 | [`SharedBiasAffineCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasAffineCompensatedCarrier.lean) | Generic compact-domain linearization for affine shared biases split into fixed signal and scalable carrier terms |
 | [`SharedBiasExpandedWorkspaceParallel.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspaceParallel.lean) | End-to-end depth-six `1 × 2 → 7 × 8` shared-bias CNN that internally generates its carrier and computes two independently shifted affine ReLU ridges |
+| [`SharedBiasHiddenAdjacentLattice.lean`](OneChannelCNNUniversality/SharedBiasHiddenAdjacentLattice.lean) | Genuine depth-three hidden-state adjacent min/max nodes with a known positive carrier shift and injectivity of the complete compact feature representation |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |
@@ -1903,9 +1924,9 @@ forbidden-source scan, and the axiom report above.
 This repository publishes the Lean source and its machine-checkable results.
 Lean kernel verification establishes that the position-dependent-bias
 universal-approximation theorem and the narrower shared-bias arbitrary-width
-single-ridge theorem, together with the carrier-loaded compact depth-four
-two-ridge block for width-two affine inputs, its supporting lemmas, and the
-exact obstruction to internalizing its present signed input interface,
-follow from the stated definitions and reported foundations.  It does not
-turn the unresolved shared-bias universality question into a theorem, and it
-does not by itself establish external peer review or historical priority.
+single-ridge theorem, the internally generated compact depth-six two-ridge
+block for width-two affine inputs, and the injective depth-three hidden
+adjacent min/max nodes follow from the stated definitions and reported
+foundations.  It does not turn the unresolved shared-bias universality
+question into a theorem, and it does not by itself establish external peer
+review or historical priority.

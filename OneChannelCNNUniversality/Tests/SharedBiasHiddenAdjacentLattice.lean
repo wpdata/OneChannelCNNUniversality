@@ -1,0 +1,17 @@
+import OneChannelCNNUniversality.SharedBiasHiddenAdjacentLattice
+
+/-! # Regression tests for encoded hidden adjacent lattice nodes -/
+
+namespace OneChannelCNNUniversality
+
+#check verticalWeightedKernel
+#check diagonalWeightedKernel
+#check fullConvImage_verticalWeightedKernel_injective
+#check fullConvImage_diagonalWeightedKernel_injective
+#check exists_encodedAdjacentMaxNetwork_on_compact
+#check exists_encodedAdjacentMinNetwork_on_compact
+
+#print axioms exists_encodedAdjacentMaxNetwork_on_compact
+#print axioms exists_encodedAdjacentMinNetwork_on_compact
+
+end OneChannelCNNUniversality
