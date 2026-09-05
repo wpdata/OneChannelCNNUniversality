@@ -55,6 +55,11 @@ $2\times2$ 共享偏置层的南侧输出行，不可能同时与输入无关且
 ReLU，因此排除的是真实单层网络行为，而不仅是预激活的线性代数。这是一条关于载波初始化
 的单层下界，并不是对任意深度网络的非万能逼近定理。
 
+同一文件现在还证明了更贴近应用的紧域版本：对任何包含零图像的输入集合，仅凭输入无关性
+就能推出三个载波值全部等于 $\mathrm{ReLU}(b)$。特别地，逐坐标对称盒 $[-M,M]^2$ 是紧集；
+当 $M\geq0$ 时，单层网络不可能在该盒上产生空间非均匀而又与输入无关的南侧载波。包含零
+输入这一条件是必要的：若输入盒远离零点，某些位置可能始终停留在 ReLU 的零支路。
+
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 对零延拓全卷积产生的边界效应进行了机器验证：零卷积核加正共享偏置会产生常数矩形；
 横向一阶差分再经过 ReLU 会精确保留正的左边界；继续做纵向一阶差分会精确保留西北角
@@ -1274,7 +1279,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | 依赖类型有限后继日程、紧致性见证的递归构造、内部种子精确等式，以及最终单一组合 CNN 的导出 |
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | 已编译选择块的恢复适配器、等长日程恢复链、最终输出恢复，以及最终 CNN 的条件单射性 |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | 全局成对保护导致目标常值、选择 ReLU 恒定的障碍定理，以及对追加选择器步骤的专门结论 |
-| [`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean) | 单层下界：从 $1\times2$ 输入得到的南侧行若与输入无关，则卷积核南侧系数必须为零，并且 ReLU 后只能是空间常数 |
+| [`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean) | 全实数输入以及任意含零输入域上的单层下界，包括紧对称盒 $[-M,M]^2$；后者不依赖无界输入假设，也能排除空间非均匀的输入无关载波 |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |

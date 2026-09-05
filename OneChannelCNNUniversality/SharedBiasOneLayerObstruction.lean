@@ -131,4 +131,67 @@ theorem not_oneLayer_south_nonuniform_inputIndependent
         (1 : Fin 2) q₂ := (heval 0 0 q₂).symm
     _ = c q₂ := hconstant 0 0 q₂
 
+/-- On any input domain containing the zero image, an input-independent
+southern row must equal the spatially constant row `relu b`.  Unlike the
+global theorem above, this conclusion needs no interior or size assumption
+on the domain. -/
+theorem oneLayer_south_constant_on_zero_mem_eq_relu_bias
+    (K : Set (Image 1 2)) (hzero : (0 : Image 1 2) ∈ K)
+    (w : Kernel 2 2) (b : ℝ) (c : Fin 3 → ℝ)
+    (hconstant : ∀ x ∈ K, ∀ q,
+      sharedLayerEval w b x (1 : Fin 2) q = c q) :
+    ∀ q, c q = relu b := by
+  intro q
+  calc
+    c q = sharedLayerEval w b (0 : Image 1 2)
+        (1 : Fin 2) q := (hconstant 0 hzero q).symm
+    _ = relu b := by
+      simp [sharedLayerEval, layerEval, constantImage]
+
+/-- Consequently, a single shared-bias layer cannot produce a spatially
+nonuniform southern carrier that is input-independent on a domain containing
+the zero image. -/
+theorem not_oneLayer_south_nonuniform_inputIndependent_on_zero_mem
+    (K : Set (Image 1 2)) (hzero : (0 : Image 1 2) ∈ K)
+    (w : Kernel 2 2) (b : ℝ) :
+    ¬ ∃ c : Fin 3 → ℝ,
+      (∃ q₁ q₂, c q₁ ≠ c q₂) ∧
+        ∀ x ∈ K, ∀ q,
+          sharedLayerEval w b x (1 : Fin 2) q = c q := by
+  rintro ⟨c, ⟨q₁, q₂, hne⟩, hconstant⟩
+  have heq := oneLayer_south_constant_on_zero_mem_eq_relu_bias
+    K hzero w b c hconstant
+  apply hne
+  calc
+    c q₁ = relu b := heq q₁
+    _ = c q₂ := (heq q₂).symm
+
+/-- The coordinatewise symmetric box `[-M,M]²` for the two input
+registers. -/
+def twoPointSymmetricBox (M : ℝ) : Set (Image 1 2) :=
+  Set.Icc (constantImage 1 2 (-M)) (constantImage 1 2 M)
+
+/-- Every finite symmetric two-point box is compact. -/
+theorem twoPointSymmetricBox_compact (M : ℝ) :
+    IsCompact (twoPointSymmetricBox M) :=
+  isCompact_Icc
+
+/-- A nonempty symmetric box contains the zero image. -/
+theorem twoPointSymmetricBox_zero_mem (M : ℝ) (hM : 0 ≤ M) :
+    (0 : Image 1 2) ∈ twoPointSymmetricBox M := by
+  constructor <;> intro i j <;> simp [constantImage] <;>
+    linarith
+
+/-- On the compact symmetric input box `[-M,M]²`, no single shared-bias
+layer has a southern row that is simultaneously input-independent and
+spatially nonuniform. -/
+theorem not_oneLayer_south_nonuniform_inputIndependent_on_symmetricBox
+    (M : ℝ) (hM : 0 ≤ M) (w : Kernel 2 2) (b : ℝ) :
+    ¬ ∃ c : Fin 3 → ℝ,
+      (∃ q₁ q₂, c q₁ ≠ c q₂) ∧
+        ∀ x ∈ twoPointSymmetricBox M, ∀ q,
+          sharedLayerEval w b x (1 : Fin 2) q = c q := by
+  exact not_oneLayer_south_nonuniform_inputIndependent_on_zero_mem
+    (twoPointSymmetricBox M) (twoPointSymmetricBox_zero_mem M hM) w b
+
 end OneChannelCNNUniversality
