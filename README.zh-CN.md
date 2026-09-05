@@ -1198,8 +1198,9 @@ $$
 
 其中 $\varepsilon>0$，公共因子可由后续仿射读出消去。这是一个实质性的并行化结论：两个
 具有独立偏移的非线性单元能够共存于同一个固定深度、单通道、共享偏置卷积块中。当前构造
-仍假设输入状态已显式加载依赖网络参数的载体，其中包括第二行常数填充；如何从原始输入在
-网络内部生成整个状态，以及如何组合任意有限多个这样的模块，仍是后续任务。
+还可以选择尺度，使整个载波加载输入状态在给定紧集上逐坐标非负，同时保持两个目标恒等式
+不变。它仍假设存在显式依赖网络参数的加载状态，其中包括第二行常数填充；如何从原始输入在
+网络内部生成这一空间接口，以及如何组合任意有限多个这样的模块，仍是后续任务。
 
 [`SharedBiasParallelStripeInitializationObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeInitializationObstruction.lean)
 进一步证明：上述第一个任务不能靠“原样生成当前带符号接口”来完成。该文件先用一个命名的
@@ -1222,6 +1223,42 @@ Lean 同时证明了每个正深度 ReLU 网络的输出逐坐标非负，因此
 “表示接口障碍”，并不否定双 ridge 定理，也不构成共享偏置网络不万能的结论。它把下一步
 收窄为：组合编译器必须采用可追踪其代数影响的非负平移编码，或改换模块接口，而不能只在
 现有模块前面机械增加若干层。
+
+[`SharedBiasParallelStripeNonnegativeInterface.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeNonnegativeInterface.lean)
+对每个**固定的**紧问题实例解决了上述符号问题。给定紧集 $K$、权重 $w$ 和偏移 $\theta$，
+Lean 会选择 $\varepsilon>0$ 与 $s>0$，使得
+
+$$
+L_{\varepsilon,s,w,\theta}(x)\ge 0
+\quad\text{对每个 }x\in K\text{ 都逐坐标成立},
+$$
+
+并且同一个深度四网络仍满足
+
+$$
+N(L_{\varepsilon,s,w,\theta}(x))_{1,2}
+=\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),
+\qquad
+N(L_{\varepsilon,s,w,\theta}(x))_{1,4}
+=\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1).
+$$
+
+这与前面的障碍并不矛盾：前一个结论先固定 $s$，再把对抗性偏移选成 $s$ 的函数；这里先
+固定参数，再允许 $s$ 足够大以支配这些参数。
+
+同一文件还证明了一个由空间形状引起的更精确的剩余障碍。任意深度 $d$ 的扩张型
+$2\times2$ 网络都会把行数和列数分别精确增加 $d$，所以一个带类型的
+$1\times2\to2\times3$ 映射必须只有一层。对于显式参数
+$\varepsilon=1$、$s=10$、$w=0$、$\theta=(367,0)$，加载状态在
+$[-1,1]^2$ 上非负，并且其南侧一行精确等于
+
+$$
+(42,80,84).
+$$
+
+已有的一层共享偏置障碍随即排除了生成这个非均匀、与输入无关状态的所有精确尺寸网络。
+因此，对固定紧集数据而言，非负性本身已经不再是障碍；真正剩下的是当前 $2\times3$ 接口
+无法在保持精确形状的条件下由网络内部生成。后续编译器必须允许更大的工作区，或重新设计接口。
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 进一步证明：对一个有代表性的长程 ridge，上述线性深度并不是当前构造方法造成的偶然浪费。
@@ -1278,15 +1315,17 @@ $$
 固定分辨率图像架构或任意二维输入状态的结论。仓库中已有的完整万能逼近定理仍使用任意
 逐位置偏置图像，而共享标量偏置子类是否万能仍然是开放问题。
 
-当前决定性的缺口已经变成**通过非负内部表示实现任意有限组合**，而不是构造单个 ridge，
-也不是现在已经验证的宽度二 ridge 对。上述初始化障碍已经排除了对所有参数都把当前带符号
-载波加载状态直接当作真实隐藏状态的路线。新的 $L$ 状态说明无需规范化整个
+当前决定性的缺口已经变成**通过网络生成的空间接口实现任意有限组合**，而不是构造单个
+ridge、已经验证的宽度二 ridge 对，或固定紧问题上加载输入的非负性。上述初始化结果同时
+说明：预先统一固定的尺度无法处理对抗性偏移，但依赖具体实例的尺度确实能够产生非负状态；
+然而精确尺寸形状定理仍排除了内部生成一个显式的 $1\times2\to2\times3$ 接口。新的 $L$ 状态说明无需规范化整个
 $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。但这个 $L$ 状态仍嵌在真实
 矩形中，而任意宽度 ridge 定理的输入仍是单行状态；链外坐标可能继续依赖输入，坐标限制也不是
 `SharedBiasNetworkTo.append` 能执行的一层网络，并且已经验证的第二行污染恒等式阻止把当前
 因子链当作黑盒复用。后续编译器必须直接处理这个嵌入状态，用更丰富的载波替代平坦终端地址，让多个
 彼此独立选取的 ridge 特征穿过后续共享偏置 ReLU 后仍可保留，再实现稠密性论证所需的有限格
-组合。该编译器还必须吸收或精确追踪每个带符号仿射种子的非负平移。在这个有限多 ridge
+组合。该编译器必须使用扩大的工作区或重新设计的接口，并保留已经验证的带符号仿射种子
+非负缩放机制。在这个有限多 ridge
 编译器被证明以前，当前结果不能被称为共享偏置万能逼近定理。
 
 ## 证明架构
@@ -1387,11 +1426,12 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | 具有预设逐层标量偏置补偿的异质因子链通用紧集真实网络定理，以及北侧两行精确“信号加载体”语义 |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | 符号变化双目标载体的逐层标量偏置精确补偿：proper 前缀统一正裕量，以及最终共同基线和 $17s$ 间隔 |
 | [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | 显式有理数竖直抽头：在补偿条带的两个目标位置实现任意两个宽度二线性形式，并给出精确逐系数与卷积恒等式 |
-| [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | 精确单点修正恢复双目标载体共同基线，并证明存在正打包尺度同时满足所有 proper 北侧两行单位下界与严格最终选择间隔 |
+| [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | 精确单点修正恢复双目标载体共同基线，并证明存在正打包尺度同时满足输入载波正性、所有 proper 北侧两行单位下界与严格最终选择间隔 |
 | [`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean) | 紧集上一致的真实三层共享偏置 ReLU 修正双目标 proper 链，并给出北侧两行精确“信号加载体”语义 |
 | [`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean) | 用第二输入行的两个显式系数编码两个独立仿射偏移，并证明完整四因子卷积的精确双目标恒等式 |
-| [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | 真实紧集深度四共享偏置模块，在显式加载载体的输入状态上，同时精确计算两个具有独立偏移的宽度二 ReLU ridge |
+| [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | 真实紧集深度四共享偏置模块：选择逐坐标非负的载波加载输入状态，并同时精确计算两个具有独立偏移的宽度二 ReLU ridge |
 | [`SharedBiasParallelStripeInitializationObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeInitializationObstruction.lean) | 显式负坐标族：证明当前带符号载波加载接口不可能由任何正深度 ReLU 初始化器在非空输入域上原样生成 |
+| [`SharedBiasParallelStripeNonnegativeInterface.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeNonnegativeInterface.lean) | 固定实例的非负加载接口定理、精确 $2\times2$ 扩张形状恒等式，以及被所有精确尺寸共享偏置初始化器排除的显式非负 $1\times2\to2\times3$ 状态 |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | 端点仿射 ReLU ridge 的锐利 $1/2$ 四点误差障碍，以及达到匹配精确深度的共享偏置构造 |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | 精确的深度感受野、任意仿射读出的四点混合差恒等式、锐利误差下界 $1$，以及端点交互所需的深度 $L+1$ |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | 普通逐位置偏置网络的二维各向异性感受野上界、两点混合差障碍，以及乘积逼近所需的行／列深度跨度 |

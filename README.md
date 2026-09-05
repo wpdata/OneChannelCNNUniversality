@@ -1507,10 +1507,12 @@ $$
 with $\varepsilon>0$.  The common factor is harmless to a later affine
 readout.  This is a substantive parallelization result: two independently
 shifted nonlinear units coexist in one fixed-depth, one-channel,
-shared-bias convolutional block.  It still assumes an explicit
-parameter-dependent carrier-loaded input state, including constant padding
-in the second row.  Generating that state inside a network from a raw input
-and composing arbitrarily many such blocks remain separate tasks.
+shared-bias convolutional block.  The scale can moreover be chosen so that
+the entire carrier-loaded input state is coordinatewise nonnegative on the
+given compact set, without changing either target identity.  It still assumes
+an explicit parameter-dependent loaded state, including constant padding in
+the second row.  Generating that spatial interface inside a network from a
+raw input and composing arbitrarily many such blocks remain separate tasks.
 
 [`SharedBiasParallelStripeInitializationObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeInitializationObstruction.lean)
 shows that the first of those tasks cannot be solved by generating the present
@@ -1539,6 +1541,48 @@ the next construction step: a compositional compiler must use a nonnegative
 translated encoding (with the translation tracked through the packed
 algebra) or replace the interface, rather than merely prefix the current
 block.
+
+[`SharedBiasParallelStripeNonnegativeInterface.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeNonnegativeInterface.lean)
+resolves the apparent sign issue for every *fixed* compact problem instance.
+Given a compact $K$, weights $w$, and offsets $\theta$, Lean chooses
+$\varepsilon>0$ and $s>0$ such that
+
+$$
+L_{\varepsilon,s,w,\theta}(x)\ge 0
+\quad\text{coordinatewise for every }x\in K,
+$$
+
+while the same depth-four network still satisfies
+
+$$
+N(L_{\varepsilon,s,w,\theta}(x))_{1,2}
+=\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),
+\qquad
+N(L_{\varepsilon,s,w,\theta}(x))_{1,4}
+=\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1).
+$$
+
+There is no contradiction with the preceding obstruction: there $s$ is fixed
+first and the adverse offset is then chosen as a function of $s$; here the
+parameters are fixed first and $s$ is then allowed to dominate them.
+
+The same file proves a sharper residual obstruction caused by spatial shape.
+Every depth-$d$ expansive $2\times2$ network increases each side length by
+exactly $d$, so a typed map from $1\times2$ to $2\times3$ must have depth one.
+For the explicit choice $\varepsilon=1$, $s=10$, $w=0$, and
+$\theta=(367,0)$, the loaded state is nonnegative on $[-1,1]^2$ and its
+southern row is exactly
+
+$$
+(42,80,84).
+$$
+
+The already proved one-layer shared-bias obstruction then excludes every
+exact-size network that generates this nonuniform, input-independent state.
+Thus nonnegativity itself is no longer the obstacle for fixed compact data;
+the remaining issue is that the current $2\times3$ interface cannot be
+internalized at its exact shape.  A successful compiler must permit a larger
+workspace or redesign the interface.
 
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
@@ -1613,10 +1657,13 @@ position-dependent bias images, and universality of the shared-scalar-bias
 subclass remains open.
 
 The decisive remaining gap is **arbitrary finite composition through a
-nonnegative internal representation**, not the construction of one ridge or
-the now-verified width-two pair.  The initialization obstruction above rules
-out treating the current signed carrier-loaded state as a literal hidden
-state for all parameters.  The new
+network-generated spatial interface**, not the construction of one ridge,
+the now-verified width-two pair, or nonnegativity of its loaded input for a
+fixed compact problem.  The initialization results above show both that one
+uniform preselected scale cannot handle adversarial offsets and that an
+instance-dependent scale does produce a nonnegative state.  The exact-size
+shape theorem nevertheless rules out internalizing even one explicit such
+$1\times2\to2\times3$ interface.  The new
 $L$-state shows that the complete $m\times(2m-1)$ rectangle
 need not be normalized: an input-length northern prefix plus the ridge is
 already sufficient.  However, that $L$-state is still embedded in the physical
@@ -1628,9 +1675,10 @@ factor chain.  A future compiler must operate directly on this embedded state,
 replace the flat terminal address by a richer carrier, retain several
 independently chosen ridge features through later shared-bias ReLUs, and then
 implement the finite lattice combinations used by the density argument.
-Such a compiler must also absorb or track a nonnegative translation of every
-signed affine seed.  Until that finite multi-ridge compiler is proved, the
-present result must not be described as a shared-bias
+Such a compiler must exploit an expanded workspace or a redesigned interface,
+while retaining the verified nonnegative scaling mechanism for signed affine
+seeds.  Until that finite multi-ridge compiler is proved, the present result
+must not be described as a shared-bias
 universal-approximation theorem.
 
 ## Proof architecture
@@ -1731,11 +1779,12 @@ universal-approximation theorem.
 | [`SharedBiasCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasCompensatedCarrier.lean) | General compact genuine-network theorem for heterogeneous factor chains with prescribed layerwise scalar-bias compensation and exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasParallelStripeCompensation.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCompensation.lean) | Exact layerwise scalar-bias compensation for the sign-changing two-target carrier: uniform proper-prefix margin and final common baseline with gap $17s$ |
 | [`SharedBiasParallelStripeFactorization.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeFactorization.lean) | Explicit rational vertical taps realizing two arbitrary width-two linear forms at the compensated stripe's two target sites, with exact coefficientwise and convolution identities |
-| [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | Exact one-site correction restoring the two-target carrier baseline, plus existence of a positive packed scale satisfying every proper northern-two-row unit-lower condition and a strict final selector gap |
+| [`SharedBiasParallelStripeCarrierCorrection.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeCarrierCorrection.lean) | Exact one-site correction restoring the two-target carrier baseline, plus existence of a positive packed scale satisfying input-carrier positivity, every proper northern-two-row unit-lower condition, and a strict final selector gap |
 | [`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean) | Compact-uniform genuine three-layer shared-bias ReLU realization of the corrected two-target proper chain, with exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean) | Explicit two-coefficient southern-row encoding of two independent affine offsets, with exact target identities for the complete four-factor convolution |
-| [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | Genuine compact depth-four shared-bias block which, on an explicit carrier-loaded input state, simultaneously computes two independently shifted width-two ReLU ridges at distinct target sites |
+| [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | Genuine compact depth-four shared-bias block which chooses a coordinatewise-nonnegative carrier-loaded input state and simultaneously computes two independently shifted width-two ReLU ridges at distinct target sites |
 | [`SharedBiasParallelStripeInitializationObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeInitializationObstruction.lean) | Explicit negative-coordinate family proving that the current signed carrier-loaded interface cannot be generated unchanged by any positive-depth ReLU initializer on a nonempty domain |
+| [`SharedBiasParallelStripeNonnegativeInterface.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeNonnegativeInterface.lean) | Fixed-instance nonnegative loaded-interface theorem, exact $2\times2$ expansion shape identities, and an explicit nonnegative $1\times2\to2\times3$ state excluded by every exact-size shared-bias initializer |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |

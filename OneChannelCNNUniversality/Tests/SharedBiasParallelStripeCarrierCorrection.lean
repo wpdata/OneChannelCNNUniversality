@@ -11,6 +11,7 @@ namespace OneChannelCNNUniversality
 #check parallelStripeCorrectedFinalImage_middle_gap_at_zero
 #check exists_parallelStripeCorrected_positive_scale
 #check exists_parallelStripeCorrected_unitLower_and_gap
+#check exists_parallelStripeCorrected_unitLower_gap_and_inputPositive
 
 #print axioms parallelStripeCorrectedFinalCarrier_common_targets
 #print axioms parallelStripeCorrectedFinalCarrier_middle_gap_at_zero
@@ -18,5 +19,6 @@ namespace OneChannelCNNUniversality
 #print axioms parallelStripeCorrectedFinalImage_middle_gap_at_zero
 #print axioms exists_parallelStripeCorrected_positive_scale
 #print axioms exists_parallelStripeCorrected_unitLower_and_gap
+#print axioms exists_parallelStripeCorrected_unitLower_gap_and_inputPositive
 
 end OneChannelCNNUniversality

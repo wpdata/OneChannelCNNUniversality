@@ -143,18 +143,22 @@ private theorem relu_mul_of_pos (ε z : ℝ) (hε : 0 < ε) :
     rw [relu_of_nonpos hz', relu_of_nonpos (mul_nonpos_of_nonneg_of_nonpos hε.le hz')]
     ring
 
-/-- **Exact compact two-affine-ridge block.**
+/-- **Exact compact two-affine-ridge block with a nonnegative input state.**
 
 For every compact set of width-two inputs and every pair of affine ridge
 parameters, there are positive scales `ε` and `s` such that one genuine
 depth-four expansive shared-bias ReLU network, evaluated on the explicitly
 carrier-loaded affine input state, returns the two ridge ReLUs at the packed
-target sites, multiplied by the same positive `ε`. -/
-theorem exists_parallelStripePackedAffineNetwork_on_compact
+target sites, multiplied by the same positive `ε`.  The carrier-loaded state
+is coordinatewise nonnegative throughout the compact input family. -/
+theorem exists_parallelStripePackedAffineNetwork_nonnegative_input_on_compact
     {K : Set (Image 1 2)} (hK : IsCompact K)
     (w : Fin 2 → Fin 2 → ℝ) (θ : Fin 2 → ℝ) :
     ∃ ε s : ℝ, 0 < ε ∧ 0 < s ∧
       (parallelStripePackedAffineNetwork ε w s).net.depth = 4 ∧
+      (∀ x ∈ K, ImageNonnegative
+        (parallelStripeAffineSeed ε θ x +
+          s • parallelStripeCorrectedCarrier ε w)) ∧
       ∀ x ∈ K,
         (parallelStripePackedAffineNetwork ε w s).eval
             (parallelStripeAffineSeed ε θ x +
@@ -165,11 +169,13 @@ theorem exists_parallelStripePackedAffineNetwork_on_compact
               s • parallelStripeCorrectedCarrier ε w) 1 4 =
           ε * relu (w 1 0 * x 0 0 + w 1 1 * x 0 1 + θ 1) := by
   classical
-  rcases exists_parallelStripeCorrected_unitLower_and_gap w with
-    ⟨ε, hε, hcarrier, hgap⟩
+  rcases exists_parallelStripeCorrected_unitLower_gap_and_inputPositive w with
+    ⟨ε, hε, hinputCarrier, hcarrier, hgap⟩
   let V : Image 1 2 → Image 2 3 := parallelStripeAffineSeed ε θ
   have hV : ContinuousFeatureOn K V :=
     continuousFeatureOn_parallelStripeAffineSeed K ε θ
+  rcases exists_uniform_feature_margin hK V hV 0 with
+    ⟨input₀, hinput₀, hinputBound⟩
   rcases exists_compensatedNorthTwoNetwork_scale_on_compact
       hK (parallelStripePackedProperSteps ε w) V hV
       (parallelStripeCorrectedCarrier ε w) hcarrier with
@@ -190,11 +196,29 @@ theorem exists_parallelStripePackedAffineNetwork_on_compact
       hK signal hsignal carrier base parallelStripePackedTargets
       parallelStripePackedProtect 0 htargets hprotected with
     ⟨select₀, hselect₀, hselect⟩
-  let s := max proper₀ select₀
+  let s := max proper₀ (max select₀ input₀)
   have hproperS : proper₀ ≤ s := le_max_left _ _
-  have hselectS : select₀ ≤ s := le_max_right _ _
+  have hselectS : select₀ ≤ s :=
+    (le_max_left select₀ input₀).trans (le_max_right proper₀ _)
+  have hinputS : input₀ ≤ s :=
+    (le_max_right select₀ input₀).trans (le_max_right proper₀ _)
   have hs : 0 < s := hselect₀.trans_le hselectS
-  refine ⟨ε, s, hε, hs, parallelStripePackedAffineNetwork_depth ε w s, ?_⟩
+  have hloadedNonnegative : ∀ x ∈ K, ImageNonnegative
+      (parallelStripeAffineSeed ε θ x +
+        s • parallelStripeCorrectedCarrier ε w) := by
+    intro x hx p q
+    have hvariableAbs : |V x p q| < input₀ := by
+      simpa using hinputBound x hx p q
+    have hvariableLower : -input₀ < V x p q :=
+      neg_lt_of_abs_lt hvariableAbs
+    have hscaledCarrier : s ≤
+        s * parallelStripeCorrectedCarrier ε w p q := by
+      simpa only [mul_one] using mul_le_mul_of_nonneg_left
+        (hinputCarrier p q) hs.le
+    change 0 ≤ V x p q + s * parallelStripeCorrectedCarrier ε w p q
+    linarith
+  refine ⟨ε, s, hε, hs, parallelStripePackedAffineNetwork_depth ε w s,
+    hloadedNonnegative, ?_⟩
   intro x hx
   have hproperAt := hproper s hproperS x hx
   let actual : Image 5 6 :=
@@ -298,5 +322,25 @@ theorem exists_parallelStripePackedAffineNetwork_on_compact
         (parallelStripeAffineSeed ε θ x) 1 4) = _
     rw [parallelStripePackedFinalVariable_affine_target_one]
     exact relu_mul_of_pos ε _ hε
+
+/-- Compatibility form of the compact two-affine-ridge theorem, obtained by
+forgetting the strengthened input-state nonnegativity certificate. -/
+theorem exists_parallelStripePackedAffineNetwork_on_compact
+    {K : Set (Image 1 2)} (hK : IsCompact K)
+    (w : Fin 2 → Fin 2 → ℝ) (θ : Fin 2 → ℝ) :
+    ∃ ε s : ℝ, 0 < ε ∧ 0 < s ∧
+      (parallelStripePackedAffineNetwork ε w s).net.depth = 4 ∧
+      ∀ x ∈ K,
+        (parallelStripePackedAffineNetwork ε w s).eval
+            (parallelStripeAffineSeed ε θ x +
+              s • parallelStripeCorrectedCarrier ε w) 1 2 =
+          ε * relu (w 0 0 * x 0 0 + w 0 1 * x 0 1 + θ 0) ∧
+        (parallelStripePackedAffineNetwork ε w s).eval
+            (parallelStripeAffineSeed ε θ x +
+              s • parallelStripeCorrectedCarrier ε w) 1 4 =
+          ε * relu (w 1 0 * x 0 0 + w 1 1 * x 0 1 + θ 1) := by
+  rcases exists_parallelStripePackedAffineNetwork_nonnegative_input_on_compact
+      hK w θ with ⟨ε, s, hε, hs, hdepth, _hnonnegative, htargets⟩
+  exact ⟨ε, s, hε, hs, hdepth, htargets⟩
 
 end OneChannelCNNUniversality

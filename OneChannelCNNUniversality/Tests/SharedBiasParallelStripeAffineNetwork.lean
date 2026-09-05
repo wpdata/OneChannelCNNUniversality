@@ -6,8 +6,10 @@ namespace OneChannelCNNUniversality
 #check parallelStripePackedProtect
 #check parallelStripePackedAffineNetwork
 #check parallelStripePackedAffineNetwork_depth
+#check exists_parallelStripePackedAffineNetwork_nonnegative_input_on_compact
 #check exists_parallelStripePackedAffineNetwork_on_compact
 
+#print axioms exists_parallelStripePackedAffineNetwork_nonnegative_input_on_compact
 #print axioms exists_parallelStripePackedAffineNetwork_on_compact
 
 end OneChannelCNNUniversality

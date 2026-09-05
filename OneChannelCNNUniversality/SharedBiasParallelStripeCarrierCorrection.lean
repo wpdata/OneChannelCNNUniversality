@@ -402,16 +402,29 @@ private theorem parallelStripeCorrectedFinalCarrier_gap_zero
       Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
       Finset.sum_range_succ, coeff_X, coeff_C, coeff_one]
 
-/-- A strictly positive packed scale simultaneously preserves all three
-proper southern-row margins and the final middle-to-target gap. -/
-theorem exists_parallelStripeCorrected_positive_scale
+private theorem continuous_parallelStripeCorrectedCarrier_apply
+    (w : Fin 2 → Fin 2 → ℝ) (p : Fin 2) (q : Fin 3) :
+    Continuous fun ε : ℝ ↦ parallelStripeCorrectedCarrier ε w p q := by
+  fin_cases p <;> fin_cases q <;>
+    simp [parallelStripeCorrectedCarrier] <;> fun_prop
+
+/-- A small positive packed scale can additionally be chosen so that the
+corrected carrier is already strictly above one at every input site. -/
+private theorem exists_parallelStripeCorrected_positive_scale_with_input
     (w : Fin 2 → Fin 2 → ℝ) :
     ∃ ε : ℝ, 0 < ε ∧
+      (∀ p q, 1 < parallelStripeCorrectedCarrier ε w p q) ∧
       (∀ q : Fin 4, 1 < (parallelStripeCorrectedSouthOne ε w).coeff q) ∧
       (∀ q : Fin 5, 1 < (parallelStripeCorrectedSouthTwo ε w).coeff q) ∧
       (∀ q : Fin 6, 1 < (parallelStripeCorrectedSouthThree ε w).coeff q) ∧
       1 < (parallelStripeCorrectedFinalCarrier ε w).coeff 3 -
         (parallelStripeCorrectedFinalCarrier ε w).coeff 2 := by
+  have hinput : ∀ᶠ ε in 𝓝 (0 : ℝ),
+      ∀ p q, 1 < parallelStripeCorrectedCarrier ε w p q :=
+    Filter.eventually_all.2 fun p ↦ Filter.eventually_all.2 fun q ↦
+      continuousAt_const.eventually_lt
+        (continuous_parallelStripeCorrectedCarrier_apply w p q).continuousAt
+        (by simp [parallelStripeCorrectedCarrier])
   have h₁ : ∀ᶠ ε in 𝓝 (0 : ℝ),
       ∀ q : Fin 4, 1 < (parallelStripeCorrectedSouthOne ε w).coeff q :=
     Filter.eventually_all.2 fun q ↦
@@ -439,12 +452,26 @@ theorem exists_parallelStripeCorrected_positive_scale
     continuousAt_const.eventually_lt
       (continuous_parallelStripeCorrectedFinalCarrier_gap w).continuousAt
       (by rw [parallelStripeCorrectedFinalCarrier_gap_zero]; norm_num)
-  have hall := h₁.and (h₂.and (h₃.and hgap))
+  have hall := hinput.and (h₁.and (h₂.and (h₃.and hgap)))
   rcases Metric.mem_nhds_iff.1 hall with ⟨r, hr, hball⟩
   refine ⟨r / 2, by linarith, hball ?_⟩
   simp only [Metric.mem_ball, Real.dist_eq, sub_zero]
   rw [abs_of_pos (by linarith)]
   linarith
+
+/-- A strictly positive packed scale simultaneously preserves all three
+proper southern-row margins and the final middle-to-target gap. -/
+theorem exists_parallelStripeCorrected_positive_scale
+    (w : Fin 2 → Fin 2 → ℝ) :
+    ∃ ε : ℝ, 0 < ε ∧
+      (∀ q : Fin 4, 1 < (parallelStripeCorrectedSouthOne ε w).coeff q) ∧
+      (∀ q : Fin 5, 1 < (parallelStripeCorrectedSouthTwo ε w).coeff q) ∧
+      (∀ q : Fin 6, 1 < (parallelStripeCorrectedSouthThree ε w).coeff q) ∧
+      1 < (parallelStripeCorrectedFinalCarrier ε w).coeff 3 -
+        (parallelStripeCorrectedFinalCarrier ε w).coeff 2 := by
+  rcases exists_parallelStripeCorrected_positive_scale_with_input w with
+    ⟨ε, hε, _hinput, h₁, h₂, h₃, hgap⟩
+  exact ⟨ε, hε, h₁, h₂, h₃, hgap⟩
 
 private theorem parallelStripeCorrectedNorthOne_ge_two
     (ε : ℝ) (w : Fin 2 → Fin 2 → ℝ) (q : Fin 4) :
@@ -585,6 +612,23 @@ theorem exists_parallelStripeCorrected_unitLower_and_gap
   rcases exists_parallelStripeCorrected_positive_scale w with
     ⟨ε, hε, h₁, h₂, h₃, hgap⟩
   exact ⟨ε, hε,
+    parallelStripeCorrected_unitLower_of_polynomial_margins ε w h₁ h₂ h₃,
+    hgap⟩
+
+/-- There is one positive packed scale satisfying the proper-prefix and final
+gap conditions while the corrected input carrier is pointwise at least one. -/
+theorem exists_parallelStripeCorrected_unitLower_gap_and_inputPositive
+    (w : Fin 2 → Fin 2 → ℝ) :
+    ∃ ε : ℝ, 0 < ε ∧
+      (∀ p q, 1 ≤ parallelStripeCorrectedCarrier ε w p q) ∧
+      NorthTwoCompensatedUnitLowerAlong
+        (parallelStripePackedProperSteps ε w)
+        (parallelStripeCorrectedCarrier ε w) ∧
+      1 < (parallelStripeCorrectedFinalCarrier ε w).coeff 3 -
+        (parallelStripeCorrectedFinalCarrier ε w).coeff 2 := by
+  rcases exists_parallelStripeCorrected_positive_scale_with_input w with
+    ⟨ε, hε, hinput, h₁, h₂, h₃, hgap⟩
+  exact ⟨ε, hε, fun p q ↦ (hinput p q).le,
     parallelStripeCorrected_unitLower_of_polynomial_margins ε w h₁ h₂ h₃,
     hgap⟩
 
