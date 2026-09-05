@@ -53,6 +53,16 @@ site.  [`SharedBias.lean`](OneChannelCNNUniversality/SharedBias.lean) defines
 this exact network class and proves that its semantics embeds without change
 into the general position-dependent-bias model.
 
+[`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean)
+proves a sharp initialization obstruction for this stricter class. From an
+arbitrary real $1\times2$ input, the southern row of one expansive $2\times2$
+shared-bias layer cannot be both input-independent and spatially nonuniform.
+Input independence forces both southern kernel coefficients to zero, after
+which all three outputs equal $\mathrm{ReLU}(b)$. The theorem includes the
+ReLU and therefore rules out the actual one-layer network behavior, not only
+its preactivation algebra. It is a one-layer lower bound for carrier
+initialization, not a non-universality theorem for arbitrary depth.
+
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 machine-checks exact boundary effects of zero-extended full convolution.  A
 zero kernel and positive shared bias create a constant rectangle; horizontal
@@ -1588,6 +1598,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasFiniteSelection.lean`](OneChannelCNNUniversality/SharedBiasFiniteSelection.lean) | Dependent finite successor schedules, recursive compactness witness construction, exact internal-seed equations, and extraction of one final composed CNN |
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | Recovery adapters for compiled selector blocks, schedule-length recovery chains, final-output recovery, and conditional injectivity of the final CNN |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | The target-constancy obstruction for global pairwise protection, constancy of the selected ReLU, and its specialization to appended selector steps |
+| [`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean) | A one-layer lower bound: an input-independent southern row from a $1\times2$ input must have zero southern kernel coefficients and be spatially constant after ReLU |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |

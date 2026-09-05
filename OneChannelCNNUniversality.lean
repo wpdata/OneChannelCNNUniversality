@@ -1,5 +1,6 @@
 import OneChannelCNNUniversality.Main
 import OneChannelCNNUniversality.SharedBias
+import OneChannelCNNUniversality.SharedBiasOneLayerObstruction
 import OneChannelCNNUniversality.SharedBiasGeometry
 import OneChannelCNNUniversality.SharedBiasCarrier
 import OneChannelCNNUniversality.SharedBiasSelection
