@@ -1512,6 +1512,34 @@ parameter-dependent carrier-loaded input state, including constant padding
 in the second row.  Generating that state inside a network from a raw input
 and composing arbitrarily many such blocks remain separate tasks.
 
+[`SharedBiasParallelStripeInitializationObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeInitializationObstruction.lean)
+shows that the first of those tasks cannot be solved by generating the present
+signed interface unchanged.  It first restates the positive compact two-ridge
+theorem through a named loaded-input interface, so the connection is exact
+rather than informal.  For every packing scale $\varepsilon>0$ and
+every nonnegative carrier scale $s$, set the packed ridge weights to zero and
+choose
+
+$$
+\theta_0=\frac{367(s+1)}{\varepsilon},\qquad \theta_1=0.
+$$
+
+The southwest coordinate of the required carrier-loaded input is then
+
+$$
+-38(s+1)+8s=-30s-38<0.
+$$
+
+Lean proves that every positive-depth ReLU network has coordinatewise
+nonnegative output, so no positive-depth shared-bias initializer can equal
+this state even at one input, and therefore not on any nonempty input set.
+This is an exact representation-interface obstruction, not a failure of the
+two-ridge theorem and not a shared-bias non-universality result.  It narrows
+the next construction step: a compositional compiler must use a nonnegative
+translated encoding (with the translation tracked through the packed
+algebra) or replace the interface, rather than merely prefix the current
+block.
+
 [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean)
 shows that the linear depth of this construction is unavoidable for a
 representative long-range ridge.  For
@@ -1584,8 +1612,11 @@ existing full universal-approximation theorem still permits arbitrary
 position-dependent bias images, and universality of the shared-scalar-bias
 subclass remains open.
 
-The decisive remaining gap is **arbitrary finite composition**, not the
-construction of one ridge or the now-verified width-two pair.  The new
+The decisive remaining gap is **arbitrary finite composition through a
+nonnegative internal representation**, not the construction of one ridge or
+the now-verified width-two pair.  The initialization obstruction above rules
+out treating the current signed carrier-loaded state as a literal hidden
+state for all parameters.  The new
 $L$-state shows that the complete $m\times(2m-1)$ rectangle
 need not be normalized: an input-length northern prefix plus the ridge is
 already sufficient.  However, that $L$-state is still embedded in the physical
@@ -1597,8 +1628,10 @@ factor chain.  A future compiler must operate directly on this embedded state,
 replace the flat terminal address by a richer carrier, retain several
 independently chosen ridge features through later shared-bias ReLUs, and then
 implement the finite lattice combinations used by the density argument.
-Until that finite multi-ridge compiler is proved, the present result must not
-be described as a shared-bias universal-approximation theorem.
+Such a compiler must also absorb or track a nonnegative translation of every
+signed affine seed.  Until that finite multi-ridge compiler is proved, the
+present result must not be described as a shared-bias
+universal-approximation theorem.
 
 ## Proof architecture
 
@@ -1702,6 +1735,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasParallelStripeProperNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeProperNetwork.lean) | Compact-uniform genuine three-layer shared-bias ReLU realization of the corrected two-target proper chain, with exact northern-two-row signal-plus-carrier semantics |
 | [`SharedBiasParallelStripeAffinePacking.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffinePacking.lean) | Explicit two-coefficient southern-row encoding of two independent affine offsets, with exact target identities for the complete four-factor convolution |
 | [`SharedBiasParallelStripeAffineNetwork.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeAffineNetwork.lean) | Genuine compact depth-four shared-bias block which, on an explicit carrier-loaded input state, simultaneously computes two independently shifted width-two ReLU ridges at distinct target sites |
+| [`SharedBiasParallelStripeInitializationObstruction.lean`](OneChannelCNNUniversality/SharedBiasParallelStripeInitializationObstruction.lean) | Explicit negative-coordinate family proving that the current signed carrier-loaded interface cannot be generated unchanged by any positive-depth ReLU initializer on a nonempty domain |
 | [`SharedBiasGeneralRidgeOptimality.lean`](OneChannelCNNUniversality/SharedBiasGeneralRidgeOptimality.lean) | A sharp $1/2$ four-corner error obstruction for the endpoint affine-ReLU ridge and a matching exact-depth shared-bias construction |
 | [`SharedBiasDepthLowerBound.lean`](OneChannelCNNUniversality/SharedBiasDepthLowerBound.lean) | Exact depth-dependent receptive fields, the four-corner mixed-difference identity for arbitrary affine readouts, the sharp error lower bound $1$, and the necessary depth $L+1$ for endpoint interaction |
 | [`SpatialInteractionDepthLowerBound.lean`](OneChannelCNNUniversality/SpatialInteractionDepthLowerBound.lean) | Anisotropic receptive-field bounds for ordinary position-dependent-bias networks, a two-site mixed-difference obstruction, and the necessary row/column depth spans for product approximation |
@@ -1787,7 +1821,8 @@ This repository publishes the Lean source and its machine-checkable results.
 Lean kernel verification establishes that the position-dependent-bias
 universal-approximation theorem and the narrower shared-bias arbitrary-width
 single-ridge theorem, together with the carrier-loaded compact depth-four
-two-ridge block for width-two affine inputs and its supporting lemmas,
+two-ridge block for width-two affine inputs, its supporting lemmas, and the
+exact obstruction to internalizing its present signed input interface,
 follow from the stated definitions and reported foundations.  It does not
 turn the unresolved shared-bias universality question into a theorem, and it
 does not by itself establish external peer review or historical priority.
