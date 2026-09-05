@@ -79,6 +79,19 @@ $$
 所以真实 ReLU 网络在该紧输入域上仍然单射。也就是说，边界载波的生成没有擦除输入，也不会
 把两个不同输入合并成同一输出，因此能够继续接入后续的载波间隙与选定 ReLU 构造。
 
+[`SharedBiasExpandedWorkspace.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspace.lean)
+证明这个扩大状态不仅是单射编码，而且是可直接使用的内部接口。对原始宽度二输入，网络生成的
+`3 × 4` 状态的西北 `2 × 2` 块满足精确解码式
+
+$$
+x_0=z_{0,0}-z_{1,0},\qquad
+x_1=(z_{0,0}-z_{1,0})+(z_{0,1}-z_{1,1}).
+$$
+
+因此，再追加一个共享偏置 `2 × 2` 层，就能在固定位置精确计算任意仿射 ridge。所得真实网络实现
+`1 × 2 → 4 × 5`，深度恰为三，在网络内部生成非负空间非均匀载波，不需要裁剪或外部加载仿射状态。
+这确认了扩展工作区可以支持单 ridge 组合；任意多个独立 ridge 的同时内部生成与保留仍然开放。同一模块还证明，对打包权重作一个显式累积重参数化后，已有四因子双 ridge 卷积代数在这个工作区编码上仍然成立：形式卷积链继续在第 \(2\) 与第 \(4\) 列读出两条任意线性形式。因此，剩余的双 ridge 缺口是非线性的——需要兼容的网络生成载波、逐层 ReLU 支路控制和两个独立仿射偏移——而不是打包线性信号的丢失。
+
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 对零延拓全卷积产生的边界效应进行了机器验证：零卷积核加正共享偏置会产生常数矩形；
 横向一阶差分再经过 ReLU 会精确保留正的左边界；继续做纵向一阶差分会精确保留西北角
@@ -1324,9 +1337,9 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 `SharedBiasNetworkTo.append` 能执行的一层网络，并且已经验证的第二行污染恒等式阻止把当前
 因子链当作黑盒复用。后续编译器必须直接处理这个嵌入状态，用更丰富的载波替代平坦终端地址，让多个
 彼此独立选取的 ridge 特征穿过后续共享偏置 ReLU 后仍可保留，再实现稠密性论证所需的有限格
-组合。该编译器必须使用扩大的工作区或重新设计的接口，并保留已经验证的带符号仿射种子
-非负缩放机制。在这个有限多 ridge
-编译器被证明以前，当前结果不能被称为共享偏置万能逼近定理。
+组合。新的深度三定理已经证明，扩展工作区能直接局部读出任意单个仿射 ridge。下一个有限多 ridge 编译器
+必须扩展这个可操作接口，让具有独立参数的 ridge 特征共存并穿过后续共享偏置层后仍被保留，同时保留已经验证的带符号仿射种子非负缩放机制。
+在这个有限多 ridge 编译器被证明以前，当前结果不能被称为共享偏置万能逼近定理。
 
 ## 证明架构
 
@@ -1364,6 +1377,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean) | 全实数输入以及任意含零输入域上的单层下界，包括紧对称盒 $[-M,M]^2$；后者不依赖无界输入假设，也能排除空间非均匀的输入无关载波 |
 | [`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean) | 输入无关非均匀载波初始化的锐利最小正深度定理：任意含零输入域上的通用单层不可能性，以及显式精确二层左边界构造 |
 | [`SharedBiasNondestructiveCarrier.lean`](OneChannelCNNUniversality/SharedBiasNondestructiveCarrier.lean) | 紧输入域上的精确二层非破坏性边界载波生成：固定非均匀载波与单射变换信号共存，并证明真实共享偏置 ReLU 网络保持单射 |
+| [`SharedBiasExpandedWorkspace.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspace.lean) | 对网络内部生成的 `3 × 4` 工作区进行精确局部解码，并给出任意仿射 ReLU ridge 的端到端深度三 `1 × 2 → 4 × 5` 共享偏置网络 |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
