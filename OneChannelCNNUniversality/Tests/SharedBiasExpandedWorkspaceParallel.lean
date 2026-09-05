@@ -1,0 +1,15 @@
+import OneChannelCNNUniversality.SharedBiasExpandedWorkspaceParallel
+
+namespace OneChannelCNNUniversality
+
+#check expandedWorkspaceInitializerSteps
+#check expandedWorkspaceParallelProperSteps
+#check expandedWorkspaceOffsetResponse_difference
+#check expandedWorkspaceParallelFinalCarrier_common_targets
+#check exists_depthSix_expandedWorkspace_twoRidge_on_compact
+
+#print axioms expandedWorkspaceOffsetResponse_difference
+#print axioms expandedWorkspaceParallelFinalCarrier_common_targets
+#print axioms exists_depthSix_expandedWorkspace_twoRidge_on_compact
+
+end OneChannelCNNUniversality

@@ -112,15 +112,32 @@ A single additional shared-bias `2 × 2` layer therefore computes any affine
 ridge exactly at a fixed site.  The resulting genuine network maps
 `1 × 2 → 4 × 5`, has exact depth three, creates its nonnegative spatially
 nonuniform carrier internally, and uses neither cropping nor an externally
-loaded affine state.  This validates expanded workspace for one-ridge
-composition; simultaneous internal generation and preservation of arbitrarily
-many independent ridges remains open.  The same module also proves that the
-existing four-factor two-ridge convolution algebra survives this workspace
+loaded affine state.  The same module also proves that the existing
+four-factor two-ridge convolution algebra survives this workspace
 encoding after an explicit cumulative reparameterization of its weights:
 the formal chain still reads two arbitrary linear forms at columns two and
-four.  The remaining two-ridge gap is therefore nonlinear---a compatible
-network-generated carrier, layerwise ReLU control, and two independent affine
-offsets---rather than loss of the packed linear signal.
+four.
+
+[`SharedBiasAffineCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasAffineCompensatedCarrier.lean)
+adds a general compact-domain bridge in which every shared scalar bias splits
+into a fixed signal term plus a scalable carrier term.  Then
+[`SharedBiasExpandedWorkspaceParallel.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspaceParallel.lean)
+closes the genuine width-two two-ridge problem.  For every compact input set,
+two arbitrary weight rows $w_0,w_1$, and two independent offsets
+$\theta_0,\theta_1$, Lean constructs $\varepsilon,s>0$ and one actual
+depth-six `1 × 2 → 7 × 8` shared-bias ReLU CNN such that
+
+$$
+N(x)_{1,2}=\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),
+\qquad
+N(x)_{1,4}=\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1).
+$$
+
+The network starts from the raw input, generates the expanded carrier
+internally, uses no crop or position-dependent bias, and preserves both
+independently shifted nonlinear features simultaneously.  Arbitrary finite
+multi-ridge preservation and lattice composition remain open; this theorem is
+not yet universal approximation for the shared-scalar-bias subclass.
 
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 machine-checks exact boundary effects of zero-extended full convolution.  A
@@ -1681,31 +1698,19 @@ position-dependent bias images, and universality of the shared-scalar-bias
 subclass remains open.
 
 The decisive remaining gap is **arbitrary finite composition through a
-network-generated spatial interface**, not the construction of one ridge,
-the now-verified width-two pair, or nonnegativity of its loaded input for a
-fixed compact problem.  The initialization results above show both that one
-uniform preselected scale cannot handle adversarial offsets and that an
-instance-dependent scale does produce a nonnegative state.  The exact-size
-shape theorem nevertheless rules out internalizing even one explicit such
-$1\times2\to2\times3$ interface.  The new
-$L$-state shows that the complete $m\times(2m-1)$ rectangle
-need not be normalized: an input-length northern prefix plus the ridge is
-already sufficient.  However, that $L$-state is still embedded in the physical
-rectangle, whereas the arbitrary-width ridge theorem starts from a one-row
-state; off-chain sites may still depend on the input, coordinate restriction
-is not a layer that `SharedBiasNetworkTo.append` can execute, and the verified
-row-one contamination identity prevents black-box reuse of the current
-factor chain.  A future compiler must operate directly on this embedded state,
-replace the flat terminal address by a richer carrier, retain several
-independently chosen ridge features through later shared-bias ReLUs, and then
-implement the finite lattice combinations used by the density argument.
-The new depth-three result proves that expanded workspace already supports a
-direct local readout of one arbitrary affine ridge.  A finite multi-ridge
-compiler must now extend that operational interface so that independently
-parameterized ridge features coexist and survive later shared-bias layers,
-while retaining the verified nonnegative scaling mechanism for signed affine
-seeds.  Until that compiler is proved, the present result must not be described
-as a shared-bias universal-approximation theorem.
+network-generated spatial interface**.  The exact-size obstruction still
+explains why the old loaded `2 × 3` state cannot simply be prefixed by an
+initializer.  The depth-six theorem bypasses it: two initializer layers create
+a larger nonuniform carrier, the next three layers use affine-compensated
+shared biases to keep the northern computation linear, and the last layer
+simultaneously selects two independent ridges.  Thus internal carrier
+generation, two independent offsets, and the two-target ReLU branch control
+are no longer open at width two.  What is not yet proved is an inductive
+invariant that preserves an unbounded finite family of such ridge features
+through later shared-bias layers and implements the finite min/max lattice
+expressions used by Stone--Weierstrass.  Until that compiler is proved, the
+present result must not be described as a shared-bias universal-approximation
+theorem.
 
 ## Proof architecture
 
@@ -1744,6 +1749,8 @@ as a shared-bias universal-approximation theorem.
 | [`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean) | Sharp minimum-positive-depth theorem for input-independent nonuniform carrier initialization: a generic one-layer impossibility on every zero-containing domain and an explicit exact-depth-two left-boundary construction |
 | [`SharedBiasNondestructiveCarrier.lean`](OneChannelCNNUniversality/SharedBiasNondestructiveCarrier.lean) | Compact exact-depth-two generation of a fixed nonuniform boundary carrier alongside an injective transformed signal, with injectivity of the genuine shared-bias ReLU network |
 | [`SharedBiasExpandedWorkspace.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspace.lean) | Exact local decoding of the network-generated `3 × 4` workspace and an end-to-end depth-three `1 × 2 → 4 × 5` shared-bias network for an arbitrary affine ReLU ridge |
+| [`SharedBiasAffineCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasAffineCompensatedCarrier.lean) | Generic compact-domain linearization for affine shared biases split into fixed signal and scalable carrier terms |
+| [`SharedBiasExpandedWorkspaceParallel.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspaceParallel.lean) | End-to-end depth-six `1 × 2 → 7 × 8` shared-bias CNN that internally generates its carrier and computes two independently shifted affine ReLU ridges |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |

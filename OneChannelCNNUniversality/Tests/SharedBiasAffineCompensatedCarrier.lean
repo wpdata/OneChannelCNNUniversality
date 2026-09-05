@@ -1,0 +1,16 @@
+import OneChannelCNNUniversality.SharedBiasAffineCompensatedCarrier
+
+namespace OneChannelCNNUniversality
+
+#check AffineCompensatedBilinearStep
+#check affineCompensatedVariableChain
+#check affineCompensatedCarrierChain
+#check affineCompensatedBilinearNetwork
+#check affineCompensatedBilinearNetwork_depth
+#check affineNorthTwoCompensatedUnitLowerAlong_append_iff
+#check exists_affineCompensatedNorthTwoNetwork_scale_on_compact
+
+#print axioms affineCompensatedBilinearNetwork_depth
+#print axioms exists_affineCompensatedNorthTwoNetwork_scale_on_compact
+
+end OneChannelCNNUniversality

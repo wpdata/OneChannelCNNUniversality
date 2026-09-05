@@ -90,7 +90,22 @@ $$
 
 因此，再追加一个共享偏置 `2 × 2` 层，就能在固定位置精确计算任意仿射 ridge。所得真实网络实现
 `1 × 2 → 4 × 5`，深度恰为三，在网络内部生成非负空间非均匀载波，不需要裁剪或外部加载仿射状态。
-这确认了扩展工作区可以支持单 ridge 组合；任意多个独立 ridge 的同时内部生成与保留仍然开放。同一模块还证明，对打包权重作一个显式累积重参数化后，已有四因子双 ridge 卷积代数在这个工作区编码上仍然成立：形式卷积链继续在第 \(2\) 与第 \(4\) 列读出两条任意线性形式。因此，剩余的双 ridge 缺口是非线性的——需要兼容的网络生成载波、逐层 ReLU 支路控制和两个独立仿射偏移——而不是打包线性信号的丢失。
+同一模块还证明，对打包权重作一个显式累积重参数化后，已有四因子双 ridge 卷积代数在这个工作区编码上仍然成立：形式卷积链继续在第 \(2\) 与第 \(4\) 列读出两条任意线性形式。
+
+[`SharedBiasAffineCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasAffineCompensatedCarrier.lean)
+建立了一个通用紧集桥接定理：每层共享标量偏置分解为固定的信号偏置与可缩放的载波偏置。随后
+[`SharedBiasExpandedWorkspaceParallel.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspaceParallel.lean)
+完整闭合了真实的宽度二双 ridge 问题。对任意紧输入集、两行任意权重
+$w_0,w_1$ 及两个独立偏移 $\theta_0,\theta_1$，Lean 构造
+$\varepsilon,s>0$ 与一个真实的深度六 `1 × 2 → 7 × 8` 共享偏置 ReLU CNN，满足
+
+$$
+N(x)_{1,2}=\varepsilon\,\mathrm{ReLU}(w_0\mathbin{\cdot}x+\theta_0),
+\qquad
+N(x)_{1,4}=\varepsilon\,\mathrm{ReLU}(w_1\mathbin{\cdot}x+\theta_1).
+$$
+
+该网络直接从原始输入出发，在内部生成扩展载波，不使用裁剪或逐位置偏置，并同时保留两个独立平移的非线性特征。任意有限多 ridge 的保留及格组合仍未完成；因此这还不是共享标量偏置子类的万能逼近定理。
 
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 对零延拓全卷积产生的边界效应进行了机器验证：零卷积核加正共享偏置会产生常数矩形；
@@ -1328,18 +1343,8 @@ $$
 固定分辨率图像架构或任意二维输入状态的结论。仓库中已有的完整万能逼近定理仍使用任意
 逐位置偏置图像，而共享标量偏置子类是否万能仍然是开放问题。
 
-当前决定性的缺口已经变成**通过网络生成的空间接口实现任意有限组合**，而不是构造单个
-ridge、已经验证的宽度二 ridge 对，或固定紧问题上加载输入的非负性。上述初始化结果同时
-说明：预先统一固定的尺度无法处理对抗性偏移，但依赖具体实例的尺度确实能够产生非负状态；
-然而精确尺寸形状定理仍排除了内部生成一个显式的 $1\times2\to2\times3$ 接口。新的 $L$ 状态说明无需规范化整个
-$m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。但这个 $L$ 状态仍嵌在真实
-矩形中，而任意宽度 ridge 定理的输入仍是单行状态；链外坐标可能继续依赖输入，坐标限制也不是
-`SharedBiasNetworkTo.append` 能执行的一层网络，并且已经验证的第二行污染恒等式阻止把当前
-因子链当作黑盒复用。后续编译器必须直接处理这个嵌入状态，用更丰富的载波替代平坦终端地址，让多个
-彼此独立选取的 ridge 特征穿过后续共享偏置 ReLU 后仍可保留，再实现稠密性论证所需的有限格
-组合。新的深度三定理已经证明，扩展工作区能直接局部读出任意单个仿射 ridge。下一个有限多 ridge 编译器
-必须扩展这个可操作接口，让具有独立参数的 ridge 特征共存并穿过后续共享偏置层后仍被保留，同时保留已经验证的带符号仿射种子非负缩放机制。
-在这个有限多 ridge 编译器被证明以前，当前结果不能被称为共享偏置万能逼近定理。
+当前决定性的缺口是**通过网络生成的空间接口实现任意有限组合**。精确尺寸障碍仍然解释了为什么旧的加载
+`2 × 3` 状态不能简单地在前面接一个初始化器。新的深度六定理绕过了它：前两层生成更大的非均匀载波，中间三层利用仿射补偿共享偏置使北侧计算保持线性，最后一层同时选出两个独立 ridge。因此，在宽度二上，内部载波生成、两个独立偏移以及双目标 ReLU 支路控制都已不再是开放问题。尚未证明的是：建立一个归纳不变量，使任意有限多的 ridge 特征能穿过后续共享偏置层而保留，并实现 Stone--Weierstrass 论证所需的有限最小／最大格表达式。在这个编译器被证明以前，当前结果不能被称为共享标量偏置子类的万能逼近定理。
 
 ## 证明架构
 
@@ -1378,6 +1383,8 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean) | 输入无关非均匀载波初始化的锐利最小正深度定理：任意含零输入域上的通用单层不可能性，以及显式精确二层左边界构造 |
 | [`SharedBiasNondestructiveCarrier.lean`](OneChannelCNNUniversality/SharedBiasNondestructiveCarrier.lean) | 紧输入域上的精确二层非破坏性边界载波生成：固定非均匀载波与单射变换信号共存，并证明真实共享偏置 ReLU 网络保持单射 |
 | [`SharedBiasExpandedWorkspace.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspace.lean) | 对网络内部生成的 `3 × 4` 工作区进行精确局部解码，并给出任意仿射 ReLU ridge 的端到端深度三 `1 × 2 → 4 × 5` 共享偏置网络 |
+| [`SharedBiasAffineCompensatedCarrier.lean`](OneChannelCNNUniversality/SharedBiasAffineCompensatedCarrier.lean) | 把共享仿射偏置分为固定信号项与可缩放载波项的通用紧集线性化定理 |
+| [`SharedBiasExpandedWorkspaceParallel.lean`](OneChannelCNNUniversality/SharedBiasExpandedWorkspaceParallel.lean) | 端到端深度六 `1 × 2 → 7 × 8` 共享偏置 CNN：内部生成载波，并同时计算两个独立平移的仿射 ReLU ridge |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
