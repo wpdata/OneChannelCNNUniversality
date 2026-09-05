@@ -71,6 +71,17 @@ no spatially nonuniform input-independent southern carrier from one layer.
 The zero-membership condition is essential: a box away from zero can keep
 selected sites permanently in ReLU's zero branch.
 
+[`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean)
+closes this initialization subproblem with a matching construction.  For
+arbitrary finite input dimensions and every domain containing the zero image,
+one shared-bias layer cannot output any nonuniform image independently of the
+input.  An explicit exact-depth-two network does: its first zero-kernel layer
+erases the input to the constant image `1`, and its second horizontal
+difference layer uses zero extension to produce the left-edge indicator.
+Consequently, the minimum positive depth for input-independent nonuniform
+carrier initialization is exactly two.  A dedicated corollary states the same
+sharp result on the compact box $[-M,M]^2$.
+
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 machine-checks exact boundary effects of zero-extended full convolution.  A
 zero kernel and positive shared bias create a constant rectangle; horizontal
@@ -1607,6 +1618,7 @@ be described as a shared-bias universal-approximation theorem.
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | Recovery adapters for compiled selector blocks, schedule-length recovery chains, final-output recovery, and conditional injectivity of the final CNN |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | The target-constancy obstruction for global pairwise protection, constancy of the selected ReLU, and its specialization to appended selector steps |
 | [`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean) | One-layer lower bounds on all real inputs and on every zero-containing domain, including the compact symmetric box $[-M,M]^2$; the latter rules out a spatially nonuniform input-independent carrier without an unbounded-domain assumption |
+| [`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean) | Sharp minimum-positive-depth theorem for input-independent nonuniform carrier initialization: a generic one-layer impossibility on every zero-containing domain and an explicit exact-depth-two left-boundary construction |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | Exact two-coordinate Pascal boundary formulas and injectivity of a genuine selected block on the adjacent-root-duplicate subspace |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | A genuine injective zero-bias layer that creates the adjacent root copy, preservation through the seed bridge, and an end-to-end injective copy--seed--select CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | A reusable monotone/strictly-monotone two-coordinate code, its preservation and recovery through a selected block, and injectivity of the actual appended network |

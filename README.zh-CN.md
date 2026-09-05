@@ -60,6 +60,13 @@ ReLU，因此排除的是真实单层网络行为，而不仅是预激活的线�
 当 $M\geq0$ 时，单层网络不可能在该盒上产生空间非均匀而又与输入无关的南侧载波。包含零
 输入这一条件是必要的：若输入盒远离零点，某些位置可能始终停留在 ReLU 的零支路。
 
+[`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean)
+用匹配的构造完整解决了这个初始化子问题。对于任意有限输入尺寸和任意包含零图像的输入域，
+一个共享偏置层都不可能与输入无关地产生任何非均匀图像；而一个显式的精确二层网络可以做到：
+第一层采用零卷积核，把任意输入擦除为常数图像 `1`；第二层采用横向差分核，利用零延拓边界
+生成左边界示性载波。因此，初始化“与输入无关且空间非均匀”的载波所需的最小正深度恰好为
+$2$。文件中还单独给出了紧对称盒 $[-M,M]^2$ 上的同一锐利结论。
+
 [`SharedBiasGeometry.lean`](OneChannelCNNUniversality/SharedBiasGeometry.lean)
 对零延拓全卷积产生的边界效应进行了机器验证：零卷积核加正共享偏置会产生常数矩形；
 横向一阶差分再经过 ReLU 会精确保留正的左边界；继续做纵向一阶差分会精确保留西北角
@@ -1280,6 +1287,7 @@ $m\times(2m-1)$ 矩形：输入长度的北侧前缀再加 ridge 已经足够。
 | [`SharedBiasScheduledRecovery.lean`](OneChannelCNNUniversality/SharedBiasScheduledRecovery.lean) | 已编译选择块的恢复适配器、等长日程恢复链、最终输出恢复，以及最终 CNN 的条件单射性 |
 | [`SharedBiasProtectionObstruction.lean`](OneChannelCNNUniversality/SharedBiasProtectionObstruction.lean) | 全局成对保护导致目标常值、选择 ReLU 恒定的障碍定理，以及对追加选择器步骤的专门结论 |
 | [`SharedBiasOneLayerObstruction.lean`](OneChannelCNNUniversality/SharedBiasOneLayerObstruction.lean) | 全实数输入以及任意含零输入域上的单层下界，包括紧对称盒 $[-M,M]^2$；后者不依赖无界输入假设，也能排除空间非均匀的输入无关载波 |
+| [`SharedBiasCarrierDepthOptimality.lean`](OneChannelCNNUniversality/SharedBiasCarrierDepthOptimality.lean) | 输入无关非均匀载波初始化的锐利最小正深度定理：任意含零输入域上的通用单层不可能性，以及显式精确二层左边界构造 |
 | [`SharedBiasRedundantRecovery.lean`](OneChannelCNNUniversality/SharedBiasRedundantRecovery.lean) | 两个边界坐标上的精确 Pascal 公式，以及真实选择块在相邻根副本子空间上的单射性 |
 | [`SharedBiasAdjacentCopy.lean`](OneChannelCNNUniversality/SharedBiasAdjacentCopy.lean) | 真实且单射的零偏置相邻根复制层、种子桥保持，以及端到端单射的复制—种子—选择 CNN |
 | [`SharedBiasMonotoneCode.lean`](OneChannelCNNUniversality/SharedBiasMonotoneCode.lean) | 可重复使用的单调／严格单调双坐标编码、选择块中的保持与恢复，以及真实追加网络的单射性 |
